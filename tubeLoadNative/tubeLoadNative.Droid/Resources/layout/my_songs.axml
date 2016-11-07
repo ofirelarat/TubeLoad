@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1"
+        android:weightSum="90">
+        <ImageButton
+            android:src="@drawable/ic_lock_silent_mode_off"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/muteBtn"
+            android:layout_weight="30"
+            android:backgroundTint="#99b4d1ff" />
+        <ImageButton
+            android:src="@drawable/ic_media_play"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/playBtn"
+            android:layout_weight="30"
+            android:backgroundTint="#99b4d1ff" />
+        <ImageButton
+            android:src="@android:drawable/ic_media_next"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/nextBtn"
+            android:layout_weight="30"
+            android:backgroundTint="#99b4d1ff" />
+    </LinearLayout>
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/songsListView" />
+</LinearLayout>
