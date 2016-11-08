@@ -12,10 +12,10 @@
         android:id="@+id/linearLayout1"
         android:weightSum="90">
         <ImageButton
-            android:src="@drawable/ic_lock_silent_mode_off"
+            android:src="@android:drawable/ic_media_previous"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/muteBtn"
+            android:id="@+id/prevBtn"
             android:layout_weight="30"
             android:backgroundTint="#99b4d1ff" />
         <ImageButton

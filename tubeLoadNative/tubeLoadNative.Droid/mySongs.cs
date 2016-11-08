@@ -46,7 +46,7 @@ namespace tubeLoadNative.Droid
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
-            ImageButton muteBtn = FindViewById<ImageButton>(Resource.Id.muteBtn);
+            ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
 
             if (mediaPlayer.IsPlaying)
             {
@@ -287,24 +287,32 @@ namespace tubeLoadNative.Droid
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
             };
 
-            muteBtn.Click += delegate
+            prevBtn.Click += delegate
             {
-                RingerMode mod = myAoudioManager.RingerMode;
-                if (mod == RingerMode.Normal)
-                {
-                    mediaPlayer.SetVolume(0, 0);
-                    myAoudioManager.RingerMode = RingerMode.Silent;
-                    Toast.MakeText(this, "now in silent mode", ToastLength.Short).Show();
-                    muteBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_lock_silent_mode));
-                }
-                else if (mod == RingerMode.Silent)
-                {
-                    mediaPlayer.SetVolume(1, 1);
-                    myAoudioManager.RingerMode = RingerMode.Normal;
-                    Toast.MakeText(this, "now in normal mode", ToastLength.Short).Show();
-                    muteBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_lock_silent_mode_off));
+                pos = pos <= 0 ? mySongsFiles.Count -1 : --pos;
+                mediaPlayer.Reset();
+                mediaPlayer.SetDataSource(mySongsFiles[pos].ToString());
+                mediaPlayer.Prepare();
+                mediaPlayer.Start();
 
+                mmr.SetDataSource(mySongsFiles[pos].Path);
+                string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
+                string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
+
+                if (title == null || artist == null)
+                {
+                    builder.SetContentTitle("TubeLoad");
+                    builder.SetContentText(songsNames[pos]);
                 }
+                else
+                {
+                    builder.SetContentTitle(title);
+                    builder.SetContentText(artist);
+                }
+                notification = builder.Build();
+                notificationManager.Notify(notificationId, notification);
+
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
             };
         }
 
