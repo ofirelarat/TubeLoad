@@ -15,4 +15,8 @@
        android:showAsAction="ifRoom|withText"
        android:title="Rename"
        android:visible="true"/>
+  <item
+      android:id="@+id/seek_bar"
+      android:showAsAction="never"
+      android:title="seekbar"/>
 </menu>

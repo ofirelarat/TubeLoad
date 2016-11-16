@@ -11,13 +11,16 @@ using Android.Views;
 using Android.Widget;
 using Android.Media;
 using Java.IO;
+using Android.Graphics.Drawables;
+using Android.Graphics;
+using System.Threading;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad")]
+    [Activity(Label = "TubeLoad",LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
     public class mySongs : Activity
     {
-        private static MediaPlayer mediaPlayer = new MediaPlayer();
+        public static MediaPlayer mediaPlayer = new MediaPlayer();
         private AudioManager myAoudioManager;
         private ListView songsListView;
         private File path;
@@ -31,6 +34,10 @@ namespace tubeLoadNative.Droid
         ImageButton playBtn;
         MediaMetadataRetriever mmr;
 
+        SeekBar seekBar = null;
+        AlertDialog myAlertSeekBar;
+        Thread seekThread;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -42,7 +49,6 @@ namespace tubeLoadNative.Droid
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             path = new Java.IO.File(sdCard.AbsolutePath + "/TubeLoad");
 
-            myAoudioManager = (AudioManager)GetSystemService(Activity.AudioService);
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
@@ -51,17 +57,21 @@ namespace tubeLoadNative.Droid
             if (mediaPlayer.IsPlaying)
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
-            }
+            }       
 
             mmr = new MediaMetadataRetriever();
 
             Intent notificationIntent = new Intent(this, typeof(mySongs));
             var pendingIntentClick = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.UpdateCurrent);
+            Intent notificationStopIntent = new Intent(this, typeof(StopBtn));
+            var pendingIntentStopClick = PendingIntent.GetBroadcast(this, 0, notificationStopIntent, PendingIntentFlags.UpdateCurrent);
+            Notification.Action action = new Notification.Action.Builder(Resource.Drawable.ic_media_stop, "stop", pendingIntentStopClick).Build();
             builder = new Notification.Builder(this)
             .SetAutoCancel(false)
             .SetContentIntent(pendingIntentClick)
             .SetSmallIcon(Resource.Drawable.icon)
-            .SetContentTitle("TubeLoad");
+            .SetContentTitle("TubeLoad")
+            .AddAction(action);
 
             notificationManager = GetSystemService(Context.NotificationService) as NotificationManager;
 
@@ -75,6 +85,7 @@ namespace tubeLoadNative.Droid
                     mediaPlayer.Prepare();
                     mediaPlayer.Start();
 
+                    mmr.SetDataSource(inputData);
                     string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
                     string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
 
@@ -189,6 +200,9 @@ namespace tubeLoadNative.Droid
 
             mediaPlayer.Completion += delegate
             {
+                myAlertSeekBar.Cancel();
+                seekThread.Abort();
+
                 if (pos < mySongsFiles.Count - 1 && pos != -1)
                 {
                     mediaPlayer.Reset();
@@ -314,7 +328,7 @@ namespace tubeLoadNative.Droid
 
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
             };
-        }
+}
 
         private List<File> findSongs(File root)
         {
@@ -338,6 +352,16 @@ namespace tubeLoadNative.Droid
             return al;
         }
 
+        public class StopBtn : BroadcastReceiver
+        {
+            public override void OnReceive(Context context, Intent intent)
+            {
+                mediaPlayer.Stop();
+                notificationManager.Cancel(notificationId);
+                throw new NotImplementedException();
+            }
+        }
+
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
         {
             if (v.Id == Resource.Id.songsListView)
@@ -345,8 +369,21 @@ namespace tubeLoadNative.Droid
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
                 menu.SetHeaderTitle(mySongsFiles[info.Position].Name);
                 SelectedSong = mySongsFiles[info.Position];
+                mmr.SetDataSource(SelectedSong.Path);
+                byte[] art = mmr.GetEmbeddedPicture();
+                if (art != null)
+                {
+                    Drawable d = new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(art, 0, art.Length));
+                    menu.SetHeaderIcon(d);
+                }
+
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
+
+                if (!(mediaPlayer.IsPlaying && pos >- 1 && mySongsFiles[pos].Path.Equals(SelectedSong.Path)))
+                {
+                    menu.FindItem(Resource.Id.seek_bar).SetVisible(false);
+                }
             }
         }
 
@@ -394,16 +431,17 @@ namespace tubeLoadNative.Droid
                     }
                     notification = builder.Build();
                     notificationManager.Notify(notificationId, notification);
+
                     playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                     return true;
 
                 case Resource.Id.item_rename:
-                    AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                    AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
                     edittext.Text = SelectedSong.Name;
-                    alert.SetTitle("Rename");
-                    alert.SetView(edittext);
-                    alert.SetPositiveButton("ok", (s, e) =>
+                    alertRename.SetTitle("Rename");
+                    alertRename.SetView(edittext);
+                    alertRename.SetPositiveButton("ok", (s, e) =>
                     {
                         string newPath = SelectedSong.Path.Replace(SelectedSong.Name, edittext.Text);
                         //if(SelectedSong.RenameTo(new File(newPath)))
@@ -424,11 +462,60 @@ namespace tubeLoadNative.Droid
                         }
 
                     });
-                    alert.Show();
+                    alertRename.Show();
+                    return true;
+
+                case Resource.Id.seek_bar:
+                    AlertDialog.Builder alertSeekBar = new AlertDialog.Builder(this);
+                    seekBar = new SeekBar(this);
+                    seekBar.Max = mediaPlayer.Duration;
+                    seekBar.Progress = mediaPlayer.CurrentPosition;
+                    seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
+                    {
+                        if (e.FromUser)
+                        {
+                            mediaPlayer.SeekTo(e.Progress);
+                        }
+                    };
+
+                    seekThread = new Thread(new ThreadStart(UpdateSongTime));
+                    seekThread.Start();
+
+                    alertSeekBar.SetTitle(SelectedSong.Name);
+                    alertSeekBar.SetView(seekBar);
+                    
+                    alertSeekBar.SetCancelable(false);
+                    alertSeekBar.SetPositiveButton("ok",   (s, e) => 
+                    {
+                        seekThread.Abort();
+                    });
+
+                    mmr.SetDataSource(SelectedSong.Path);
+                    byte[] art = mmr.GetEmbeddedPicture();
+                    if (art != null)
+                    {
+                        Drawable d = new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(art, 0, art.Length));
+                        alertSeekBar.SetIcon(d);
+                    }
+
+                    myAlertSeekBar = alertSeekBar.Create();
+                    myAlertSeekBar.Show();     
                     return true;
 
                 default:
                     return base.OnContextItemSelected(item);
+            }
+        }
+
+        public void UpdateSongTime()
+        {
+            while (true)
+            {
+                if (seekBar != null && mediaPlayer != null)
+                {
+                    int startTime = mediaPlayer.CurrentPosition;
+                    seekBar.Progress = startTime;
+                }
             }
         }
 

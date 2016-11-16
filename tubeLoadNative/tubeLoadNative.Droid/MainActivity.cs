@@ -11,7 +11,7 @@ using Android.Views.InputMethods;
 
 namespace tubeLoadNative.Droid
 {
-	[Activity (Label = "TubeLoad", MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "TubeLoad",MainLauncher = true, Icon = "@drawable/icon")]
 	public class MainActivity : Android.App.Activity
     {
         public static List<SearchResult> videos { get; private set; }
