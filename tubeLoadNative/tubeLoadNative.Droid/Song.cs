@@ -12,9 +12,9 @@ using Android.Widget;
 
 namespace tubeLoadNative.Droid
 {
-    class Song
+    public class Song
     {
+        public string Id { get; set; }
         public string Name { get; set; }
-        public string Id { get; }
     }
 }

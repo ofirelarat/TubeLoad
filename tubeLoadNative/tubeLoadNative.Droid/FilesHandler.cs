@@ -21,58 +21,92 @@ namespace tubeLoadNative.Droid
 
         public const string ID_FILE = "ids.json";
 
-        static FilesHandler()
+        private static void UpdateFile(List<Song> songsList)
         {
-            File.Create(PATH + ID_FILE);
+            var jsonData = JsonConvert.SerializeObject(songsList, Formatting.Indented);
+            File.WriteAllText(PATH + ID_FILE, jsonData, Encoding.UTF8);
         }
 
-        public static Dictionary<T, K> ReadJsonFile<T, K>(string file)
+        public static List<Song> ReadFile()
         {
-            Dictionary<T, K> values = new Dictionary<T, K>();
+            string jsonData = null;
+            List<Song> songsList = new List<Song>();
 
-            if (File.Exists(file))
+            // Read existing json data
+            if (File.Exists(PATH + ID_FILE))
+                jsonData = File.ReadAllText(PATH + ID_FILE, Encoding.UTF8);
+
+            // De-serialize to object or leave the new list
+            if (jsonData != null)
+                songsList = JsonConvert.DeserializeObject<List<Song>>(jsonData);
+
+            return songsList;
+        }
+
+        public static void WriteToJsonFile(Dictionary<string, string> values)
+        {
+            var songsList = ReadFile();
+
+            // Add the new songs
+            foreach (string id in values.Keys)
             {
-                string json = File.ReadAllText(file, Encoding.UTF8);
-
-                if (json != string.Empty)
-                    values = JsonConvert.DeserializeObject<Dictionary<T, K>>(json); 
-            }
-
-            return values;
-        }
-
-        public static void WriteToJsonFile<T, K>(string fileName, T key, K value)
-        {
-            Dictionary<T, K> values = new Dictionary<T, K>();
-            values.Add(key, value);
-
-            WriteToJsonFile(fileName, values);
-        }
-
-        public static void WriteToJsonFile<T, K>(string fileName, Dictionary<T, K> files)
-        {
-            string filePath = PATH + fileName;
-
-            Dictionary<T, K> values = ReadJsonFile<T, K>(filePath);
-
-            foreach (var file in files)
-                values[file.Key] = files[file.Key];
-
-
-            using (FileStream fs = new FileStream(filePath, FileMode.Truncate, FileAccess.Write, FileShare.None))
-            {
-                using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                Song song = new Song()
                 {
-                    sw.WriteAsync(JsonConvert.SerializeObject(values, Formatting.Indented));
+                    Id = id,
+                    Name = values[id]
+                };
+
+                int index = songsList.FindIndex((x) => x.Id == song.Id);
+
+                if (index != -1)
+                {
+                    songsList.RemoveAt(index);
                 }
+
+                songsList.Add(song);
             }
 
-            // serialize JSON directly to a file
-            //using (StreamWriter sw = File.CreateText(filePath))
-            //{
-            //    JsonSerializer serializer = new JsonSerializer();
-            //    serializer.Serialize(sw, files);
-            //}
+            // Update json data string
+            UpdateFile(songsList);
+        }
+
+        public static void WriteToJsonFile(string id, string name)
+        {
+            Dictionary<string, string> songs = new Dictionary<string, string>();
+            songs[id] = name;
+            WriteToJsonFile(songs);
+        }
+
+        public static string FindSong(string name)
+        {
+            string songId = null;
+            List<Song> songs = ReadFile();
+            Song song = songs.FirstOrDefault((x) => x.Name == name);
+
+            if (song != null)
+            {
+                songId = song.Id;
+            }
+
+            return songId;
+        }
+
+        public static bool DeleteSong(string id)
+        {
+            bool didDelete = false;
+            var songsList = ReadFile();
+
+            int index = songsList.FindIndex((x) => x.Id == id);
+
+            if (index != -1)
+            {
+                didDelete = true;
+                songsList.RemoveAt(index);
+            }
+
+            UpdateFile(songsList);
+
+            return didDelete;
         }
     }
 }

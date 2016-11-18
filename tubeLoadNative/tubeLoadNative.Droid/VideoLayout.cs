@@ -159,8 +159,9 @@ namespace tubeLoadNative.Droid.Resources
                 }
 
                 Toast.MakeText(this, "Download succeed!!", ToastLength.Long).Show();
+
                 string[] file = FileName.Split('/');
-                FilesHandler.WriteToJsonFile(FilesHandler.ID_FILE, id, file[file.Length - 1]);
+                FilesHandler.WriteToJsonFile(id, file[file.Length - 1]);
 
                 path = findSong(dir, videoName.Text);
 

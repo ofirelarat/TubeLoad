@@ -393,7 +393,7 @@ namespace tubeLoadNative.Droid
             {
                 case Resource.Id.item_delete:
                     SelectedSong.Delete();
-
+                    FilesHandler.DeleteSong(FilesHandler.FindSong(SelectedSong.Name));
                     mySongsFiles = findSongs(path);
                     List<string> songsNames = new List<string>();
                     if (mySongsFiles.Count > 0)
@@ -444,10 +444,15 @@ namespace tubeLoadNative.Droid
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
                         string newPath = SelectedSong.Path.Replace(SelectedSong.Name, edittext.Text);
-                        //if(SelectedSong.RenameTo(new File(newPath)))
-                        //{
-                        //    FilesHandler.WriteToJsonFile(FilesHandler.ID_FILE, itemSelected.Id.VideoId, FileName);
-                        //}
+                        if (SelectedSong.RenameTo(new File(newPath)))
+                        {
+                            string id = FilesHandler.FindSong(SelectedSong.Name);
+
+                            if (id != null)
+                            {
+                                FilesHandler.WriteToJsonFile(id, edittext.Text); 
+                            }
+                        }
 
                         mySongsFiles = findSongs(path);
                         songsNames = new List<string>();
@@ -535,12 +540,6 @@ namespace tubeLoadNative.Droid
                     intent = new Intent(this, typeof(MainActivity));
                     StartActivity(intent);
                     return true;
-
-                case Resource.Id.mySong:
-                    //intent = new Intent(this, typeof(mySongs));
-                    //StartActivity(intent);
-                    return true;
-
                 default:
                     return base.OnOptionsItemSelected(item);
             }
