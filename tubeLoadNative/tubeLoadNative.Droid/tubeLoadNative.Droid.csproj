@@ -13,7 +13,7 @@
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidApplication>True</AndroidApplication>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
     <AssemblyName>tubeLoadNative.Droid</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <NuGetPackageImportStamp>
@@ -97,13 +97,14 @@
   <ItemGroup>
     <Compile Include="CostumAdapter.cs" />
     <Compile Include="CostumAdapterSong.cs" />
-    <Compile Include="FilesHandler.cs" />
+    <Compile Include="FileHandler.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MediaFragment.cs" />
     <Compile Include="mySongs.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
+    <Compile Include="SongsHandler.cs" />
     <Compile Include="SplashActivity.cs" />
     <Compile Include="VideoLayout.cs" />
   </ItemGroup>
@@ -133,7 +134,9 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\Main.axml" />
+    <AndroidResource Include="Resources\layout\Main.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>

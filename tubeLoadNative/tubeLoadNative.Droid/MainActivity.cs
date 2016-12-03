@@ -11,21 +11,17 @@ using Android.Views.InputMethods;
 
 namespace tubeLoadNative.Droid
 {
-	[Activity (Label = "TubeLoad",MainLauncher = true, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance, Icon = "@drawable/icon")]
+	[Activity (Label = "TubeLoad",MainLauncher = true, Icon = "@drawable/icon")]
 	public class MainActivity : Android.App.Activity
     {
-        public static List<SearchResult> videos { get; private set; }
+        private static List<SearchResult> videos;
+        public static SearchResult video;
         private ListView myVideosListView;
         private EditText searchTxt;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-
-            // ActionBar.SetCustomView(Resource.Layout.action_bar);
-            // ActionBar.SetDisplayShowCustomEnabled(true);
-
-            // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
@@ -52,9 +48,8 @@ namespace tubeLoadNative.Droid
 
             myVideosListView.ItemClick += (sender, e) =>
             {
-                string item = myVideosListView.GetItemAtPosition(e.Position).ToString();
+                video = videos[e.Position];
                 Intent intent = new Intent(this,typeof(VideoLayout));
-                intent.PutExtra("selectedVideo", item);
                 StartActivity(intent);  
             };
         }
@@ -63,18 +58,11 @@ namespace tubeLoadNative.Droid
         {
             try
             {
-                Search search = new Search();
+                YoutubeHandler search = new YoutubeHandler();
                 videos = search.Run(searchTxt.Text);
 
                 if (videos != null)
                 {
-                    List<string> videoNames = new List<string>();
-                    foreach (var item in videos)
-                    {
-                        videoNames.Add(item.Snippet.Title + " <" + item.Id.VideoId + ">");
-                    }
-
-                    //ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, videoNames);
                     var adapter = new CostumAdapter(this, videos.ToArray());
                     myVideosListView.Adapter = adapter;
                 }
@@ -87,6 +75,7 @@ namespace tubeLoadNative.Droid
         {
             var inflater = MenuInflater;
             inflater.Inflate(Resource.Menu.menu_details, menu);
+            menu.FindItem(Resource.Id.addSong).SetVisible(false);
             return true;
         }
 
@@ -95,18 +84,12 @@ namespace tubeLoadNative.Droid
             Intent intent;
             switch (item.ItemId)
             {
-                case Resource.Id.addSong:
-                    //intent = new Intent(this, typeof(MainActivity));
-                    //StartActivity(intent);
-                    return true;
-
                 case Resource.Id.mySong:
                     intent = new Intent(this, typeof(mySongs));
                     StartActivity(intent);
                     return true;
-
                 default:
-                    return base.OnOptionsItemSelected(item);
+                    return false;
             }
         }
     }

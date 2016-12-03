@@ -21,7 +21,6 @@ namespace tubeLoadNative.Droid
     public class mySongs : Activity
     {
         public static MediaPlayer mediaPlayer = new MediaPlayer();
-        private AudioManager myAoudioManager;
         private ListView songsListView;
         private File path;
         private static int pos = -1;
@@ -393,7 +392,7 @@ namespace tubeLoadNative.Droid
             {
                 case Resource.Id.item_delete:
                     SelectedSong.Delete();
-                    FilesHandler.DeleteSong(FilesHandler.FindSong(SelectedSong.Name));
+                    FileHandler.DeleteSong(FileHandler.FindSong(SelectedSong.Name));
                     mySongsFiles = findSongs(path);
                     List<string> songsNames = new List<string>();
                     if (mySongsFiles.Count > 0)
@@ -446,11 +445,11 @@ namespace tubeLoadNative.Droid
                         string newPath = SelectedSong.Path.Replace(SelectedSong.Name, edittext.Text);
                         if (SelectedSong.RenameTo(new File(newPath)))
                         {
-                            string id = FilesHandler.FindSong(SelectedSong.Name);
+                            string id = FileHandler.FindSong(SelectedSong.Name);
 
                             if (id != null)
                             {
-                                FilesHandler.WriteToJsonFile(id, edittext.Text); 
+                                FileHandler.WriteToJsonFile(id, edittext.Text); 
                             }
                         }
 

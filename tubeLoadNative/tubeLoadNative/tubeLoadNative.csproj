@@ -33,9 +33,8 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Search.cs" />
+    <Compile Include="YoutubeHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

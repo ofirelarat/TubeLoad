@@ -21,7 +21,7 @@ namespace tubeLoadNative.Droid.Resources
     [Activity(Label = "TubeLoad")]
     public class VideoLayout : Android.App.Activity
     {
-        private SearchResult myVideo;
+        private SearchResult video;
         private Button downloadBtn;
         private Java.IO.File dir;
         private Button playBtn;
@@ -31,54 +31,31 @@ namespace tubeLoadNative.Droid.Resources
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Create your application here
-
-            // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.video_layout);
 
-            string inputData = Intent.GetStringExtra("selectedVideo") ?? "Data not available";
-            if (!inputData.Equals("Data not available"))
+            video = MainActivity.video;
+
+            videoName = FindViewById<TextView>(Resource.Id.videoName);
+            TextView channelName = FindViewById<TextView>(Resource.Id.channelName);
+            ImageView videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
+            downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
+            playBtn = FindViewById<Button>(Resource.Id.playBtn);
+
+            if (video.Id.VideoId != null)
             {
-                videoName = FindViewById<TextView>(Resource.Id.videoName);
-                TextView channelName = FindViewById<TextView>(Resource.Id.channelName);
-                ImageView videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
-                //WebView videoView = FindViewById<WebView>(Resource.Id.webViewVideo);
-                downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
-                playBtn = FindViewById<Button>(Resource.Id.playBtn);
+                Thumbnail logo = video.Snippet.Thumbnails.High;
+                Bitmap imageBitmap = GetImageBitmapFromUrl(logo.Url);
+                videoImg.SetImageBitmap(imageBitmap);
 
-                Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-                dir = new Java.IO.File(sdCard.AbsolutePath + "/TubeLoad");
-                dir.Mkdirs();
-
-                foreach (SearchResult video in MainActivity.videos)
+                videoImg.Click += delegate
                 {
-                    if (inputData.Contains(video.Id.VideoId))
-                    {
-                        myVideo = video;
+                    var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.Id.VideoId);
+                    var intent = new Intent(Intent.ActionView, uri);
+                    StartActivity(intent);
+                };
 
-                        Thumbnail logo = video.Snippet.Thumbnails.High;
-
-                        Bitmap imageBitmap = GetImageBitmapFromUrl(logo.Url);
-                        videoImg.SetImageBitmap(imageBitmap);
-                        videoImg.Click += delegate
-                        {
-                            var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.Id.VideoId);
-                            var intent = new Intent(Intent.ActionView, uri);
-                            StartActivity(intent);
-                        };
-
-                        videoName.Text = video.Snippet.Title;
-                        channelName.Text = video.Snippet.ChannelTitle;
-                    }
-                }
-
-                path = findSong(dir, videoName.Text);
-                if (path != null)
-                {
-                    playBtn.Visibility = ViewStates.Visible;
-                    downloadBtn.Enabled = false;
-                }
+                videoName.Text = video.Snippet.Title;
+                channelName.Text = video.Snippet.ChannelTitle;
             }
             else
             {
@@ -87,15 +64,24 @@ namespace tubeLoadNative.Droid.Resources
                 StartActivity(intent);
             }
 
+            path = FileHandler.PATH + FileHandler.GetSongNameById(video.Id.VideoId);
+
+            if (path != null)
+            {
+                playBtn.Visibility = ViewStates.Visible;
+                downloadBtn.Enabled = false;
+            }
+
+
             downloadBtn.Click += async delegate
             {
                 try
                 {
                     downloadBtn.Enabled = false;
 
-                    string FileName = dir + "/" + myVideo.Snippet.Title.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
+                    string FileName = dir + "/" + video.Snippet.Title.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
 
-                    await downloadStream(myVideo, FileName);
+                    await downloadStream(video, FileName);
                 }
                 catch (Exception ex)
                 {
@@ -155,15 +141,15 @@ namespace tubeLoadNative.Droid.Resources
                 using (Stream output = File.OpenWrite(FileName))
                 using (Stream input = httpResponse.GetResponseStream())
                 {
-                     await input.CopyToAsync(output); 
+                    await input.CopyToAsync(output);
                 }
 
                 Toast.MakeText(this, "Download succeed!!", ToastLength.Long).Show();
 
                 string[] file = FileName.Split('/');
-                FilesHandler.WriteToJsonFile(id, file[file.Length - 1]);
+                FileHandler.WriteToJsonFile(id, file[file.Length - 1]);
 
-                path = findSong(dir, videoName.Text);
+                path = FileHandler.PATH + FileHandler.GetSongNameById(video.Id.VideoId);
 
                 if (path != null)
                 {
