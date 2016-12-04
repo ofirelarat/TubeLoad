@@ -137,8 +137,9 @@ namespace tubeLoadNative.Droid
             if (view.Id == Resource.Id.songsListView)
             {
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-                menu.SetHeaderTitle(songs[info.Position].Name);
-                MediaMetadataRetriever metadata = SongsHandler.GetMetadata(songs[info.Position].Id);
+                selectedSong = songs[info.Position];
+                menu.SetHeaderTitle(selectedSong.Name);
+                MediaMetadataRetriever metadata = SongsHandler.GetMetadata(selectedSong.Id);
 
                 Drawable picture = GetSongPicture(selectedSong.Id);
 
@@ -154,8 +155,6 @@ namespace tubeLoadNative.Droid
                 {
                     menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
-
-                selectedSong = songs[info.Position];
             }
         }
 
