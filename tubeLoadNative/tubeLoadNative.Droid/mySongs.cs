@@ -55,7 +55,11 @@ namespace tubeLoadNative.Droid
 
             SongsMediaPlayer.mediaPlayer.Completion += delegate
             {
-                myAlertSeekBar.Cancel();
+                if (myAlertSeekBar != null)
+                {
+                    myAlertSeekBar.Cancel(); 
+                }
+
                 seekThread.Abort();
                 SongsHandler.PlayNext();
             };

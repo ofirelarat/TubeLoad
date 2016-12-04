@@ -32,7 +32,7 @@ namespace tubeLoadNative.Droid
             {
                 InputMethodManager imm = (InputMethodManager)GetSystemService(InputMethodService);
                 imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                UpdateVideos();
+                UpdateVideos(searchTxt.Text);
             };
 
             searchTxt.KeyPress += (object sender, View.KeyEventArgs e) =>
@@ -43,7 +43,7 @@ namespace tubeLoadNative.Droid
                 {
                     InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
                     imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                    UpdateVideos();
+                    UpdateVideos(searchTxt.Text);
                     e.Handled = true;
                 }
             };
@@ -56,20 +56,26 @@ namespace tubeLoadNative.Droid
             };
         }
 
-        private void UpdateVideos()
+        private void UpdateVideos(string searchQuery)
         {
             try
             {
-                videos = YoutubeHandler.Search(searchTxt.Text);
+                videos = YoutubeHandler.Search(searchQuery);
 
                 if (videos != null)
                 {
                     var adapter = new VideosAdapter(this, videos.ToArray());
                     myVideosListView.Adapter = adapter;
                 }
-                else { Toast.MakeText(this, "Error - could not find resoults", ToastLength.Long).Show(); }
+                else
+                {
+                    Toast.MakeText(this, "Could not find resoults", ToastLength.Long).Show();
+                }
             }
-            catch (Exception ex) { Toast.MakeText(this, "Error - " + ex.Message, ToastLength.Long).Show(); }
+            catch (Exception)
+            {
+                Toast.MakeText(this, "Could not connect to youtube", ToastLength.Long).Show();
+            }
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
