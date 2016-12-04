@@ -1,388 +1,157 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Media;
-using Java.IO;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using System.Threading;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad",LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad")]
     public class mySongs : Activity
     {
-        public static MediaPlayer mediaPlayer = new MediaPlayer();
         private ListView songsListView;
-        private File path;
-        private static int pos = -1;
-        private Notification notification;
-        private const int notificationId = 0;
-        private static NotificationManager notificationManager;
-        Notification.Builder builder;
-        private List<File> mySongsFiles;
-        File SelectedSong;
+        private List<Song> songs;
         ImageButton playBtn;
-        MediaMetadataRetriever mmr;
 
         SeekBar seekBar = null;
         AlertDialog myAlertSeekBar;
         Thread seekThread;
+        Song selectedSong;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-
-            // Create your application here
-
             SetContentView(Resource.Layout.my_songs);
-
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            path = new Java.IO.File(sdCard.AbsolutePath + "/TubeLoad");
 
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
 
-            if (mediaPlayer.IsPlaying)
+            string videoId = Intent.GetStringExtra("videoId");
+
+            if (videoId != null)
             {
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
-            }       
-
-            mmr = new MediaMetadataRetriever();
-
-            Intent notificationIntent = new Intent(this, typeof(mySongs));
-            var pendingIntentClick = PendingIntent.GetActivity(this, 0, notificationIntent, PendingIntentFlags.UpdateCurrent);
-            Intent notificationStopIntent = new Intent(this, typeof(StopBtn));
-            var pendingIntentStopClick = PendingIntent.GetBroadcast(this, 0, notificationStopIntent, PendingIntentFlags.UpdateCurrent);
-            Notification.Action action = new Notification.Action.Builder(Resource.Drawable.ic_media_stop, "stop", pendingIntentStopClick).Build();
-            builder = new Notification.Builder(this)
-            .SetAutoCancel(false)
-            .SetContentIntent(pendingIntentClick)
-            .SetSmallIcon(Resource.Drawable.icon)
-            .SetContentTitle("TubeLoad")
-            .AddAction(action);
-
-            notificationManager = GetSystemService(Context.NotificationService) as NotificationManager;
-
-            string inputData = Intent.GetStringExtra("selectedVideo") ?? "Data not available";
-            if (!inputData.Equals("Data not available"))
-            {
-                mediaPlayer.Reset();
-                try
-                {
-                    mediaPlayer.SetDataSource(inputData);
-                    mediaPlayer.Prepare();
-                    mediaPlayer.Start();
-
-                    mmr.SetDataSource(inputData);
-                    string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                    string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                    if (title == null || artist == null)
-                    {
-                        builder.SetContentTitle("TubeLoad");
-                        string[] arr = inputData.Split('/');
-                        builder.SetContentText(arr[arr.Length - 1]);
-                    }
-                    else
-                    {
-                        builder.SetContentTitle(title);
-                        builder.SetContentText(artist);
-                    }
-                    notification = builder.Build();
-                    notificationManager.Notify(notificationId, notification);
-
-                    playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
-                }
-                catch { }
+                Play(videoId);
             }
 
-            mySongsFiles = findSongs(path);
-
-            List<string> songsNames = new List<string>();
-            if (mySongsFiles.Count > 0)
-            {
-                foreach (File song in mySongsFiles)
-                {
-                    songsNames.Add(song.Name);
-                }
-                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songsNames);
-                songsListView.Adapter = adapter;
-            }
-            //songsListView.SetAdapter(new CostumAdapterSong(this, songsNames.ToArray()));
+            UpdateList();
 
             songsListView.ItemClick += (object sender, Android.Widget.AdapterView.ItemClickEventArgs e) =>
             {
-                mediaPlayer.Reset();
-                pos = e.Position;
-                try
-                {
-                    mediaPlayer.SetDataSource(mySongsFiles[pos].ToString());
-                    mediaPlayer.Prepare();
-                    mediaPlayer.Start();
-
-                    mmr.SetDataSource(mySongsFiles[pos].Path);
-                    string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                    string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                    if (title == null || artist == null)
-                    {
-                        builder.SetContentTitle("TubeLoad");
-                        builder.SetContentText(songsNames[pos]);
-                    }
-                    else
-                    {
-                        builder.SetContentTitle(title);
-                        builder.SetContentText(artist);
-                    }
-                    notification = builder.Build();
-                    notificationManager.Notify(notificationId, notification);
-
-                    playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
-                }
-                catch (Exception ex) { Toast.MakeText(this, "cannot open this file - " + ex.Message, ToastLength.Long).Show(); }
+                Play(songs[e.Position].Id);
             };
 
             RegisterForContextMenu(songsListView);
-            /*
-            songsListView.ItemLongClick += (s, e) =>
-             {
-                 PopupMenu popupMenu = new PopupMenu(this, songsListView);                
-                 popupMenu.MenuItemClick += (s1, arg1) =>
-                 {
-                     switch (arg1.Item.ItemId)
-                     {
-                         case Resource.Id.item_delete:
-                             mySongsFiles[e.Position].Delete();
 
-                             mySongsFiles = findSongs(path);
-                             songsNames = new List<string>();
-                             if (mySongsFiles.Count > 0)
-                             {
-                                 foreach (File song in mySongsFiles)
-                                 {
-                                     songsNames.Add(song.Name);
-                                 }
-                                 ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songsNames);
-                                 songsListView.Adapter = adapter;
-                             }
-                             break;
 
-                         case Resource.Id.item_play:
-                             mediaPlayer.Reset();
-                             mediaPlayer = new MediaPlayer();
-                             pos = e.Position;
-                             mediaPlayer.SetDataSource(mySongsFiles[e.Position].ToString());
-                             mediaPlayer.Prepare();
-                             mediaPlayer.Start();
-
-                             builder.SetContentText(songsNames[e.Position]);
-                             notification = builder.Build();
-                             notificationManager.Notify(notificationId, notification);
-                             break;
-                     }
-                 };
-                 popupMenu.Inflate(Resource.Menu.popup_menu);
-                 popupMenu.Show();
-             };
-             */
-
-            mediaPlayer.Completion += delegate
+            SongsMediaPlayer.mediaPlayer.Completion += delegate
             {
                 myAlertSeekBar.Cancel();
                 seekThread.Abort();
-
-                if (pos < mySongsFiles.Count - 1 && pos != -1)
-                {
-                    mediaPlayer.Reset();
-                    mediaPlayer.SetDataSource(mySongsFiles[++pos].ToString());
-                    mediaPlayer.Prepare();
-                    mediaPlayer.Start();
-
-                    mmr.SetDataSource(mySongsFiles[pos].Path);
-                    string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                    string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                    if (title == null || artist == null)
-                    {
-                        builder.SetContentTitle("TubeLoad");
-                        builder.SetContentText(songsNames[pos]);
-                    }
-                    else
-                    {
-                        builder.SetContentTitle(title);
-                        builder.SetContentText(artist);
-                    }
-                    notification = builder.Build();
-                    notificationManager.Notify(notificationId, notification);
-                }
-                else { pos = -1; }
+                SongsHandler.PlayNext();
             };
 
-            playBtn.Click += delegate
+            if (SongsMediaPlayer.IsPlaying())
             {
-                try
-                {
-                    if (!mediaPlayer.IsPlaying)
-                    {
-                        if (pos == -1)
-                        {
-                            pos = 0;
-                            mediaPlayer.Reset();
-                            mediaPlayer.SetDataSource(mySongsFiles[pos].ToString());
-                            mediaPlayer.Prepare();
-                        }
-                        mediaPlayer.Start();
-
-                        mmr.SetDataSource(mySongsFiles[pos].Path);
-                        string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                        string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                        if (title == null || artist == null)
-                        {
-                            builder.SetContentTitle("TubeLoad");
-                            builder.SetContentText(songsNames[pos]);
-                        }
-                        else
-                        {
-                            builder.SetContentTitle(title);
-                            builder.SetContentText(artist);
-                        }
-                        notification = builder.Build();
-                        notificationManager.Notify(notificationId, notification);
-
-                        playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
-                    }
-                    else
-                    {
-                        mediaPlayer.Pause();
-                        playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
-                    }
-                }
-                catch { throw; }
-            };
+                playBtn.Click += Start;
+            }
+            else
+            {
+                playBtn.Click += Stop;
+            }
 
             nextBtn.Click += delegate
             {
-                pos = pos == mySongsFiles.Count - 1 ? 0 : ++pos;
-                mediaPlayer.Reset();
-                mediaPlayer.SetDataSource(mySongsFiles[pos].ToString());
-                mediaPlayer.Prepare();
-                mediaPlayer.Start();
-
-                mmr.SetDataSource(mySongsFiles[pos].Path);
-                string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                if (title == null || artist == null)
-                {
-                    builder.SetContentTitle("TubeLoad");
-                    builder.SetContentText(songsNames[pos]);
-                }
-                else
-                {
-                    builder.SetContentTitle(title);
-                    builder.SetContentText(artist);
-                }
-                notification = builder.Build();
-                notificationManager.Notify(notificationId, notification);
-
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                SongsHandler.PlayNext();
             };
 
             prevBtn.Click += delegate
             {
-                pos = pos <= 0 ? mySongsFiles.Count -1 : --pos;
-                mediaPlayer.Reset();
-                mediaPlayer.SetDataSource(mySongsFiles[pos].ToString());
-                mediaPlayer.Prepare();
-                mediaPlayer.Start();
-
-                mmr.SetDataSource(mySongsFiles[pos].Path);
-                string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                if (title == null || artist == null)
-                {
-                    builder.SetContentTitle("TubeLoad");
-                    builder.SetContentText(songsNames[pos]);
-                }
-                else
-                {
-                    builder.SetContentTitle(title);
-                    builder.SetContentText(artist);
-                }
-                notification = builder.Build();
-                notificationManager.Notify(notificationId, notification);
-
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                SongsHandler.PlayPrev();
             };
-}
-
-        private List<File> findSongs(File root)
-        {
-            List<File> al = new List<File>();
-            File[] files = root.ListFiles();
-            foreach (File singleFile in files)
-            {
-                if (singleFile.IsDirectory && !singleFile.IsHidden)
-                {
-                    al.AddRange(findSongs(singleFile));
-                }
-                else
-                {
-                    if (singleFile.Name.EndsWith(".mp3") || singleFile.Name.EndsWith(".wav"))
-                    {
-                        al.Add(singleFile);
-                    }
-                }
-            }
-
-            return al;
         }
 
-        public class StopBtn : BroadcastReceiver
+        private void UpdateList()
         {
-            public override void OnReceive(Context context, Intent intent)
+            songs = FileHandler.ReadFile();
+
+            if (songs.Count > 0)
             {
-                mediaPlayer.Stop();
-                notificationManager.Cancel(notificationId);
-                throw new NotImplementedException();
+                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name).ToArray());
+                songsListView.Adapter = adapter;
             }
         }
 
-        public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
+        private void Start(object sender, EventArgs e)
         {
-            if (v.Id == Resource.Id.songsListView)
+            SongsMediaPlayer.Start();
+            playBtn.Click -= Start;
+            playBtn.Click += Stop;
+            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+        }
+
+        private void Stop(object sender, EventArgs e)
+        {
+            SongsMediaPlayer.Stop();
+            playBtn.Click -= Stop;
+            playBtn.Click += Start;
+            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
+        }
+
+        private void Play(string id)
+        {
+            SongsHandler.Play(id);
+            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+        }
+
+        private Drawable GetSongPicture(string id)
+        {
+            MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
+            byte[] pictureByteArray = metadata.GetEmbeddedPicture();
+
+            if (pictureByteArray != null)
+            {
+                return new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public override void OnCreateContextMenu(IContextMenu menu, View view, IContextMenuContextMenuInfo menuInfo)
+        {
+            if (view.Id == Resource.Id.songsListView)
             {
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-                menu.SetHeaderTitle(mySongsFiles[info.Position].Name);
-                SelectedSong = mySongsFiles[info.Position];
-                mmr.SetDataSource(SelectedSong.Path);
-                byte[] art = mmr.GetEmbeddedPicture();
-                if (art != null)
+                menu.SetHeaderTitle(songs[info.Position].Name);
+                MediaMetadataRetriever metadata = SongsHandler.GetMetadata(songs[info.Position].Id);
+
+                Drawable picture = GetSongPicture(selectedSong.Id);
+
+                if (picture != null)
                 {
-                    Drawable d = new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(art, 0, art.Length));
-                    menu.SetHeaderIcon(d);
+                    menu.SetHeaderIcon(picture);
                 }
 
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
 
-                if (!(mediaPlayer.IsPlaying && pos >- 1 && mySongsFiles[pos].Path.Equals(SelectedSong.Path)))
+                if (SongsMediaPlayer.IsPlaying() && info.Position == SongsHandler.position)
                 {
-                    menu.FindItem(Resource.Id.seek_bar).SetVisible(false);
+                    menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
+
+                selectedSong = songs[info.Position];
             }
         }
 
@@ -391,119 +160,70 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.item_delete:
-                    SelectedSong.Delete();
-                    FileHandler.DeleteSong(FileHandler.FindSong(SelectedSong.Name));
-                    mySongsFiles = findSongs(path);
-                    List<string> songsNames = new List<string>();
-                    if (mySongsFiles.Count > 0)
-                    {
-                        foreach (File song in mySongsFiles)
-                        {
-                            songsNames.Add(song.Name);
-                        }
-                        ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songsNames);
-                        songsListView.Adapter = adapter;
-                    }
+                    SongsHandler.DeleteSong(selectedSong.Id);
+                    UpdateList();
+
                     return true;
 
                 case Resource.Id.item_play:
-                    mediaPlayer.Reset();
-                    mediaPlayer = new MediaPlayer();
-                    pos = -1;
-                    mediaPlayer.SetDataSource(SelectedSong.ToString());
-                    mediaPlayer.Prepare();
-                    mediaPlayer.Start();
+                    Play(selectedSong.Id);
 
-                    mmr.SetDataSource(SelectedSong.Path);
-                    string title = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyTitle);
-                    string artist = mmr.ExtractMetadata(MediaMetadataRetriever.MetadataKeyArtist);
-
-                    if (title == null || artist == null)
-                    {
-                        builder.SetContentTitle("TubeLoad");
-                        builder.SetContentText(SelectedSong.Name);
-                    }
-                    else
-                    {
-                        builder.SetContentTitle(title);
-                        builder.SetContentText(artist);
-                    }
-                    notification = builder.Build();
-                    notificationManager.Notify(notificationId, notification);
-
-                    playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                     return true;
 
                 case Resource.Id.item_rename:
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
-                    edittext.Text = SelectedSong.Name;
+                    edittext.Text = selectedSong.Name;
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);
+
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
-                        string newPath = SelectedSong.Path.Replace(SelectedSong.Name, edittext.Text);
-                        if (SelectedSong.RenameTo(new File(newPath)))
-                        {
-                            string id = FileHandler.FindSong(SelectedSong.Name);
+                        SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
 
-                            if (id != null)
-                            {
-                                FileHandler.WriteToJsonFile(id, edittext.Text); 
-                            }
-                        }
-
-                        mySongsFiles = findSongs(path);
-                        songsNames = new List<string>();
-                        if (mySongsFiles.Count > 0)
-                        {
-                            foreach (File song in mySongsFiles)
-                            {
-                                songsNames.Add(song.Name);
-                            }
-                            ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songsNames);
-                            songsListView.Adapter = adapter;
-                        }
-
+                        UpdateList();
                     });
+
                     alertRename.Show();
+
                     return true;
 
                 case Resource.Id.seek_bar:
                     AlertDialog.Builder alertSeekBar = new AlertDialog.Builder(this);
                     seekBar = new SeekBar(this);
-                    seekBar.Max = mediaPlayer.Duration;
-                    seekBar.Progress = mediaPlayer.CurrentPosition;
+                    seekBar.Max = SongsMediaPlayer.mediaPlayer.Duration;
+                    seekBar.Progress = SongsMediaPlayer.mediaPlayer.CurrentPosition;
+
                     seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
                     {
                         if (e.FromUser)
                         {
-                            mediaPlayer.SeekTo(e.Progress);
+                            SongsMediaPlayer.SeekTo(e.Progress);
                         }
                     };
 
                     seekThread = new Thread(new ThreadStart(UpdateSongTime));
                     seekThread.Start();
 
-                    alertSeekBar.SetTitle(SelectedSong.Name);
+                    alertSeekBar.SetTitle(selectedSong.Name);
                     alertSeekBar.SetView(seekBar);
-                    
-                    alertSeekBar.SetCancelable(false);
-                    alertSeekBar.SetPositiveButton("ok",   (s, e) => 
-                    {
-                        seekThread.Abort();
-                    });
 
-                    mmr.SetDataSource(SelectedSong.Path);
-                    byte[] art = mmr.GetEmbeddedPicture();
-                    if (art != null)
+                    alertSeekBar.SetCancelable(false);
+                    alertSeekBar.SetPositiveButton("ok", (s, e) =>
+                  {
+                      seekThread.Abort();
+                  });
+
+                    Drawable picture = GetSongPicture(selectedSong.Id);
+
+                    if (picture != null)
                     {
-                        Drawable d = new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(art, 0, art.Length));
-                        alertSeekBar.SetIcon(d);
+                        alertSeekBar.SetIcon(picture);
                     }
 
                     myAlertSeekBar = alertSeekBar.Create();
-                    myAlertSeekBar.Show();     
+                    myAlertSeekBar.Show();
+
                     return true;
 
                 default:
@@ -511,14 +231,13 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        public void UpdateSongTime()
+        private void UpdateSongTime()
         {
             while (true)
             {
-                if (seekBar != null && mediaPlayer != null)
+                if (SongsMediaPlayer.IsPlaying())
                 {
-                    int startTime = mediaPlayer.CurrentPosition;
-                    seekBar.Progress = startTime;
+                    seekBar.Progress = SongsMediaPlayer.mediaPlayer.CurrentPosition;
                 }
             }
         }
@@ -527,6 +246,8 @@ namespace tubeLoadNative.Droid
         {
             var inflater = MenuInflater;
             inflater.Inflate(Resource.Menu.menu_details, menu);
+            menu.FindItem(Resource.Id.mySong).SetVisible(false);
+
             return true;
         }
 
@@ -538,6 +259,7 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.addSong:
                     intent = new Intent(this, typeof(MainActivity));
                     StartActivity(intent);
+
                     return true;
                 default:
                     return base.OnOptionsItemSelected(item);

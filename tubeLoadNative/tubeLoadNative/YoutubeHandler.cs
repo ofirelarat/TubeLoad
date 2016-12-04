@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Google.Apis.Services;
+using System.Net;
+using System.Net.Http;
 
 namespace tubeLoadNative
 {
-    public class YoutubeHandler
+    public static class YoutubeHandler
     {
-        public List<SearchResult> Run(string query)
+        public static List<SearchResult> Search(string query)
         {
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = "AIzaSyD99DDTmpBI79gKReSgYj001I7IK2jBGao",
-                ApplicationName = GetType().ToString()
+                ApplicationName = "TubeLoad"
             });
 
 
@@ -42,15 +44,32 @@ namespace tubeLoadNative
                         break;
 
                     case "youtube#channel":
-                        channels.Add(String.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.ChannelId));
+                        channels.Add(string.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.ChannelId));
                         break;
 
                     case "youtube#playlist":
-                        playlists.Add(String.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.PlaylistId));
+                        playlists.Add(string.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.PlaylistId));
                         break;
                 }
             }
             return Videos;
+        }
+
+        public static async Task<HttpWebResponse> downloadStream(string videoId)
+        {
+            try
+            {
+                string videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+
+                using (var client = new HttpClient())
+                {
+                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
+                    httpRequest.Method = "GET";
+                    WebResponse response = await httpRequest.GetResponseAsync();
+                    return (HttpWebResponse)response;
+                }
+            }
+            catch { throw; }
         }
     }
 }

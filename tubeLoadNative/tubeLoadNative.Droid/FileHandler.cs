@@ -16,8 +16,15 @@ namespace tubeLoadNative.Droid
 {
     public static class FileHandler
     {
+        static FileHandler()
+        {
+            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+            Java.IO.File directory = new Java.IO.File(PATH);
+            directory.Mkdirs();
+        }
+
         private static Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-        public static readonly string PATH = sdCard.Path + "/TubeLoad/";
+        public static readonly string PATH = sdCard.AbsolutePath + "/TubeLoad/";
 
         public const string ID_FILE = "ids.json";
 
@@ -31,6 +38,7 @@ namespace tubeLoadNative.Droid
         {
             List<Song> songs = ReadFile();
             Song song = songs.FirstOrDefault((x) => x.Id == id);
+
             if (song != null)
             {
                 return song.Name;

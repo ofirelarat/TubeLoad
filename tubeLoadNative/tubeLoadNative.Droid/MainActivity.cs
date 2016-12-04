@@ -11,7 +11,7 @@ using Android.Views.InputMethods;
 
 namespace tubeLoadNative.Droid
 {
-	[Activity (Label = "TubeLoad",MainLauncher = true, Icon = "@drawable/icon")]
+	[Activity (Label = "TubeLoad", MainLauncher = true, Icon = "@drawable/icon")]
 	public class MainActivity : Android.App.Activity
     {
         private static List<SearchResult> videos;
@@ -27,21 +27,23 @@ namespace tubeLoadNative.Droid
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
             ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchTxt = FindViewById<EditText>(Resource.Id.searchEditText);
+
             searchBtn.Click += delegate
             {
-                InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
+                InputMethodManager imm = (InputMethodManager)GetSystemService(InputMethodService);
                 imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                YoutubeResult();
+                UpdateVideos();
             };
 
             searchTxt.KeyPress += (object sender, View.KeyEventArgs e) =>
             {
                 e.Handled = false;
+
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
                     InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
                     imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                    YoutubeResult();
+                    UpdateVideos();
                     e.Handled = true;
                 }
             };
@@ -54,16 +56,15 @@ namespace tubeLoadNative.Droid
             };
         }
 
-        private void YoutubeResult()
+        private void UpdateVideos()
         {
             try
             {
-                YoutubeHandler search = new YoutubeHandler();
-                videos = search.Run(searchTxt.Text);
+                videos = YoutubeHandler.Search(searchTxt.Text);
 
                 if (videos != null)
                 {
-                    var adapter = new CostumAdapter(this, videos.ToArray());
+                    var adapter = new VideosAdapter(this, videos.ToArray());
                     myVideosListView.Adapter = adapter;
                 }
                 else { Toast.MakeText(this, "Error - could not find resoults", ToastLength.Long).Show(); }
@@ -76,12 +77,14 @@ namespace tubeLoadNative.Droid
             var inflater = MenuInflater;
             inflater.Inflate(Resource.Menu.menu_details, menu);
             menu.FindItem(Resource.Id.addSong).SetVisible(false);
-            return true;
+
+            return base.OnCreateOptionsMenu(menu);
         }
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             Intent intent;
+
             switch (item.ItemId)
             {
                 case Resource.Id.mySong:

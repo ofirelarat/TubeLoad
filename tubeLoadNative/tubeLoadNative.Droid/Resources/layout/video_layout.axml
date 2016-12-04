@@ -26,13 +26,4 @@
         android:layout_height="wrap_content"
         android:id="@+id/downloadBtn"
         android:backgroundTint="#99b4d1ff" />
-    <Button
-        android:text="Play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/playBtn"
-        android:layout_marginRight="0.0dp"
-        android:layout_marginTop="5dp"
-        android:visibility="invisible"
-        android:backgroundTint="#99b4d1ff" />
 </LinearLayout>

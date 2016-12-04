@@ -1,20 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Google.Apis.YouTube.v3.Data;
 using Android.Graphics;
 using System.Net;
-using System.Net.Http;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace tubeLoadNative.Droid.Resources
 {
@@ -23,8 +15,6 @@ namespace tubeLoadNative.Droid.Resources
     {
         private SearchResult video;
         private Button downloadBtn;
-        private Java.IO.File dir;
-        private Button playBtn;
         private string path;
         private TextView videoName;
 
@@ -39,12 +29,11 @@ namespace tubeLoadNative.Droid.Resources
             TextView channelName = FindViewById<TextView>(Resource.Id.channelName);
             ImageView videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
-            playBtn = FindViewById<Button>(Resource.Id.playBtn);
 
             if (video.Id.VideoId != null)
             {
                 Thumbnail logo = video.Snippet.Thumbnails.High;
-                Bitmap imageBitmap = GetImageBitmapFromUrl(logo.Url);
+                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
                 videoImg.SetImageBitmap(imageBitmap);
 
                 videoImg.Click += delegate
@@ -56,6 +45,19 @@ namespace tubeLoadNative.Droid.Resources
 
                 videoName.Text = video.Snippet.Title;
                 channelName.Text = video.Snippet.ChannelTitle;
+
+                path = FileHandler.PATH + FileHandler.GetSongNameById(video.Id.VideoId);
+
+                if (path != null)
+                {
+                    downloadBtn.Text = "Play";
+                    downloadBtn.Click += OnPlayClick;
+                }
+                else
+                {
+                    downloadBtn.Text = "Download";
+                    downloadBtn.Click += OnDownloadClick;
+                }
             }
             else
             {
@@ -63,137 +65,56 @@ namespace tubeLoadNative.Droid.Resources
                 Intent intent = new Intent(this, typeof(MainActivity));
                 StartActivity(intent);
             }
-
-            path = FileHandler.PATH + FileHandler.GetSongNameById(video.Id.VideoId);
-
-            if (path != null)
-            {
-                //playBtn.Visibility = ViewStates.Visible;
-                downloadBtn.Text = "Play";
-                //downloadBtn.Enabled = false;
-            }
-
-
-            downloadBtn.Click += async delegate
-            {
-                if (downloadBtn.Text.Equals("Download"))
-                {
-                    try
-                    {
-                        downloadBtn.Enabled = false;
-
-                        string FileName = dir + "/" + video.Snippet.Title.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
-
-                        await downloadStream(video, FileName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Toast.MakeText(this, "Error - " + ex.Message, ToastLength.Long).Show();
-                        downloadBtn.Enabled = true;
-                    }
-                }
-                else if (downloadBtn.Text.Equals("Play"))
-                {
-                    Intent intent = new Intent(this, typeof(mySongs));
-                    intent.PutExtra("selectedVideo", path);
-                    StartActivity(intent);
-                }
-            };
-
-            playBtn.Click += delegate
-            {
-                Intent intent = new Intent(this, typeof(mySongs));
-                intent.PutExtra("selectedVideo", path);
-                StartActivity(intent);
-            };
-
         }
 
-        private Bitmap GetImageBitmapFromUrl(string url)
+        private async void OnDownloadClick(object sender, EventArgs e)
         {
-            Bitmap imageBitmap = null;
+            HttpWebResponse response;
+            downloadBtn.Enabled = false;
+            string FileName = video.Snippet.Title + ".mp3";
 
-            using (var webClient = new WebClient())
+            // Erasing illegal charachters from file name
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
             {
-                var imageBytes = webClient.DownloadData(url);
-                if (imageBytes != null && imageBytes.Length > 0)
-                {
-                    imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
-                }
+                FileName = FileName.Replace(c.ToString(), string.Empty);
             }
 
-            return imageBitmap;
-        }
-
-
-        private async Task downloadStream(SearchResult itemSelected, string FileName)
-        {
             try
             {
-                string videoUrl = "https://www.youtube.com/watch?v=" + itemSelected.Id.VideoId;
-
-                using (var client = new HttpClient())
-                {
-                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
-                    httpRequest.Method = "GET";
-                    WebResponse response = await httpRequest.GetResponseAsync();
-                    HttpWebResponse httpResponse = (HttpWebResponse)response;
-                    saveFile(itemSelected.Id.VideoId, FileName, httpResponse);
-                }
+                response = await YoutubeHandler.downloadStream(video.Id.VideoId);
             }
-            catch { throw; }
-        }
-
-        private async void saveFile(string id, string FileName, HttpWebResponse httpResponse)
-        {
-            try
+            catch
             {
-                using (Stream output = File.OpenWrite(FileName))
-                using (Stream input = httpResponse.GetResponseStream())
-                {
-                    await input.CopyToAsync(output);
-                }
-
-                Toast.MakeText(this, "Download succeed!!", ToastLength.Long).Show();
-
-                string[] file = FileName.Split('/');
-                FileHandler.WriteToJsonFile(id, file[file.Length - 1]);
-
-                path = FileHandler.PATH + FileHandler.GetSongNameById(video.Id.VideoId);
-
-                if (path != null)
-                {
-                    //playBtn.Visibility = ViewStates.Visible;
-                    downloadBtn.Text = "Play";
-                    downloadBtn.Enabled = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Toast.MakeText(this, "Error - " + ex.Message, ToastLength.Long).Show();
+                Toast.MakeText(this, "Could not connect to youtube", ToastLength.Long).Show();
                 downloadBtn.Enabled = true;
+
+                return;
             }
-        }
 
-        private string findSong(Java.IO.File root, string songName)
-        {
-            string path = null;
-            List<Java.IO.File> al = new List<Java.IO.File>();
-            Java.IO.File[] files = root.ListFiles();
-            songName = songName.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
-
-            foreach (Java.IO.File singleFile in files)
+            if (await SongsHandler.Instance.SaveSong(FileHandler.PATH, FileName, video.Id.VideoId, response.GetResponseStream()))
             {
-                if ((songName).Contains(singleFile.Name))
-                {
-                    path = singleFile.Path;
-                    return path;
-                }
+                downloadBtn.Enabled = true;
+                downloadBtn.Text = "Play";
+                downloadBtn.Click -= OnDownloadClick;
+                downloadBtn.Click += OnPlayClick;
+
+                Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
+            }
+            else
+            {
+                downloadBtn.Enabled = true;
+                Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
             }
 
-            return path;
         }
 
+        private void OnPlayClick(object sender, EventArgs e)
+        {
+            Intent intent = new Intent(this, typeof(mySongs));
+            intent.PutExtra("videoId", video.Id.VideoId);
+            StartActivity(intent);
+        }
+        
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             var inflater = MenuInflater;
