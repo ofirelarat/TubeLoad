@@ -68,25 +68,35 @@ namespace tubeLoadNative.Droid.Resources
 
             if (path != null)
             {
-                playBtn.Visibility = ViewStates.Visible;
-                downloadBtn.Enabled = false;
+                //playBtn.Visibility = ViewStates.Visible;
+                downloadBtn.Text = "Play";
+                //downloadBtn.Enabled = false;
             }
 
 
             downloadBtn.Click += async delegate
             {
-                try
+                if (downloadBtn.Text.Equals("Download"))
                 {
-                    downloadBtn.Enabled = false;
+                    try
+                    {
+                        downloadBtn.Enabled = false;
 
-                    string FileName = dir + "/" + video.Snippet.Title.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
+                        string FileName = dir + "/" + video.Snippet.Title.Replace("\"", "").Replace("\\", "").Replace("/", "").Replace("*", "").Replace(":", "").Replace("?", "").Replace("|", "").Replace("<", "").Replace(">", "") + ".mp3";
 
-                    await downloadStream(video, FileName);
+                        await downloadStream(video, FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Toast.MakeText(this, "Error - " + ex.Message, ToastLength.Long).Show();
+                        downloadBtn.Enabled = true;
+                    }
                 }
-                catch (Exception ex)
+                else if (downloadBtn.Text.Equals("Play"))
                 {
-                    Toast.MakeText(this, "Error - " + ex.Message, ToastLength.Long).Show();
-                    downloadBtn.Enabled = true;
+                    Intent intent = new Intent(this, typeof(mySongs));
+                    intent.PutExtra("selectedVideo", path);
+                    StartActivity(intent);
                 }
             };
 
@@ -153,7 +163,9 @@ namespace tubeLoadNative.Droid.Resources
 
                 if (path != null)
                 {
-                    playBtn.Visibility = ViewStates.Visible;
+                    //playBtn.Visibility = ViewStates.Visible;
+                    downloadBtn.Text = "Play";
+                    downloadBtn.Enabled = true;
                 }
             }
             catch (Exception ex)

@@ -30,8 +30,13 @@ namespace tubeLoadNative.Droid
         public static string GetSongNameById(string id)
         {
             List<Song> songs = ReadFile();
-            string name = songs.FirstOrDefault((x) => x.Id == id) == null ? null : songs.FirstOrDefault((x) => x.Id == id).Name;
-            return name;
+            Song song = songs.FirstOrDefault((x) => x.Id == id);
+            if (song != null)
+            {
+                return song.Name;
+            }
+
+            return null;
         }
 
         public static List<Song> ReadFile()
