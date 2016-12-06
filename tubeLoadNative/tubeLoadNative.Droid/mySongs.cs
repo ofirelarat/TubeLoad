@@ -67,11 +67,11 @@ namespace tubeLoadNative.Droid
 
             if (SongsMediaPlayer.IsPlaying())
             {
-                playBtn.Click += Start;
+                playBtn.Click += Pause;
             }
             else
             {
-                playBtn.Click += Pause;
+                playBtn.Click += Start;
             }
 
             nextBtn.Click += delegate
