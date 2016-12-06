@@ -10,7 +10,7 @@ namespace tubeLoadNative.Droid
         private static Java.IO.File directory;
 
         private static readonly SongsHandler instance = new SongsHandler();
-        
+
         static SongsHandler()
         {
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
@@ -78,7 +78,7 @@ namespace tubeLoadNative.Droid
                 {
                     await input.CopyToAsync(output);
                 }
-                
+
                 FileHandler.WriteToJsonFile(id, songName);
 
                 return true;
@@ -108,6 +108,5 @@ namespace tubeLoadNative.Droid
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
         }
-
     }
 }

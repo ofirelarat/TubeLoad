@@ -83,29 +83,31 @@ namespace tubeLoadNative.Droid.Resources
             {
                 response = await YoutubeHandler.downloadStream(video.Id.VideoId);
             }
-            catch
+            catch(Exception ex)
             {
-                Toast.MakeText(this, "Could not connect to youtube", ToastLength.Long).Show();
+                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
                 downloadBtn.Enabled = true;
 
                 return;
             }
 
-            if (await SongsHandler.Instance.SaveSong(FileHandler.PATH, FileName, video.Id.VideoId, response.GetResponseStream()))
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                downloadBtn.Enabled = true;
-                downloadBtn.Text = "Play";
-                downloadBtn.Click -= OnDownloadClick;
-                downloadBtn.Click += OnPlayClick;
+                if (await SongsHandler.Instance.SaveSong(FileHandler.PATH, FileName, video.Id.VideoId, response.GetResponseStream()))
+                {
+                    downloadBtn.Enabled = true;
+                    downloadBtn.Text = "Play";
+                    downloadBtn.Click -= OnDownloadClick;
+                    downloadBtn.Click += OnPlayClick;
 
-                Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
+                    Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
+                }
+                else
+                {
+                    downloadBtn.Enabled = true;
+                    Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
+                }
             }
-            else
-            {
-                downloadBtn.Enabled = true;
-                Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
-            }
-
         }
 
         private void OnPlayClick(object sender, EventArgs e)

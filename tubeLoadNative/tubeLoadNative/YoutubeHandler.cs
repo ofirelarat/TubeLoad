@@ -8,6 +8,7 @@ using Google.Apis.YouTube.v3.Data;
 using Google.Apis.Services;
 using System.Net;
 using System.Net.Http;
+using System.IO;
 
 namespace tubeLoadNative
 {
@@ -66,10 +67,24 @@ namespace tubeLoadNative
                     HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
                     httpRequest.Method = "GET";
                     WebResponse response = await httpRequest.GetResponseAsync();
-                    return (HttpWebResponse)response;
+
+                    if (response.ContentType.Equals("audio/mpeg"))
+                    {
+                        return (HttpWebResponse)response;
+                    }
+                    else
+                    {
+                        Stream dataStream = ((HttpWebResponse)response).GetResponseStream();
+                        StreamReader reader = new StreamReader(dataStream);
+                        string strResponse = reader.ReadToEnd();
+                        throw new Exception(strResponse);
+                    }
                 }
             }
-            catch { throw; }
+            catch
+            {
+                new Exception("Could not connect to Youtube");
+            }
         }
     }
 }
