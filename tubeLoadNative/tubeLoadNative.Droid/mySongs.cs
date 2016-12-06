@@ -70,7 +70,7 @@ namespace tubeLoadNative.Droid
             }
             else
             {
-                playBtn.Click += Stop;
+                playBtn.Click += Pause;
             }
 
             nextBtn.Click += delegate
@@ -99,14 +99,14 @@ namespace tubeLoadNative.Droid
         {
             SongsMediaPlayer.Start();
             playBtn.Click -= Start;
-            playBtn.Click += Stop;
+            playBtn.Click += Pause;
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
         }
 
-        private void Stop(object sender, EventArgs e)
+        private void Pause(object sender, EventArgs e)
         {
-            SongsMediaPlayer.Stop();
-            playBtn.Click -= Stop;
+            SongsMediaPlayer.Pause();
+            playBtn.Click -= Pause;
             playBtn.Click += Start;
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
         }

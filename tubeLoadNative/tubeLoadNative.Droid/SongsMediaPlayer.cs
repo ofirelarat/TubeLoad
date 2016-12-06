@@ -39,9 +39,9 @@ namespace tubeLoadNative.Droid
             mediaPlayer.Start();
         }
 
-        public static void Stop()
+        public static void Pause()
         {
-            mediaPlayer.Stop();
+            mediaPlayer.Pause();
         }
     }
 }
