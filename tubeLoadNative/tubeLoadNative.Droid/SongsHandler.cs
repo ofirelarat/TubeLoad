@@ -108,5 +108,27 @@ namespace tubeLoadNative.Droid
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
         }
+
+        public static void CheckFilesExist()
+        {
+            List<Song> songsInJsonFile = FileHandler.ReadFile();
+
+            foreach (Song song in songsInJsonFile)
+            {
+                if (!File.Exists(FileHandler.PATH + song.Name))
+                {
+                    FileHandler.DeleteSong(song.Id);
+                }    
+            }
+        }
+
+        public static void CheckFileExist(string songId)
+        {
+            string name = FileHandler.GetSongNameById(songId);
+            if (!File.Exists(FileHandler.PATH + name))
+            {
+                FileHandler.DeleteSong(songId);
+            }
+        }
     }
 }

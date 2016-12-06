@@ -43,6 +43,7 @@ namespace tubeLoadNative.Droid
                 Play(videoId);
             }
 
+            SongsHandler.CheckFilesExist();
             UpdateList();
 
             songsListView.ItemClick += (object sender, Android.Widget.AdapterView.ItemClickEventArgs e) =>
@@ -113,6 +114,7 @@ namespace tubeLoadNative.Droid
 
         private void Play(string id)
         {
+            SongsHandler.CheckFileExist(id);
             SongsHandler.Play(id);
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
         }
