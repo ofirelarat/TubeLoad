@@ -67,7 +67,7 @@ namespace tubeLoadNative
                     HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
                     httpRequest.Method = "GET";
                     WebResponse response = await httpRequest.GetResponseAsync();
-
+                    
                     if (response.ContentType.Equals("audio/mpeg"))
                     {
                         return (HttpWebResponse)response;
@@ -83,7 +83,7 @@ namespace tubeLoadNative
             }
             catch
             {
-                new Exception("Could not connect to Youtube");
+               throw new Exception("Could not connect to Youtube");
             }
         }
     }
