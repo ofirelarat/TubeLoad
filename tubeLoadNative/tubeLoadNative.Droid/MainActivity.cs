@@ -69,12 +69,12 @@ namespace tubeLoadNative.Droid
                 }
                 else
                 {
-                    Toast.MakeText(this, "Could not find resoults", ToastLength.Long).Show();
+                    Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Toast.MakeText(this, "Could not connect to youtube", ToastLength.Long).Show();
+                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
             }
         }
 

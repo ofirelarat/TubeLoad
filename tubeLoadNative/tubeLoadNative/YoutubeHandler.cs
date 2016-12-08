@@ -58,34 +58,34 @@ namespace tubeLoadNative
 
         public static async Task<HttpWebResponse> downloadStream(string videoId)
         {
-            try
-            {
-                string videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+            string videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+            WebResponse response;
 
-                using (var client = new HttpClient())
+            using (var client = new HttpClient())
+            {
+                try
                 {
                     HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
                     httpRequest.Method = "GET";
-                    WebResponse response = await httpRequest.GetResponseAsync();
-                    
-                    if (response.ContentType.Equals("audio/mpeg"))
-                    {
-                        return (HttpWebResponse)response;
-                    }
-                    else
-                    {
-                        Stream dataStream = ((HttpWebResponse)response).GetResponseStream();
-                        StreamReader reader = new StreamReader(dataStream);
-                        string strResponse = reader.ReadToEnd();
-                        throw new Exception(strResponse);
-                    }
+                    response = await httpRequest.GetResponseAsync();
                 }
-            }
-            catch
-            {
-               throw new Exception("Could not connect to Youtube");
+                catch
+                {
+                    throw new Exception("Could not connect to Youtube");
+                }
+
+                if (response.ContentType.Equals("audio/mpeg"))
+                {
+                    return (HttpWebResponse)response;
+                }
+
+                Stream dataStream = ((HttpWebResponse)response).GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string strResponse = reader.ReadToEnd();
+                throw new Exception(strResponse);
             }
         }
+
     }
 }
 
