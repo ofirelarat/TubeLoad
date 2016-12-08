@@ -11,8 +11,8 @@ using Android.Views.InputMethods;
 
 namespace tubeLoadNative.Droid
 {
-	[Activity (Label = "TubeLoad", MainLauncher = true, Icon = "@drawable/icon")]
-	public class MainActivity : Android.App.Activity
+    [Activity(Label = "TubeLoad", MainLauncher = true, Icon = "@drawable/icon")]
+    public class MainActivity : Android.App.Activity
     {
         private static List<SearchResult> videos;
         public static SearchResult video;
@@ -51,8 +51,8 @@ namespace tubeLoadNative.Droid
             myVideosListView.ItemClick += (sender, e) =>
             {
                 video = videos[e.Position];
-                Intent intent = new Intent(this,typeof(VideoLayout));
-                StartActivity(intent);  
+                Intent intent = new Intent(this, typeof(VideoLayout));
+                StartActivity(intent);
             };
         }
 
@@ -61,21 +61,22 @@ namespace tubeLoadNative.Droid
             try
             {
                 videos = YoutubeHandler.Search(searchQuery);
-
-                if (videos != null)
-                {
-                    var adapter = new VideosAdapter(this, videos.ToArray());
-                    myVideosListView.Adapter = adapter;
-                }
-                else
-                {
-                    Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
-                }
             }
-            catch (Exception ex)
+            catch
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
+
+            if (videos != null)
+            {
+                var adapter = new VideosAdapter(this, videos.ToArray());
+                myVideosListView.Adapter = adapter;
+            }
+            else
+            {
+                Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
+            }
+
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
