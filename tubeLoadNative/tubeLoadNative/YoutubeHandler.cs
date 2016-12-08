@@ -56,33 +56,29 @@ namespace tubeLoadNative
             return Videos;
         }
 
-        public static async Task<HttpWebResponse> downloadStream(string videoId)
+        public static async Task<HttpResponseMessage> downloadStream(string videoId)
         {
             string videoUrl = "https://www.youtube.com/watch?v=" + videoId;
-            WebResponse response;
+            HttpResponseMessage response;
 
             using (var client = new HttpClient())
             {
                 try
                 {
-                    HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
-                    httpRequest.Method = "GET";
-                    response = await httpRequest.GetResponseAsync();
+                    response = await client.GetAsync("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
                 }
                 catch
                 {
                     throw new Exception("Could not connect to Youtube");
                 }
 
-                if (response.ContentType.Equals("audio/mpeg"))
+                if (response.Content.Headers.ContentType.MediaType.Equals("audio/mpeg"))
                 {
-                    return (HttpWebResponse)response;
+                    return response;
                 }
-
-                Stream dataStream = ((HttpWebResponse)response).GetResponseStream();
-                StreamReader reader = new StreamReader(dataStream);
-                string strResponse = reader.ReadToEnd();
-                throw new Exception(strResponse);
+                
+                // TODO: change the exception message to this await response.Content.ReadAsStringAsync() when the API is fixed
+                throw new Exception("This video has been blocked");
             }
         }
 

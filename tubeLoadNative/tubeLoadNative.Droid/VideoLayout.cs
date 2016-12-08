@@ -7,6 +7,7 @@ using Android.Widget;
 using Google.Apis.YouTube.v3.Data;
 using Android.Graphics;
 using System.Net;
+using System.Net.Http;
 
 namespace tubeLoadNative.Droid.Resources
 {
@@ -69,7 +70,7 @@ namespace tubeLoadNative.Droid.Resources
 
         private async void OnDownloadClick(object sender, EventArgs e)
         {
-            HttpWebResponse response;
+            HttpResponseMessage response;
             downloadBtn.Enabled = false;
             string FileName = video.Snippet.Title + ".mp3";
 
@@ -93,7 +94,7 @@ namespace tubeLoadNative.Droid.Resources
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                if (await SongsHandler.Instance.SaveSong(FileHandler.PATH, FileName, video.Id.VideoId, response.GetResponseStream()))
+                if (await SongsHandler.Instance.SaveSong(FileHandler.PATH, FileName, video.Id.VideoId, await response.Content.ReadAsStreamAsync()))
                 {
                     downloadBtn.Enabled = true;
                     downloadBtn.Text = "Play";

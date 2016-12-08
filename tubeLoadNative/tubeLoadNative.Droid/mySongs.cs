@@ -22,7 +22,7 @@ namespace tubeLoadNative.Droid
         ImageButton playBtn;
 
         SeekBar seekBar;
-        AlertDialog myAlertSeekBar;
+        AlertDialog seekbarDialog;
         Thread seekThread;
         Song selectedSong;
 
@@ -56,14 +56,17 @@ namespace tubeLoadNative.Droid
 
             SongsHandler.OnComplete += delegate
             {
-                if (myAlertSeekBar != null)
+                if (seekbarDialog != null)
                 {
-                    myAlertSeekBar.Cancel(); 
+                    seekbarDialog.Cancel();
+                    CloseContextMenu();
                 }
 
                 seekThread.Abort();
                 SongsHandler.PlayNext();
             };
+
+            SongsHandler.OnSongSaved += (sender, e) => UpdateList();
 
             if (SongsHandler.IsPlaying)
             {
@@ -76,11 +79,13 @@ namespace tubeLoadNative.Droid
 
             nextBtn.Click += delegate
             {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                 SongsHandler.PlayNext();
             };
 
             prevBtn.Click += delegate
             {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                 SongsHandler.PlayPrev();
             };
         }
@@ -226,8 +231,8 @@ namespace tubeLoadNative.Droid
                         alertSeekBar.SetIcon(picture);
                     }
 
-                    myAlertSeekBar = alertSeekBar.Create();
-                    myAlertSeekBar.Show();
+                    seekbarDialog = alertSeekBar.Create();
+                    seekbarDialog.Show();
 
                     return true;
 

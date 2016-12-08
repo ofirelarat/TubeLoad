@@ -10,7 +10,9 @@ namespace tubeLoadNative.Droid
     {
         static Java.IO.File directory;
 
-        public static EventHandler OnComplete;
+        public static event EventHandler OnComplete;
+
+        public static event EventHandler OnSongSaved;
 
         static MediaPlayer mediaPlayer = new MediaPlayer();
 
@@ -50,6 +52,7 @@ namespace tubeLoadNative.Droid
             }
         }
 
+        // Start the current song
         public static void Start()
         {
             if (CurrentSongIndex == -1)
@@ -62,6 +65,7 @@ namespace tubeLoadNative.Droid
             }
         }
 
+        // Start a song from the begining
         public static void Start(string fileName)
         {
             mediaPlayer.Reset();
@@ -96,7 +100,9 @@ namespace tubeLoadNative.Droid
 
         public static void PlayPrev()
         {
-            CurrentSongIndex = (--CurrentSongIndex) % songs.Count;
+            // If no song has played yet
+            CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
+            CurrentSongIndex = (--CurrentSongIndex + songs.Count) % songs.Count;
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[CurrentSongIndex].Id);
 
             Start(fileName);
@@ -133,6 +139,7 @@ namespace tubeLoadNative.Droid
                 }
 
                 FileHandler.WriteToJsonFile(id, songName);
+                OnSongSaved(null, null);
 
                 return true;
             }
