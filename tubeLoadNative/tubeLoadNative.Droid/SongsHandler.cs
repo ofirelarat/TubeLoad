@@ -1,4 +1,5 @@
 using Android.Media;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -7,19 +8,37 @@ namespace tubeLoadNative.Droid
 {
     public class SongsHandler
     {
-        private static Java.IO.File directory;
+        static Java.IO.File directory;
 
-        private static readonly SongsHandler instance = new SongsHandler();
+        public static EventHandler OnComplete;
+
+        static MediaPlayer mediaPlayer = new MediaPlayer();
+
+        static List<Song> songs = FileHandler.ReadFile();
+
+        public static int CurrentSongIndex { get; private set; }
+
+        public static int Duration { get { return mediaPlayer.Duration; } }
+
+        public static int CurrentPosition { get { return mediaPlayer.CurrentPosition; } }
+
+        public static bool IsPlaying { get { return mediaPlayer.IsPlaying; } }
+
+        static readonly SongsHandler instance = new SongsHandler();
 
         static SongsHandler()
         {
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             directory = new Java.IO.File(FileHandler.PATH);
             directory.Mkdirs();
-            position = -1;
+            CurrentSongIndex = -1;
+            mediaPlayer.Completion += (sender, e) =>
+            {
+                OnComplete(sender, e);
+            };
         }
 
-        private SongsHandler()
+        SongsHandler()
         {
         }
 
@@ -31,32 +50,66 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        static List<Song> songs = FileHandler.ReadFile();
+        public static void Start()
+        {
+            if (CurrentSongIndex == -1)
+            {
+                PlayNext();
+            }
+            else
+            {
+                mediaPlayer.Start();
+            }
+        }
 
-        public static int position { get; private set; }
+        public static void Start(string fileName)
+        {
+            mediaPlayer.Reset();
+            mediaPlayer.SetDataSource(fileName);
+
+            try
+            {
+                mediaPlayer.Prepare();
+                mediaPlayer.Start();
+            }
+            catch (Java.Lang.Exception)
+            {
+                throw;
+            }
+        }
 
         public static void Play(string id)
         {
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
-            position = songs.FindIndex((x) => x.Id == id);
+            CurrentSongIndex = songs.FindIndex((x) => x.Id == id);
 
-            SongsMediaPlayer.Play(fileName);
+            Start(fileName);
         }
 
         public static void PlayNext()
         {
-            position = (++position) % songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[position].Id);
+            CurrentSongIndex = (++CurrentSongIndex) % songs.Count;
+            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[CurrentSongIndex].Id);
 
-            SongsMediaPlayer.Play(fileName);
+            Start(fileName);
         }
 
         public static void PlayPrev()
         {
-            position = (--position) % songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[position].Id);
+            CurrentSongIndex = (--CurrentSongIndex) % songs.Count;
+            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[CurrentSongIndex].Id);
 
-            SongsMediaPlayer.Play(fileName);
+            Start(fileName);
+        }
+
+        public static void Pause()
+        {
+            mediaPlayer.Pause();
+        }
+
+        public static void SeekTo(int position)
+        {
+            mediaPlayer.SeekTo(position);
         }
 
         public static MediaMetadataRetriever GetMetadata(string id)
@@ -100,7 +153,7 @@ namespace tubeLoadNative.Droid
         {
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
 
-            if (!newName.EndsWith(".mp3"))
+            if (!newName.EndsWith(".mp3", System.StringComparison.OrdinalIgnoreCase))
             {
                 newName += ".mp3";
             }
@@ -125,6 +178,7 @@ namespace tubeLoadNative.Droid
         public static void CheckFileExist(string songId)
         {
             string name = FileHandler.GetSongNameById(songId);
+
             if (!File.Exists(FileHandler.PATH + name))
             {
                 FileHandler.DeleteSong(songId);

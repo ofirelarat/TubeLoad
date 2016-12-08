@@ -21,7 +21,7 @@ namespace tubeLoadNative.Droid
         private List<Song> songs;
         ImageButton playBtn;
 
-        SeekBar seekBar = null;
+        SeekBar seekBar;
         AlertDialog myAlertSeekBar;
         Thread seekThread;
         Song selectedSong;
@@ -54,7 +54,7 @@ namespace tubeLoadNative.Droid
             RegisterForContextMenu(songsListView);
 
 
-            SongsMediaPlayer.mediaPlayer.Completion += delegate
+            SongsHandler.OnComplete += delegate
             {
                 if (myAlertSeekBar != null)
                 {
@@ -65,7 +65,7 @@ namespace tubeLoadNative.Droid
                 SongsHandler.PlayNext();
             };
 
-            if (SongsMediaPlayer.IsPlaying())
+            if (SongsHandler.IsPlaying)
             {
                 playBtn.Click += Pause;
             }
@@ -98,7 +98,7 @@ namespace tubeLoadNative.Droid
 
         private void Start(object sender, EventArgs e)
         {
-            SongsMediaPlayer.Start();
+            SongsHandler.Start();
             playBtn.Click -= Start;
             playBtn.Click += Pause;
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
@@ -106,7 +106,7 @@ namespace tubeLoadNative.Droid
 
         private void Pause(object sender, EventArgs e)
         {
-            SongsMediaPlayer.Pause();
+            SongsHandler.Pause();
             playBtn.Click -= Pause;
             playBtn.Click += Start;
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
@@ -134,9 +134,9 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        public override void OnCreateContextMenu(IContextMenu menu, View view, IContextMenuContextMenuInfo menuInfo)
+        public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
         {
-            if (view.Id == Resource.Id.songsListView)
+            if (v.Id == Resource.Id.songsListView)
             {
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
                 selectedSong = songs[info.Position];
@@ -153,7 +153,7 @@ namespace tubeLoadNative.Droid
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
 
-                if (SongsMediaPlayer.IsPlaying() && info.Position == SongsHandler.position)
+                if (SongsHandler.IsPlaying && info.Position == SongsHandler.CurrentSongIndex)
                 {
                     menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
@@ -196,14 +196,14 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.seek_bar:
                     AlertDialog.Builder alertSeekBar = new AlertDialog.Builder(this);
                     seekBar = new SeekBar(this);
-                    seekBar.Max = SongsMediaPlayer.mediaPlayer.Duration;
-                    seekBar.Progress = SongsMediaPlayer.mediaPlayer.CurrentPosition;
+                    seekBar.Max = SongsHandler.Duration;
+                    seekBar.Progress = SongsHandler.CurrentPosition;
 
                     seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
                     {
                         if (e.FromUser)
                         {
-                            SongsMediaPlayer.SeekTo(e.Progress);
+                            SongsHandler.SeekTo(e.Progress);
                         }
                     };
 
@@ -240,9 +240,9 @@ namespace tubeLoadNative.Droid
         {
             while (true)
             {
-                if (SongsMediaPlayer.IsPlaying())
+                if (SongsHandler.IsPlaying)
                 {
-                    seekBar.Progress = SongsMediaPlayer.mediaPlayer.CurrentPosition;
+                    seekBar.Progress = SongsHandler.CurrentPosition;
                 }
             }
         }
@@ -259,6 +259,7 @@ namespace tubeLoadNative.Droid
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             Intent intent;
+
             switch (item.ItemId)
             {
                 case Resource.Id.addSong:

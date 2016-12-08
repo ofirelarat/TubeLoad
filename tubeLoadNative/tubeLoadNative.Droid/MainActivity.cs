@@ -19,9 +19,9 @@ namespace tubeLoadNative.Droid
         private ListView myVideosListView;
         private EditText searchTxt;
 
-        protected override void OnCreate(Bundle bundle)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(bundle);
+            base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);

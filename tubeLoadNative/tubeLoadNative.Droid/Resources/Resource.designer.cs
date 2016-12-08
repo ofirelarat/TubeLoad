@@ -65,9 +65,6 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f020006
 			public const int selector = 2130837510;
 			
-			// aapt resource value: 0x7f020007
-			public const int splashpage = 2130837511;
-			
 			static Drawable()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
