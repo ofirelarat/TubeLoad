@@ -92,7 +92,7 @@ namespace tubeLoadNative.Droid
 
         private void UpdateList()
         {
-            songs = FileHandler.ReadFile();
+            songs = SongsHandler.Songs;
 
             if (songs.Count > 0)
             {
@@ -137,6 +137,14 @@ namespace tubeLoadNative.Droid
             {
                 return null;
             }
+        }
+
+        protected override void OnResume()
+        {
+            SongsHandler.CheckFilesExist();
+            UpdateList();
+
+            base.OnResume();
         }
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)

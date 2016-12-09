@@ -16,7 +16,7 @@ namespace tubeLoadNative.Droid
 
         static MediaPlayer mediaPlayer = new MediaPlayer();
 
-        static List<Song> songs = FileHandler.ReadFile();
+        public static List<Song> Songs { get; private set; } 
 
         public static int CurrentSongIndex { get; private set; }
 
@@ -30,6 +30,7 @@ namespace tubeLoadNative.Droid
 
         static SongsHandler()
         {
+            Songs = FileHandler.ReadFile();
             Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             directory = new Java.IO.File(FileHandler.PATH);
             directory.Mkdirs();
@@ -85,15 +86,15 @@ namespace tubeLoadNative.Droid
         public static void Play(string id)
         {
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
-            CurrentSongIndex = songs.FindIndex((x) => x.Id == id);
+            CurrentSongIndex = Songs.FindIndex((x) => x.Id == id);
 
             Start(fileName);
         }
 
         public static void PlayNext()
         {
-            CurrentSongIndex = (++CurrentSongIndex) % songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[CurrentSongIndex].Id);
+            CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
+            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
 
             Start(fileName);
         }
@@ -102,8 +103,8 @@ namespace tubeLoadNative.Droid
         {
             // If no song has played yet
             CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
-            CurrentSongIndex = (--CurrentSongIndex + songs.Count) % songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songs[CurrentSongIndex].Id);
+            CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
+            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
 
             Start(fileName);
         }
@@ -139,6 +140,7 @@ namespace tubeLoadNative.Droid
                 }
 
                 FileHandler.WriteToJsonFile(id, songName);
+                Songs = FileHandler.ReadFile();
                 OnSongSaved(null, null);
 
                 return true;
@@ -154,6 +156,7 @@ namespace tubeLoadNative.Droid
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
             File.Delete(fileName);
             FileHandler.DeleteSong(id);
+            Songs = FileHandler.ReadFile();
         }
 
         public static void RenameSong(string id, string newName)
@@ -167,6 +170,7 @@ namespace tubeLoadNative.Droid
 
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
+            Songs = FileHandler.ReadFile();
         }
 
         public static void CheckFilesExist()
@@ -175,10 +179,7 @@ namespace tubeLoadNative.Droid
 
             foreach (Song song in songsInJsonFile)
             {
-                if (!File.Exists(FileHandler.PATH + song.Name))
-                {
-                    FileHandler.DeleteSong(song.Id);
-                }    
+                CheckFileExist(song.Id);
             }
         }
 
@@ -189,6 +190,7 @@ namespace tubeLoadNative.Droid
             if (!File.Exists(FileHandler.PATH + name))
             {
                 FileHandler.DeleteSong(songId);
+                Songs = FileHandler.ReadFile();
             }
         }
     }

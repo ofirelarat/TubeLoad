@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tubeLoadNative.Droid", "tubeLoadNative\tubeLoadNative.Droid\tubeLoadNative.Droid.csproj", "{08AA507E-232E-4665-B6C9-80900256BE78}"
 EndProject
@@ -85,8 +85,6 @@ Global
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Debug|x86.Build.0 = Debug|x86
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Debug|x86.Deploy.0 = Debug|x86
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|ARM.ActiveCfg = Release|ARM
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|ARM.Build.0 = Release|ARM
 		{CA68A30D-2671-42F0-B385-59C2954AF499}.Release|ARM.Deploy.0 = Release|ARM
