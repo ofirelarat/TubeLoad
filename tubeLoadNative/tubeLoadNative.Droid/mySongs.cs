@@ -70,6 +70,7 @@ namespace tubeLoadNative.Droid
 
             if (SongsHandler.IsPlaying)
             {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                 playBtn.Click += Pause;
             }
             else
