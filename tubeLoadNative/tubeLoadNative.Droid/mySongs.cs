@@ -62,7 +62,11 @@ namespace tubeLoadNative.Droid
                     CloseContextMenu();
                 }
 
-                seekThread.Abort();
+                if (seekThread != null)
+                {
+                    seekThread.Abort();
+                }
+               
                 SongsHandler.PlayNext();
             };
 
