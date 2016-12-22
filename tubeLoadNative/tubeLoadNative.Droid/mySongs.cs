@@ -85,12 +85,16 @@ namespace tubeLoadNative.Droid
             nextBtn.Click += delegate
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.Click -= Start;
+                playBtn.Click += Pause;
                 SongsHandler.PlayNext();
             };
 
             prevBtn.Click += delegate
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.Click -= Start;
+                playBtn.Click += Pause;
                 SongsHandler.PlayPrev();
             };
         }
@@ -126,6 +130,8 @@ namespace tubeLoadNative.Droid
         {
             SongsHandler.CheckFileExist(id);
             SongsHandler.Play(id);
+            playBtn.Click -= Start;
+            playBtn.Click += Pause;
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
         }
 
@@ -158,8 +164,15 @@ namespace tubeLoadNative.Droid
             {
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
                 selectedSong = songs[info.Position];
-                menu.SetHeaderTitle(selectedSong.Name);
+                
                 MediaMetadataRetriever metadata = SongsHandler.GetMetadata(selectedSong.Id);
+                string title = metadata.ExtractMetadata(MetadataKey.Title);
+                if (title == null)
+                {
+                    title = selectedSong.Name;
+                }
+
+                menu.SetHeaderTitle(title);
 
                 Drawable picture = GetSongPicture(selectedSong.Id);
 
@@ -236,6 +249,16 @@ namespace tubeLoadNative.Droid
                   {
                       seekThread.Abort();
                   });
+
+
+                    MediaMetadataRetriever metadata = SongsHandler.GetMetadata(selectedSong.Id);
+                    string title = metadata.ExtractMetadata(MetadataKey.Title);
+                    if (title == null)
+                    {
+                        title = selectedSong.Name;
+                    }
+
+                    alertSeekBar.SetTitle(title);
 
                     Drawable picture = GetSongPicture(selectedSong.Id);
 

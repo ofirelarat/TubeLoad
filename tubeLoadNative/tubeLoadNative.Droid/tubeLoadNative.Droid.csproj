@@ -109,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="NotificationHendler.cs" />
     <Compile Include="VideosAdapter.cs" />
     <Compile Include="FileHandler.cs" />
     <Compile Include="MainActivity.cs" />

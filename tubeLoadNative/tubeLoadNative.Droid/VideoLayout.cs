@@ -47,6 +47,7 @@ namespace tubeLoadNative.Droid.Resources
                 videoName.Text = video.Snippet.Title;
                 channelName.Text = video.Snippet.ChannelTitle;
 
+                SongsHandler.CheckFilesExist();
                 path = FileHandler.GetSongNameById(video.Id.VideoId);
 
                 if (path != null)
