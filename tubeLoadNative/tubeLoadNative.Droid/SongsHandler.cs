@@ -24,6 +24,8 @@ namespace tubeLoadNative.Droid
 
         public static int CurrentSongIndex { get; private set; }
 
+        public static Song CurrentSong { get; private set; }
+
         public static int Duration { get { return mediaPlayer.Duration; } }
 
         public static int CurrentPosition { get { return mediaPlayer.CurrentPosition; } }
@@ -95,6 +97,7 @@ namespace tubeLoadNative.Droid
         {
             string fileName = FileHandler.GetSongNameById(id);
             CurrentSongIndex = Songs.FindIndex((x) => x.Id == id);
+            CurrentSong = new Song() { Id = id, Name = fileName };
 
             Start(fileName);
         }
@@ -103,6 +106,7 @@ namespace tubeLoadNative.Droid
         {
             CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
             string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -113,6 +117,7 @@ namespace tubeLoadNative.Droid
             CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
             CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
             string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -186,6 +191,7 @@ namespace tubeLoadNative.Droid
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
             Songs = FileHandler.ReadFile();
+            CurrentSongIndex = Songs.IndexOf(CurrentSong);
         }
 
         public static void CheckFilesExist()

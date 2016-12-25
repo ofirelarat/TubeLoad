@@ -184,7 +184,7 @@ namespace tubeLoadNative.Droid
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
 
-                if (SongsHandler.IsPlaying && info.Position == SongsHandler.CurrentSongIndex)
+                if (SongsHandler.IsPlaying && selectedSong.Id == SongsHandler.CurrentSong.Id)
                 {
                     menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
