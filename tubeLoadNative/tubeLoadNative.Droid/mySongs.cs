@@ -105,7 +105,7 @@ namespace tubeLoadNative.Droid
 
             if (songs.Count > 0)
             {
-                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name).ToArray());
+                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
                 songsListView.Adapter = adapter;
             }
         }
