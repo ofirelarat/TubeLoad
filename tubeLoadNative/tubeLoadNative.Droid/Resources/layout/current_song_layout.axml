@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+    <ImageView
+        android:src="@android:drawable/ic_menu_gallery"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:id="@+id/songImg"
+        android:layout_weight="1" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/space1" />
+    <TextView
+        android:text="song title"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/songTitle" />
+    <TextView
+        android:text="song length"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/songSize" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/space3" />
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/seekBar" />
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/space2" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1"
+        android:layout_weight="90">
+        <ImageButton
+            android:src="@drawable/ic_media_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/prevBtn"
+            android:layout_weight="30" />
+        <ImageButton
+            android:src="@drawable/ic_media_pause"
+            android:id="@+id/playBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="30" />
+        <ImageButton
+            android:src="@drawable/ic_media_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/nextBtn"
+            android:layout_weight="30" />
+    </LinearLayout>
+</LinearLayout>

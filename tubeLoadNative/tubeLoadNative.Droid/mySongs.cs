@@ -135,21 +135,6 @@ namespace tubeLoadNative.Droid
             playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
         }
 
-        private Drawable GetSongPicture(string id)
-        {
-            MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
-            byte[] pictureByteArray = metadata.GetEmbeddedPicture();
-
-            if (pictureByteArray != null)
-            {
-                return new BitmapDrawable(Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         protected override void OnResume()
         {
             SongsHandler.CheckFilesExist();
@@ -174,7 +159,7 @@ namespace tubeLoadNative.Droid
 
                 menu.SetHeaderTitle(title);
 
-                Drawable picture = GetSongPicture(selectedSong.Id);
+                Drawable picture = SongsHandler.GetSongPicture(selectedSong.Id);
 
                 if (picture != null)
                 {
@@ -203,6 +188,9 @@ namespace tubeLoadNative.Droid
 
                 case Resource.Id.item_play:
                     Play(selectedSong.Id);
+                    Intent intent = new Intent(this, typeof(CurrentSongActivity));
+                    intent.PutExtra("currentSongId", selectedSong.Id);
+                    StartActivity(intent);
 
                     return true;
 
@@ -260,7 +248,7 @@ namespace tubeLoadNative.Droid
 
                     alertSeekBar.SetTitle(title);
 
-                    Drawable picture = GetSongPicture(selectedSong.Id);
+                    Drawable picture = SongsHandler.GetSongPicture(selectedSong.Id);
 
                     if (picture != null)
                     {
@@ -294,6 +282,8 @@ namespace tubeLoadNative.Droid
             inflater.Inflate(Resource.Menu.menu_details, menu);
             menu.FindItem(Resource.Id.mySong).SetVisible(false);
 
+            menu.FindItem(Resource.Id.currentSong).SetVisible(true);
+
             return true;
         }
 
@@ -307,6 +297,19 @@ namespace tubeLoadNative.Droid
                     intent = new Intent(this, typeof(MainActivity));
                     StartActivity(intent);
 
+                    return true;
+
+                case Resource.Id.currentSong:
+                    if (SongsHandler.IsPlaying)
+                    {
+                        intent = new Intent(this, typeof(CurrentSongActivity));
+                        intent.PutExtra("currentSongId", SongsHandler.CurrentSong.Id);
+                        StartActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "first play song", ToastLength.Long).Show();
+                    }
                     return true;
                 default:
                     return base.OnOptionsItemSelected(item);

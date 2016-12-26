@@ -145,6 +145,21 @@ namespace tubeLoadNative.Droid
             return metadata;
         }
 
+        public static Drawable GetSongPicture(string id)
+        {
+            MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
+            byte[] pictureByteArray = metadata.GetEmbeddedPicture();
+
+            if (pictureByteArray != null)
+            {
+                return new BitmapDrawable(Application.Context.Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> SaveSong(string path, string songName, string id, System.IO.Stream songStream)
         {
             string fileName = path + songName;
