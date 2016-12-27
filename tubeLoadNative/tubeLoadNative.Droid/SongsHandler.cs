@@ -1,4 +1,8 @@
+using Android.App;
+using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.Media;
+using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +23,8 @@ namespace tubeLoadNative.Droid
         public static List<Song> Songs { get; private set; } 
 
         public static int CurrentSongIndex { get; private set; }
+
+        public static Song CurrentSong { get; private set; }
 
         public static int Duration { get { return mediaPlayer.Duration; } }
 
@@ -67,26 +73,31 @@ namespace tubeLoadNative.Droid
         }
 
         // Start a song from the begining
-        public static void Start(string fileName)
+        public static void Start(string songName)
         {
             mediaPlayer.Reset();
+            string fileName = FileHandler.PATH + songName;
             mediaPlayer.SetDataSource(fileName);
 
             try
             {
                 mediaPlayer.Prepare();
                 mediaPlayer.Start();
+
+                string songId = FileHandler.FindSong(songName);
+                NotificationHendler.BuildNotification(songId);
             }
             catch (Java.Lang.Exception)
             {
-                throw;
+                Toast.MakeText(Application.Context, "can't open this file", ToastLength.Long).Show();
             }
         }
 
         public static void Play(string id)
         {
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
+            string fileName = FileHandler.GetSongNameById(id);
             CurrentSongIndex = Songs.FindIndex((x) => x.Id == id);
+            CurrentSong = new Song() { Id = id, Name = fileName };
 
             Start(fileName);
         }
@@ -94,7 +105,8 @@ namespace tubeLoadNative.Droid
         public static void PlayNext()
         {
             CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -104,7 +116,8 @@ namespace tubeLoadNative.Droid
             // If no song has played yet
             CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
             CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -112,6 +125,11 @@ namespace tubeLoadNative.Droid
         public static void Pause()
         {
             mediaPlayer.Pause();
+        }
+
+        public static void Stop()
+        {
+            mediaPlayer.Stop();
         }
 
         public static void SeekTo(int position)
@@ -130,6 +148,7 @@ namespace tubeLoadNative.Droid
         public async Task<bool> SaveSong(string path, string songName, string id, System.IO.Stream songStream)
         {
             string fileName = path + songName;
+            bool flag = false;
 
             try
             {
@@ -141,14 +160,15 @@ namespace tubeLoadNative.Droid
 
                 FileHandler.WriteToJsonFile(id, songName);
                 Songs = FileHandler.ReadFile();
-                OnSongSaved(null, null);
-
-                return true;
+                flag = true;
+                OnSongSaved(null, null);        
             }
             catch
             {
-                return false;
+                flag = false;
             }
+
+            return flag;
         }
 
         public static void DeleteSong(string id)
@@ -171,6 +191,7 @@ namespace tubeLoadNative.Droid
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
             Songs = FileHandler.ReadFile();
+            CurrentSongIndex = Songs.IndexOf(CurrentSong);
         }
 
         public static void CheckFilesExist()
