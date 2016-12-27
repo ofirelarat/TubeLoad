@@ -11,16 +11,18 @@ using Android.Views;
 using Android.Widget;
 using Android.Media;
 using Android.Graphics.Drawables;
+using System.Threading;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad")]
+    [Activity(Label = "TubeLoad",LaunchMode =Android.Content.PM.LaunchMode.SingleInstance)]
     public class CurrentSongActivity : Activity
     {
         ImageButton playBtn;
         TextView songLength;
         TextView songTitle;
         ImageView songImg;
+        SeekBar seekBar;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,6 +32,7 @@ namespace tubeLoadNative.Droid
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
             songLength = FindViewById<TextView>(Resource.Id.songSize);
+            seekBar = FindViewById<SeekBar>(Resource.Id.seekBar);
 
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
@@ -39,7 +42,8 @@ namespace tubeLoadNative.Droid
             {
                 UpdatePage(SongsHandler.CurrentSong.Id);
             };
-                nextBtn.Click += delegate
+
+            nextBtn.Click += delegate
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
                 playBtn.Click -= Start;
@@ -72,6 +76,19 @@ namespace tubeLoadNative.Droid
             {
                 UpdatePage(currentSongId);
             }
+            else
+            {
+                Intent intent = new Intent(this, typeof(mySongs));
+                StartActivity(intent);
+            }
+
+            seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
+            {
+                if (e.FromUser)
+                {
+                    SongsHandler.SeekTo(e.Progress);
+                }
+            };
         }
 
         private void Start(object sender, EventArgs e)
@@ -114,6 +131,9 @@ namespace tubeLoadNative.Droid
             {
                 songImg.SetImageResource(Resource.Drawable.icon);
             }
+
+            seekBar.Max = SongsHandler.Duration;
+            seekBar.Progress = SongsHandler.CurrentPosition;
         }
     }
 }

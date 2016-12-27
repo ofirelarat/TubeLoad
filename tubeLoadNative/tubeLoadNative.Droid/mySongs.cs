@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad")]
+    [Activity(Label = "TubeLoad",LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
     public class mySongs : Activity
     {
         private ListView songsListView;
