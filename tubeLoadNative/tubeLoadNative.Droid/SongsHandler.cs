@@ -87,7 +87,7 @@ namespace tubeLoadNative.Droid
                 string songId = FileHandler.FindSong(songName);
                 CurrentSong = new Song() { Id = songId, Name = songName };
 
-                NotificationHendler.BuildNotification(songId);
+                NotificationHandler.BuildNotification(songId);
             }
             catch (Java.Lang.Exception)
             {

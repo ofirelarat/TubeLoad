@@ -48,7 +48,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
@@ -110,7 +110,7 @@
   <ItemGroup>
     <Compile Include="Common.cs" />
     <Compile Include="CurrentSongActivity.cs" />
-    <Compile Include="NotificationHendler.cs" />
+    <Compile Include="NotificationHandler.cs" />
     <Compile Include="VideosAdapter.cs" />
     <Compile Include="FileHandler.cs" />
     <Compile Include="MainActivity.cs" />

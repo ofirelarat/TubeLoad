@@ -72,6 +72,7 @@ namespace tubeLoadNative.Droid
             }
 
             string currentSongId = Intent.GetStringExtra("currentSongId");
+
             if (currentSongId != null)
             {
                 UpdatePage(currentSongId);

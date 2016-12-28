@@ -13,14 +13,14 @@ using Android.Media;
 
 namespace tubeLoadNative.Droid
 {
-    class NotificationHendler
+    class NotificationHandler
     {
         private static Notification songNotification;
         private static Notification.Builder builder;
         private static NotificationManager notificationManager;
         private const int SONG_NOTIFICATION_ID = 0;
 
-        static NotificationHendler()
+        static NotificationHandler()
         {
             Intent intent = new Intent(Application.Context, typeof(CurrentSongActivity));
             intent.PutExtra("currentSongId", SongsHandler.CurrentSong.Id);
