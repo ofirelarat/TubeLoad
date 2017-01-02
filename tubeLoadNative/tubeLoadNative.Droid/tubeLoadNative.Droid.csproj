@@ -48,7 +48,11 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
+<<<<<<< HEAD
     <AndroidLinkMode>None</AndroidLinkMode>
+=======
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+>>>>>>> 1d1f15491c66a1626008b33d7d0dd23ffb42c70d
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
@@ -109,6 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="CurrentSongActivity.cs" />
     <Compile Include="NotificationHendler.cs" />
     <Compile Include="VideosAdapter.cs" />
     <Compile Include="FileHandler.cs" />
@@ -123,6 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <AndroidResource Include="Resources\layout\current_song_layout.axml" />
     <ProguardConfiguration Include="packages.config" />
     <ProguardConfiguration Include="proguard.cfg" />
     <None Include="Resources\AboutResources.txt" />
