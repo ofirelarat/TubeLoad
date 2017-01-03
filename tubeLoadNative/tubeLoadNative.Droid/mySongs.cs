@@ -189,7 +189,6 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.item_play:
                     Play(selectedSong.Id);
                     Intent intent = new Intent(this, typeof(CurrentSongActivity));
-                    intent.PutExtra("currentSongId", selectedSong.Id);
                     StartActivity(intent);
 
                     return true;
@@ -303,7 +302,6 @@ namespace tubeLoadNative.Droid
                     if (SongsHandler.IsPlaying)
                     {
                         intent = new Intent(this, typeof(CurrentSongActivity));
-                        intent.PutExtra("currentSongId", SongsHandler.CurrentSong.Id);
                         StartActivity(intent);
                     }
                     else

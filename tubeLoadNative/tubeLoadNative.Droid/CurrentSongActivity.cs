@@ -15,7 +15,7 @@ using System.Threading;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad",LaunchMode =Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad")]
     public class CurrentSongActivity : Activity
     {
         ImageButton playBtn;
@@ -23,6 +23,8 @@ namespace tubeLoadNative.Droid
         TextView songTitle;
         ImageView songImg;
         SeekBar seekBar;
+        Thread seekbarThread;
+        TextView songPosition;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,16 +34,23 @@ namespace tubeLoadNative.Droid
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
             songLength = FindViewById<TextView>(Resource.Id.songSize);
+            songPosition = FindViewById<TextView>(Resource.Id.songPosition);
             seekBar = FindViewById<SeekBar>(Resource.Id.seekBar);
 
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
 
-            SongsHandler.OnComplete += delegate
+            if (SongsHandler.CurrentSong != null)
             {
                 UpdatePage(SongsHandler.CurrentSong.Id);
-            };
+            }
+            else
+            {
+                NotificationHandler.DeleteNotification();
+                Intent intent = new Intent(this, typeof(mySongs));
+                StartActivity(intent);
+            }
 
             nextBtn.Click += delegate
             {
@@ -68,26 +77,21 @@ namespace tubeLoadNative.Droid
             }
             else
             {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
                 playBtn.Click += Start;
             }
 
-            string currentSongId = Intent.GetStringExtra("currentSongId");
-
-            if (currentSongId != null)
+            SongsHandler.OnComplete += delegate
             {
-                UpdatePage(currentSongId);
-            }
-            else
-            {
-                Intent intent = new Intent(this, typeof(mySongs));
-                StartActivity(intent);
-            }
+                UpdatePage(SongsHandler.CurrentSong.Id);
+            };
 
             seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
             {
                 if (e.FromUser)
                 {
                     SongsHandler.SeekTo(e.Progress);
+                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
                 }
             };
         }
@@ -110,9 +114,14 @@ namespace tubeLoadNative.Droid
 
         private void UpdatePage(string songId)
         {
+            if (seekbarThread != null)
+            {
+                seekbarThread.Abort();
+            }
+
             MediaMetadataRetriever mmr = SongsHandler.GetMetadata(songId);
             string title = mmr.ExtractMetadata(MetadataKey.Title) + " - " + mmr.ExtractMetadata(MetadataKey.Artist);
-            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).TotalMinutes.ToString("#.##");
+            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).TotalMinutes.ToString("0.00");
 
             if (title == null || length == null)
             {
@@ -135,6 +144,24 @@ namespace tubeLoadNative.Droid
 
             seekBar.Max = SongsHandler.Duration;
             seekBar.Progress = SongsHandler.CurrentPosition;
+            songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
+
+            seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
+            seekbarThread.Start();
+        }
+
+        private void UpdateSekkbarProgress()
+        {
+            while (SongsHandler.CurrentSong != null)
+            {
+                Thread.Sleep(1000);
+                seekBar.Progress = SongsHandler.CurrentPosition;
+                try
+                {
+                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
+                }
+                catch { }
+            }
         }
     }
 }

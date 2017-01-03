@@ -135,6 +135,9 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f070000
 			public const int songImg = 2131165184;
 			
+			// aapt resource value: 0x7f070006
+			public const int songPosition = 2131165190;
+			
 			// aapt resource value: 0x7f070007
 			public const int songSize = 2131165191;
 			
@@ -152,9 +155,6 @@ namespace tubeLoadNative.Droid
 			
 			// aapt resource value: 0x7f070003
 			public const int space3 = 2131165187;
-			
-			// aapt resource value: 0x7f070006
-			public const int textView1 = 2131165190;
 			
 			// aapt resource value: 0x7f070010
 			public const int videoChannelName = 2131165200;

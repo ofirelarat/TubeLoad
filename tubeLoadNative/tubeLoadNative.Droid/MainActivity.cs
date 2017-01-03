@@ -8,6 +8,7 @@ using Android.Content;
 using tubeLoadNative.Droid.Resources;
 using Android.Views;
 using Android.Views.InputMethods;
+using System.Threading.Tasks;
 
 namespace tubeLoadNative.Droid
 {
@@ -19,7 +20,7 @@ namespace tubeLoadNative.Droid
         private ListView myVideosListView;
         private EditText searchTxt;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
@@ -28,14 +29,14 @@ namespace tubeLoadNative.Droid
             ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchTxt = FindViewById<EditText>(Resource.Id.searchEditText);
 
-            searchBtn.Click += delegate
+            searchBtn.Click += async delegate
             {
                 InputMethodManager imm = (InputMethodManager)GetSystemService(InputMethodService);
                 imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                UpdateVideos(searchTxt.Text);
+                await UpdateVideos(searchTxt.Text);
             };
 
-            searchTxt.KeyPress += (object sender, View.KeyEventArgs e) =>
+            searchTxt.KeyPress += async (object sender, View.KeyEventArgs e) =>
             {
                 e.Handled = false;
 
@@ -43,7 +44,7 @@ namespace tubeLoadNative.Droid
                 {
                     InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
                     imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                    UpdateVideos(searchTxt.Text);
+                    await UpdateVideos(searchTxt.Text);
                     e.Handled = true;
                 }
             };
@@ -54,15 +55,24 @@ namespace tubeLoadNative.Droid
                 Intent intent = new Intent(this, typeof(VideoLayout));
                 StartActivity(intent);
             };
+
+            //await UpdateVideos(string.Empty);
         }
 
-        private void UpdateVideos(string searchQuery)
+        private async Task UpdateVideos(string searchQuery)
         {
             try
             {
-                videos = YoutubeHandler.Search(searchQuery);
+                if (searchQuery == string.Empty)
+                {
+                    videos = await YoutubeHandler.Search();
+                }
+                else
+                {
+                    videos = await YoutubeHandler.Search(searchQuery);
+                }
             }
-            catch
+            catch(Exception e)
             {
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }

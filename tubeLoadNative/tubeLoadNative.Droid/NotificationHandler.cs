@@ -23,7 +23,6 @@ namespace tubeLoadNative.Droid
         static NotificationHandler()
         {
             Intent intent = new Intent(Application.Context, typeof(CurrentSongActivity));
-            intent.PutExtra("currentSongId", SongsHandler.CurrentSong.Id);
             PendingIntent pendingIntent = PendingIntent.GetActivity(Application.Context, 0, intent, PendingIntentFlags.UpdateCurrent);
 
             Intent stopIntent = new Intent(Application.Context, typeof(NotificationActionService));
@@ -57,6 +56,11 @@ namespace tubeLoadNative.Droid
             songNotification = builder.Build();
 
             notificationManager.Notify(SONG_NOTIFICATION_ID, songNotification);
+        }
+
+        public static void DeleteNotification()
+        {
+            notificationManager.CancelAll();
         }
 
         public class NotificationActionService : IntentService

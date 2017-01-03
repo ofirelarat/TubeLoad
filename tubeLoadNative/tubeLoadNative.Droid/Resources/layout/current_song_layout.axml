@@ -37,7 +37,7 @@
         <TextView
             android:text="0"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:id="@+id/textView1"
+            android:id="@+id/songPosition"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
