@@ -13,16 +13,16 @@ using Android.Media;
 
 namespace tubeLoadNative.Droid
 {
-    class NotificationHendler
+    class NotificationHandler
     {
         private static Notification songNotification;
         private static Notification.Builder builder;
         private static NotificationManager notificationManager;
         private const int SONG_NOTIFICATION_ID = 0;
 
-        static NotificationHendler()
+        static NotificationHandler()
         {
-            Intent intent = new Intent(Application.Context, typeof(mySongs));
+            Intent intent = new Intent(Application.Context, typeof(CurrentSongActivity));
             PendingIntent pendingIntent = PendingIntent.GetActivity(Application.Context, 0, intent, PendingIntentFlags.UpdateCurrent);
 
             Intent stopIntent = new Intent(Application.Context, typeof(NotificationActionService));
@@ -56,6 +56,11 @@ namespace tubeLoadNative.Droid
             songNotification = builder.Build();
 
             notificationManager.Notify(SONG_NOTIFICATION_ID, songNotification);
+        }
+
+        public static void DeleteNotification()
+        {
+            notificationManager.CancelAll();
         }
 
         public class NotificationActionService : IntentService

@@ -14,7 +14,7 @@ using Android.Util;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Theme = "@style/MyTheme.Splash",  NoHistory = true)]
+    [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = false, NoHistory = true)]
     public class SplashActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

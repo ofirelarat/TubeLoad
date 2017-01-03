@@ -18,6 +18,8 @@ namespace tubeLoadNative.Droid
 
         public static event EventHandler OnSongSaved;
 
+        public static event EventHandler OnSongPlayedSetBackground;
+
         static MediaPlayer mediaPlayer = new MediaPlayer();
 
         public static List<Song> Songs { get; private set; } 
@@ -83,9 +85,13 @@ namespace tubeLoadNative.Droid
             {
                 mediaPlayer.Prepare();
                 mediaPlayer.Start();
-
+                    
                 string songId = FileHandler.FindSong(songName);
-                NotificationHendler.BuildNotification(songId);
+                CurrentSong = new Song() { Id = songId, Name = songName };
+
+                OnSongPlayedSetBackground(null, null);
+
+                NotificationHandler.BuildNotification(songId);
             }
             catch (Java.Lang.Exception)
             {
@@ -97,7 +103,6 @@ namespace tubeLoadNative.Droid
         {
             string fileName = FileHandler.GetSongNameById(id);
             CurrentSongIndex = Songs.FindIndex((x) => x.Id == id);
-            CurrentSong = new Song() { Id = id, Name = fileName };
 
             Start(fileName);
         }
@@ -106,7 +111,6 @@ namespace tubeLoadNative.Droid
         {
             CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
             string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
-            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -117,7 +121,6 @@ namespace tubeLoadNative.Droid
             CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
             CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
             string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
-            CurrentSong = new Song() { Id = Songs[CurrentSongIndex].Id, Name = fileName };
 
             Start(fileName);
         }
@@ -143,6 +146,21 @@ namespace tubeLoadNative.Droid
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
             metadata.SetDataSource(fileName);
             return metadata;
+        }
+
+        public static Drawable GetSongPicture(string id)
+        {
+            MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
+            byte[] pictureByteArray = metadata.GetEmbeddedPicture();
+
+            if (pictureByteArray != null)
+            {
+                return new BitmapDrawable(Application.Context.Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public async Task<bool> SaveSong(string path, string songName, string id, System.IO.Stream songStream)
@@ -177,6 +195,7 @@ namespace tubeLoadNative.Droid
             File.Delete(fileName);
             FileHandler.DeleteSong(id);
             Songs = FileHandler.ReadFile();
+            CurrentSong = null;
         }
 
         public static void RenameSong(string id, string newName)

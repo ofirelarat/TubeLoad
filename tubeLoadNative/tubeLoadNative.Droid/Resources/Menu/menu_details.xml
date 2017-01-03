@@ -7,4 +7,8 @@
   
   <item android:id="@+id/addSong"
       android:title="Add Songs"></item>
+  
+  <item android:id="@+id/currentSong"
+     android:title="Current Songs"
+     android:visible="false"></item>
 </menu>

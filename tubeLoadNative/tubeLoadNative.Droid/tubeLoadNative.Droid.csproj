@@ -109,7 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
-    <Compile Include="NotificationHendler.cs" />
+    <Compile Include="CurrentSongActivity.cs" />
+    <Compile Include="NotificationHandler.cs" />
+    <Compile Include="SongsAdapter.cs" />
     <Compile Include="VideosAdapter.cs" />
     <Compile Include="FileHandler.cs" />
     <Compile Include="MainActivity.cs" />
@@ -123,6 +125,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <AndroidResource Include="Resources\layout\current_song_layout.axml" />
+    <AndroidResource Include="Resources\layout\song_adapter.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <ProguardConfiguration Include="packages.config" />
     <ProguardConfiguration Include="proguard.cfg" />
     <None Include="Resources\AboutResources.txt" />
@@ -151,15 +157,6 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\selector.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable-xhdpi\selector.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable-xxhdpi\selector.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable-xxxhdpi\selector.xml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Menu\menu_details.xml" />
@@ -244,6 +241,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\ic_media_pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\selector.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\selector.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
