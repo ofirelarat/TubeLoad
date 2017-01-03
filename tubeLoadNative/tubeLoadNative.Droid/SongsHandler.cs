@@ -18,6 +18,8 @@ namespace tubeLoadNative.Droid
 
         public static event EventHandler OnSongSaved;
 
+        public static event EventHandler OnSongPlayedSetBackground;
+
         static MediaPlayer mediaPlayer = new MediaPlayer();
 
         public static List<Song> Songs { get; private set; } 
@@ -86,6 +88,8 @@ namespace tubeLoadNative.Droid
                     
                 string songId = FileHandler.FindSong(songName);
                 CurrentSong = new Song() { Id = songId, Name = songName };
+
+                OnSongPlayedSetBackground(null, null);
 
                 NotificationHandler.BuildNotification(songId);
             }

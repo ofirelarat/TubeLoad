@@ -42,7 +42,7 @@ namespace tubeLoadNative.Droid
             {
                 Play(videoId);
             }
-
+     
             SongsHandler.CheckFilesExist();
             UpdateList();
 
@@ -72,6 +72,12 @@ namespace tubeLoadNative.Droid
 
             SongsHandler.OnSongSaved += (sender, e) => UpdateList();
 
+            SongsHandler.OnSongPlayedSetBackground += delegate
+            {
+                UpdateList();
+                songsListView.SetSelection(SongsHandler.CurrentSongIndex);
+            }; 
+
             if (SongsHandler.IsPlaying)
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
@@ -81,6 +87,7 @@ namespace tubeLoadNative.Droid
             {
                 playBtn.Click += Start;
             }
+   
 
             nextBtn.Click += delegate
             {
@@ -105,7 +112,8 @@ namespace tubeLoadNative.Droid
 
             if (songs.Count > 0)
             {
-                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
+                //ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
+                BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
                 songsListView.Adapter = adapter;
             }
         }

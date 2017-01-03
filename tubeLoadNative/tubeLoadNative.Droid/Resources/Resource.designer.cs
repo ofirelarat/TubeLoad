@@ -78,26 +78,26 @@ namespace tubeLoadNative.Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f070017
-			public const int addSong = 2131165207;
-			
-			// aapt resource value: 0x7f070014
-			public const int channelName = 2131165204;
-			
 			// aapt resource value: 0x7f070018
-			public const int currentSong = 2131165208;
+			public const int addSong = 2131165208;
 			
 			// aapt resource value: 0x7f070015
-			public const int downloadBtn = 2131165205;
+			public const int channelName = 2131165205;
 			
 			// aapt resource value: 0x7f070019
-			public const int item_delete = 2131165209;
+			public const int currentSong = 2131165209;
+			
+			// aapt resource value: 0x7f070016
+			public const int downloadBtn = 2131165206;
 			
 			// aapt resource value: 0x7f07001a
-			public const int item_play = 2131165210;
+			public const int item_delete = 2131165210;
 			
 			// aapt resource value: 0x7f07001b
-			public const int item_rename = 2131165211;
+			public const int item_play = 2131165211;
+			
+			// aapt resource value: 0x7f07001c
+			public const int item_rename = 2131165212;
 			
 			// aapt resource value: 0x7f070009
 			public const int linearLayout1 = 2131165193;
@@ -108,8 +108,8 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f07000f
 			public const int linearLayout3 = 2131165199;
 			
-			// aapt resource value: 0x7f070016
-			public const int mySong = 2131165206;
+			// aapt resource value: 0x7f070017
+			public const int mySong = 2131165207;
 			
 			// aapt resource value: 0x7f07000c
 			public const int nextBtn = 2131165196;
@@ -129,11 +129,14 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f070004
 			public const int seekBar = 2131165188;
 			
-			// aapt resource value: 0x7f07001c
-			public const int seek_bar = 2131165212;
+			// aapt resource value: 0x7f07001d
+			public const int seek_bar = 2131165213;
 			
 			// aapt resource value: 0x7f070000
 			public const int songImg = 2131165184;
+			
+			// aapt resource value: 0x7f070014
+			public const int songName = 2131165204;
 			
 			// aapt resource value: 0x7f070006
 			public const int songPosition = 2131165190;
@@ -191,7 +194,10 @@ namespace tubeLoadNative.Droid
 			public const int my_songs = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int video_layout = 2130903044;
+			public const int song_adapter = 2130903044;
+			
+			// aapt resource value: 0x7f030005
+			public const int video_layout = 2130903045;
 			
 			static Layout()
 			{
