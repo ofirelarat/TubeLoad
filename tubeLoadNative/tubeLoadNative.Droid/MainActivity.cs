@@ -71,22 +71,22 @@ namespace tubeLoadNative.Droid
                 {
                     videos = await YoutubeHandler.Search(searchQuery);
                 }
+
+                if (videos != null)
+                {
+                    var adapter = new VideosAdapter(this, videos.ToArray());
+                    myVideosListView.Adapter = adapter;
+                }
+                else
+                {
+                    Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
+                }
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
-
-            if (videos != null)
-            {
-                var adapter = new VideosAdapter(this, videos.ToArray());
-                myVideosListView.Adapter = adapter;
-            }
-            else
-            {
-                Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
-            }
-
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -94,6 +94,7 @@ namespace tubeLoadNative.Droid
             var inflater = MenuInflater;
             inflater.Inflate(Resource.Menu.menu_details, menu);
             menu.FindItem(Resource.Id.addSong).SetVisible(false);
+            menu.FindItem(Resource.Id.currentSong).SetVisible(true);
 
             return base.OnCreateOptionsMenu(menu);
         }
@@ -108,6 +109,19 @@ namespace tubeLoadNative.Droid
                     intent = new Intent(this, typeof(mySongs));
                     StartActivity(intent);
                     return true;
+
+                case Resource.Id.currentSong:
+                    if (SongsHandler.IsPlaying)
+                    {
+                        intent = new Intent(this, typeof(CurrentSongActivity));
+                        StartActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "first play song", ToastLength.Long).Show();
+                    }
+                    return true;
+
                 default:
                     return false;
             }

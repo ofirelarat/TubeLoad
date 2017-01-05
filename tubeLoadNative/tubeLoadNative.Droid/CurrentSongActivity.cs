@@ -191,5 +191,34 @@ namespace tubeLoadNative.Droid
                 catch { }
             }
         }
+
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            var inflater = MenuInflater;
+            inflater.Inflate(Resource.Menu.menu_details, menu);
+
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            Intent intent;
+
+            switch (item.ItemId)
+            {
+                case Resource.Id.addSong:
+                    intent = new Intent(this, typeof(MainActivity));
+                    StartActivity(intent);
+                    return true;
+
+                case Resource.Id.mySong:
+                    intent = new Intent(this, typeof(mySongs));
+                    StartActivity(intent);
+                    return true;
+
+                default:
+                    return base.OnOptionsItemSelected(item);
+            }
+        }
     }
 }
