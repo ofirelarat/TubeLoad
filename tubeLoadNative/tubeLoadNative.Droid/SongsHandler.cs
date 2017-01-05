@@ -45,7 +45,7 @@ namespace tubeLoadNative.Droid
             CurrentSongIndex = -1;
             mediaPlayer.Completion += (sender, e) =>
             {
-                OnComplete(sender, e);
+                OnComplete?.Invoke(sender, e);
             };
         }
 
@@ -89,7 +89,7 @@ namespace tubeLoadNative.Droid
                 string songId = FileHandler.FindSong(songName);
                 CurrentSong = new Song() { Id = songId, Name = songName };
 
-                OnSongPlayedSetBackground(null, null);
+                OnSongPlayedSetBackground?.Invoke(null, null);
 
                 NotificationHandler.BuildNotification(songId);
             }
@@ -166,7 +166,6 @@ namespace tubeLoadNative.Droid
         public async Task<bool> SaveSong(string path, string songName, string id, System.IO.Stream songStream)
         {
             string fileName = path + songName;
-            bool flag = false;
 
             try
             {
@@ -178,15 +177,14 @@ namespace tubeLoadNative.Droid
 
                 FileHandler.WriteToJsonFile(id, songName);
                 Songs = FileHandler.ReadFile();
-                flag = true;
-                OnSongSaved(null, null);        
+                OnSongSaved?.Invoke(null, null);
             }
             catch
             {
-                flag = false;
+                return false;
             }
 
-            return flag;
+            return true;
         }
 
         public static void DeleteSong(string id)
