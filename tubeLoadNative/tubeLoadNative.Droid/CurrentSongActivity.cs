@@ -28,8 +28,9 @@ namespace tubeLoadNative.Droid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
+            base.OnCreate(savedInstanceState);    
             SetContentView(Resource.Layout.current_song_layout);
+
 
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
@@ -91,9 +92,36 @@ namespace tubeLoadNative.Droid
                 if (e.FromUser)
                 {
                     SongsHandler.SeekTo(e.Progress);
-                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
+                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".",":");
                 }
             };
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            if (SongsHandler.CurrentSong != null)
+            {
+                UpdatePage(SongsHandler.CurrentSong.Id);
+            }
+            else
+            {
+                NotificationHandler.DeleteNotification();
+                Intent intent = new Intent(this, typeof(mySongs));
+                StartActivity(intent);
+            }
+
+            if (SongsHandler.IsPlaying)
+            {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.Click += Pause;
+            }
+            else
+            {
+                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
+                playBtn.Click += Start;
+            }
         }
 
         private void Start(object sender, EventArgs e)
@@ -130,7 +158,7 @@ namespace tubeLoadNative.Droid
             }
 
             songTitle.Text = title;
-            songLength.Text = length;
+            songLength.Text = length.Replace(".",":");
 
             Drawable picture = SongsHandler.GetSongPicture(songId);
             if (picture != null)
@@ -144,7 +172,7 @@ namespace tubeLoadNative.Droid
 
             seekBar.Max = SongsHandler.Duration;
             seekBar.Progress = SongsHandler.CurrentPosition;
-            songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
+            songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
 
             seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
             seekbarThread.Start();
@@ -158,7 +186,7 @@ namespace tubeLoadNative.Droid
                 seekBar.Progress = SongsHandler.CurrentPosition;
                 try
                 {
-                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00");
+                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
                 }
                 catch { }
             }
