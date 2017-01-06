@@ -56,7 +56,7 @@ namespace tubeLoadNative.Droid
                 StartActivity(intent);
             };
 
-            //await UpdateVideos(string.Empty);
+            await UpdateVideos(string.Empty);
         }
 
         private async Task UpdateVideos(string searchQuery)

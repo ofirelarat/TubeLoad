@@ -82,10 +82,32 @@ namespace tubeLoadNative
                 jsonString.Wait();
                 JObject json = JObject.Parse(jsonString.Result);
                 var parser = json["items"].Children().ToList();
-                songs = parser.Select((x) => JsonConvert.DeserializeObject<SearchResult>(x.ToString())).ToList();
+
+                // Getting youtube most popular songs and converting them to SearchResult class
+                List<YoutubeOutput> outputSongs = parser.Select((x) => JsonConvert.DeserializeObject<YoutubeOutput>(x.ToString())).ToList();
+                songs = ConvertYoutubeOutputToSearchResults(outputSongs);
             }
 
             return songs;
+        }
+
+        // Converting the YoutubeOutput class we have created to youtube's API SearchResult class
+        public static List<SearchResult> ConvertYoutubeOutputToSearchResults(List<YoutubeOutput> youtubeOutput)
+        {
+            return new List<SearchResult>(youtubeOutput.Select((result) => new SearchResult()
+            {
+                ETag = result.etag,
+                Id = new ResourceId()
+                {
+                    ETag = result.etag,
+                    ChannelId = result.snippet.ChannelId,
+                    Kind = result.kind,
+                    PlaylistId = string.Empty,
+                    VideoId = result.id
+                },
+                Kind = result.kind,
+                Snippet = result.snippet
+            }));
         }
 
         public static async Task<HttpResponseMessage> downloadStream(string videoId)

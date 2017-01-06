@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="YoutubeHandler.cs" />
+    <Compile Include="YoutubeOutput.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
