@@ -65,18 +65,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/prevBtn"
-            android:layout_weight="30" />
+            android:layout_weight="30"
+            android:backgroundTint="#ff2980b9" />
         <ImageButton
             android:src="@drawable/ic_media_pause"
             android:id="@+id/playBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="30" />
+            android:layout_weight="30"
+            android:backgroundTint="#ff2980b9" />
         <ImageButton
             android:src="@drawable/ic_media_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/nextBtn"
-            android:layout_weight="30" />
+            android:layout_weight="30"
+            android:backgroundTint="#ff2980b9" />
     </LinearLayout>
 </LinearLayout>

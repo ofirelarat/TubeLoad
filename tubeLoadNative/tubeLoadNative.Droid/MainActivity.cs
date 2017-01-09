@@ -61,6 +61,10 @@ namespace tubeLoadNative.Droid
 
         private async Task UpdateVideos(string searchQuery)
         {
+            ProgressDialog progress = new ProgressDialog(this);
+            progress.SetMessage("loading...");
+            progress.Show();
+
             try
             {
                 if (searchQuery == string.Empty)
@@ -82,9 +86,11 @@ namespace tubeLoadNative.Droid
                     Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
                 }
 
+                progress.Dismiss();
             }
             catch (Exception e)
             {
+                progress.Dismiss();
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
         }
@@ -111,7 +117,7 @@ namespace tubeLoadNative.Droid
                     return true;
 
                 case Resource.Id.currentSong:
-                    if (SongsHandler.IsPlaying)
+                    if (SongsHandler.CurrentSong != null)
                     {
                         intent = new Intent(this, typeof(CurrentSongActivity));
                         StartActivity(intent);

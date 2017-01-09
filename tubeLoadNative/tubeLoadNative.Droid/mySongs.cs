@@ -36,6 +36,10 @@ namespace tubeLoadNative.Droid
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
 
+            playBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            nextBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            prevBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+
             string videoId = Intent.GetStringExtra("videoId");
 
             if (videoId != null)
@@ -310,7 +314,7 @@ namespace tubeLoadNative.Droid
                     return true;
 
                 case Resource.Id.currentSong:
-                    if (SongsHandler.IsPlaying)
+                    if (SongsHandler.CurrentSong != null)
                     {
                         intent = new Intent(this, typeof(CurrentSongActivity));
                         StartActivity(intent);

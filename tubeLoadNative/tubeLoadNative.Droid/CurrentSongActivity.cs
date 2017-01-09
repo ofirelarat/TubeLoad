@@ -12,6 +12,7 @@ using Android.Widget;
 using Android.Media;
 using Android.Graphics.Drawables;
 using System.Threading;
+using Android.Graphics;
 
 namespace tubeLoadNative.Droid
 {
@@ -41,6 +42,10 @@ namespace tubeLoadNative.Droid
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
+
+            playBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            nextBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            prevBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
 
             if (SongsHandler.CurrentSong != null)
             {
