@@ -74,8 +74,11 @@ namespace tubeLoadNative.Droid
 
             SongsHandler.OnSongPlayedSetBackground += delegate
             {
+                int index = songsListView.FirstVisiblePosition;
+                View v = songsListView.GetChildAt(0);
+                int top = (v == null) ? 0 : v.Top - songsListView.ListPaddingTop;
                 UpdateList();
-                songsListView.SetSelection(SongsHandler.CurrentSongIndex);
+                songsListView.SetSelectionFromTop(index,top);
             }; 
 
             if (SongsHandler.IsPlaying)

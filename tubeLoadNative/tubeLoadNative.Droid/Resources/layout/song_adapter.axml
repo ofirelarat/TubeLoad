@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/songName"
-        android:paddingBottom="7dp"
-        android:paddingTop="7dp" />
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
 </LinearLayout>
