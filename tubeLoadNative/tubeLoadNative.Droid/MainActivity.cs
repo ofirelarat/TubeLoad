@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "TubeLoad", MainLauncher = false, Icon = "@drawable/icon")]
     public class MainActivity : Android.App.Activity
     {
         private static List<SearchResult> videos;
@@ -63,16 +63,18 @@ namespace tubeLoadNative.Droid
         {
             ProgressDialog progress = new ProgressDialog(this);
             progress.SetMessage("loading...");
-            progress.Show();
 
             try
             {
                 if (searchQuery == string.Empty)
                 {
-                    videos = await YoutubeHandler.Search();
+                    videos = YoutubeHandler.MostPopularSongs;
                 }
                 else
                 {
+                   
+                    progress.Show();
+
                     videos = await YoutubeHandler.Search(searchQuery);
                 }
 

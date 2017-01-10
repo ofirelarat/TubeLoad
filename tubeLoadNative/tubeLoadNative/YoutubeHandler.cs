@@ -24,6 +24,8 @@ namespace tubeLoadNative
 
         private static SearchResource.ListRequest youtubeSearcher;
 
+        public static List<SearchResult> MostPopularSongs { get; private set; }
+
         static YoutubeHandler()
         {
             youtubeSearcher = youtubeService.Search.List("snippet");
@@ -87,6 +89,8 @@ namespace tubeLoadNative
                 List<YoutubeOutput> outputSongs = parser.Select((x) => JsonConvert.DeserializeObject<YoutubeOutput>(x.ToString())).ToList();
                 songs = ConvertYoutubeOutputToSearchResults(outputSongs);
             }
+
+            MostPopularSongs = songs;
 
             return songs;
         }

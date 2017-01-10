@@ -115,8 +115,8 @@ namespace tubeLoadNative.Droid.Resources
 
         private void OnPlayClick(object sender, EventArgs e)
         {
+            SongsHandler.Play(video.Id.VideoId);
             Intent intent = new Intent(this, typeof(mySongs));
-            intent.PutExtra("videoId", video.Id.VideoId);
             StartActivity(intent);
         }
         

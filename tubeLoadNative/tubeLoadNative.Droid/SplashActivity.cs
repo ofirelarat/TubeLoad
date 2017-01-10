@@ -14,7 +14,7 @@ using Android.Util;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = false, NoHistory = true)]
+    [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)]
     public class SplashActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -22,11 +22,12 @@ namespace tubeLoadNative.Droid
             base.OnCreate(savedInstanceState);
         }
 
-        protected override void OnResume()
+        protected override async void OnResume()
         {
             base.OnResume();
 
-            Task.Delay(3000);
+            await YoutubeHandler.Search();
+            //Task.Delay(3000);
             StartActivity(new Intent(Application.Context, typeof(MainActivity)));
         }
     }

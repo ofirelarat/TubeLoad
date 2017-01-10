@@ -40,13 +40,6 @@ namespace tubeLoadNative.Droid
             nextBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
             prevBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
 
-            string videoId = Intent.GetStringExtra("videoId");
-
-            if (videoId != null)
-            {
-                Play(videoId);
-            }
-     
             SongsHandler.CheckFilesExist();
             UpdateList();
 
