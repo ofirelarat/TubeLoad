@@ -134,8 +134,7 @@ namespace tubeLoadNative
                 {
                     return response;
                 }
-
-                // TODO: change the exception message to this await response.Content.ReadAsStringAsync() when the API is fixed
+                
                 throw new Exception("This video has been blocked");
             }
         }
