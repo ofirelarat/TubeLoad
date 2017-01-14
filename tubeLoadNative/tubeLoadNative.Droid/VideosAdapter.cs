@@ -14,19 +14,15 @@ namespace tubeLoadNative.Droid
 
         private Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
     
-        public VideosAdapter(Android.App.Activity context,SearchResult[] searchResults)
+        public VideosAdapter(Android.App.Activity context,SearchResult[] searchResults, Dictionary<string, Bitmap> images)
         {
             this.context = context;
             this.searchResults = searchResults;
-            inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);
-
-            foreach (var result in searchResults)
-            {
-                Thumbnail logo = result.Snippet.Thumbnails.High;
-                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
-                images.Add(result.Id.VideoId,imageBitmap);
-            }
+            this.images = images;
+            inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);       
         }
+
+       
 
         public override int Count
         {

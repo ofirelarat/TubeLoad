@@ -9,6 +9,7 @@ using tubeLoadNative.Droid.Resources;
 using Android.Views;
 using Android.Views.InputMethods;
 using System.Threading.Tasks;
+using Android.Graphics;
 
 namespace tubeLoadNative.Droid
 {
@@ -64,6 +65,7 @@ namespace tubeLoadNative.Droid
             ProgressDialog progress = new ProgressDialog(this);
             progress.SetMessage("loading...");
 
+
             try
             {
                 if (searchQuery == string.Empty)
@@ -72,7 +74,6 @@ namespace tubeLoadNative.Droid
                 }
                 else
                 {
-                   
                     progress.Show();
 
                     videos = await YoutubeHandler.Search(searchQuery);
@@ -80,7 +81,8 @@ namespace tubeLoadNative.Droid
 
                 if (videos != null)
                 {
-                    var adapter = new VideosAdapter(this, videos.ToArray());
+                    Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
+                    var adapter = new VideosAdapter(this, videos.ToArray(),images);
                     myVideosListView.Adapter = adapter;
                 }
                 else
@@ -95,6 +97,20 @@ namespace tubeLoadNative.Droid
                 progress.Dismiss();
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
+        }
+
+        private async Task<Dictionary<string,Bitmap>> LoadImages(SearchResult[] searchResults)
+        {
+            Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
+
+            foreach (var result in searchResults)
+            {
+                Thumbnail logo = result.Snippet.Thumbnails.High;
+                Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(logo.Url);
+                images.Add(result.Id.VideoId, imageBitmap);
+            }
+
+            return images;
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
