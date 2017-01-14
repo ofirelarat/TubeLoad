@@ -16,7 +16,7 @@ using Android.Graphics;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad")]
+    [Activity(Label = "TubeLoad", LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
     public class CurrentSongActivity : Activity
     {
         ImageButton playBtn;
