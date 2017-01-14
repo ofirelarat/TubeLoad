@@ -70,6 +70,12 @@ namespace tubeLoadNative.Droid
             {
                 if (searchQuery == string.Empty)
                 {
+                    if (YoutubeHandler.MostPopularSongs == null)
+                    {
+                        progress.Show();
+                        await YoutubeHandler.Search();
+                    }
+
                     videos = YoutubeHandler.MostPopularSongs;
                 }
                 else
