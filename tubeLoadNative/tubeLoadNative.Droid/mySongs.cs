@@ -210,9 +210,15 @@ namespace tubeLoadNative.Droid
 
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
-                        SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
-
-                        UpdateList();
+                        if (edittext.Text != string.Empty)
+                        {
+                            SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
+                            UpdateList();
+                        }
+                        else
+                        {
+                            Toast.MakeText(Application.Context, "not valid name", ToastLength.Long).Show();
+                        }
                     });
 
                     alertRename.Show();
