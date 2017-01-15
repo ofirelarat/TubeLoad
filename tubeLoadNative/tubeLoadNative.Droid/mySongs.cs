@@ -189,8 +189,15 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.item_delete:
-                    SongsHandler.DeleteSong(selectedSong.Id);
-                    UpdateList();
+                    try
+                    {
+                        SongsHandler.DeleteSong(selectedSong.Id);
+                        UpdateList();
+                    }
+                    catch
+                    {
+                        Toast.MakeText(Application.Context, "could not delete this song", ToastLength.Long).Show();
+                    }
 
                     return true;
 
@@ -210,14 +217,21 @@ namespace tubeLoadNative.Droid
 
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
-                        if (edittext.Text != string.Empty)
+                        try
                         {
-                            SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
-                            UpdateList();
+                            if (edittext.Text != string.Empty || FileHandler.FindSong(edittext.Text) != null)
+                            {
+                                SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
+                                UpdateList();
+                            }
+                            else
+                            {
+                                Toast.MakeText(Application.Context, "not valid name", ToastLength.Long).Show();
+                            }
                         }
-                        else
+                        catch
                         {
-                            Toast.MakeText(Application.Context, "not valid name", ToastLength.Long).Show();
+                            Toast.MakeText(Application.Context, "could not rename this song", ToastLength.Long).Show();
                         }
                     });
 
