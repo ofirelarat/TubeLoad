@@ -22,8 +22,6 @@ namespace tubeLoadNative.Droid
             inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);       
         }
 
-       
-
         public override int Count
         {
             get

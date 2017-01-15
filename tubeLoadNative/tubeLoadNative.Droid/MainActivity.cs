@@ -29,6 +29,7 @@ namespace tubeLoadNative.Droid
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
             ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchTxt = FindViewById<EditText>(Resource.Id.searchEditText);
+            searchTxt.Text = string.Empty;
 
             searchBtn.Click += async delegate
             {
@@ -111,7 +112,7 @@ namespace tubeLoadNative.Droid
 
             foreach (var result in searchResults)
             {
-                Thumbnail logo = result.Snippet.Thumbnails.High;
+                Thumbnail logo = result.Snippet.Thumbnails.Medium;
                 Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(logo.Url);
                 images.Add(result.Id.VideoId, imageBitmap);
             }

@@ -6,7 +6,7 @@
     <ImageView
         android:src="@android:drawable/ic_menu_gallery"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="225dp"
         android:id="@+id/videoImg" />
     <TextView
         android:text="Large Text"
@@ -25,5 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/downloadBtn"
-        android:backgroundTint="#99b4d1ff" />
+        android:backgroundTint="#ff2980b9"
+        android:layout_marginTop="10dp" />
 </LinearLayout>

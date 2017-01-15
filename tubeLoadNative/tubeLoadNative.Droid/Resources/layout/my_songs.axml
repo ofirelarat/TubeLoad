@@ -20,7 +20,6 @@
             android:id="@+id/prevBtn"
             android:layout_weight="30"
             android:backgroundTint="#ff2980b9"
-            android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp" />
         <ImageButton
             android:src="@drawable/ic_media_play"
@@ -37,8 +36,7 @@
             android:id="@+id/nextBtn"
             android:layout_weight="30"
             android:backgroundTint="#ff2980b9"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+            android:layout_marginLeft="5dp" />
     </LinearLayout>
     <ListView
         android:minWidth="25px"

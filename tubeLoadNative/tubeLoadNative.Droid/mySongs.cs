@@ -204,7 +204,7 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.item_rename:
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
-                    edittext.Text = selectedSong.Name;
+                    edittext.Text = selectedSong.Name.Replace(".mp3","");
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);
 
