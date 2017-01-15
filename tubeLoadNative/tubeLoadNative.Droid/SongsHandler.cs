@@ -6,6 +6,7 @@ using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace tubeLoadNative.Droid
@@ -189,15 +190,37 @@ namespace tubeLoadNative.Droid
 
         public static void DeleteSong(string id)
         {
+            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
+            if (pos < CurrentSongIndex)
+            {
+                CurrentSongIndex--;
+            }
+
+            if (CurrentSong.Id == id)
+            {
+                CurrentSong = null;
+                CurrentSongIndex = -1;
+            }
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
             File.Delete(fileName);
             FileHandler.DeleteSong(id);
             Songs = FileHandler.ReadFile();
-            CurrentSong = null;
         }
 
         public static void RenameSong(string id, string newName)
         {
+            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
+            if (pos < CurrentSongIndex)
+            {
+                CurrentSongIndex--;
+            }
+
+            if (pos == CurrentSongIndex)
+            {
+                CurrentSongIndex = Songs.Count - 1;
+                CurrentSong = new Song() { Id = id,Name = newName};
+            }
+
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
 
             if (!newName.EndsWith(".mp3", System.StringComparison.OrdinalIgnoreCase))
@@ -208,7 +231,6 @@ namespace tubeLoadNative.Droid
             File.Move(fileName, FileHandler.PATH + newName);
             FileHandler.WriteToJsonFile(id, newName);
             Songs = FileHandler.ReadFile();
-            CurrentSongIndex = Songs.IndexOf(CurrentSong);
         }
 
         public static void CheckFilesExist()

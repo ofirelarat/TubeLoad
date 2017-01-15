@@ -25,10 +25,18 @@ namespace tubeLoadNative.Droid
         protected override async void OnResume()
         {
             base.OnResume();
-
-            await YoutubeHandler.Search();
+       
             //Task.Delay(3000);
-            StartActivity(new Intent(Application.Context, typeof(MainActivity)));
+            try
+            {
+                await YoutubeHandler.Search();
+                StartActivity(new Intent(Application.Context, typeof(MainActivity)));
+            }
+            catch
+            {
+                Toast.MakeText(Application.Context, "could not connect, please check your internet connection", ToastLength.Long).Show();
+                StartActivity(new Intent(Application.Context, typeof(mySongs)));
+            }
         }
     }
 }

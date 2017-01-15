@@ -11,6 +11,8 @@ using Android.Media;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using System.Threading;
+using System.IO;
+using Android.Text;
 
 namespace tubeLoadNative.Droid
 {
@@ -212,6 +214,7 @@ namespace tubeLoadNative.Droid
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
                     edittext.Text = selectedSong.Name.Replace(".mp3","");
+                    edittext.SetSingleLine();
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);
 
@@ -219,7 +222,7 @@ namespace tubeLoadNative.Droid
                     {
                         try
                         {
-                            if (edittext.Text != string.Empty || FileHandler.FindSong(edittext.Text) != null)
+                            if (edittext.Text != string.Empty && FileHandler.FindSong(edittext.Text) == null && !File.Exists(FileHandler.PATH + edittext.Text) && edittext.Text.Length <= 100)
                             {
                                 SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
                                 UpdateList();
