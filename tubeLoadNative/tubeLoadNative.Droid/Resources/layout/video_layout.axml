@@ -13,13 +13,17 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/videoName" />
+        android:id="@+id/videoName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
     <TextView
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/channelName" />
+        android:id="@+id/channelName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
     <Button
         android:text="Download"
         android:layout_width="match_parent"

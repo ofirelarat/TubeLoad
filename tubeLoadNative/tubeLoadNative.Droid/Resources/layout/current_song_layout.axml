@@ -28,7 +28,9 @@
             android:scrollHorizontally="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:fadingEdge="none" />
+            android:fadingEdge="none"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
     </ScrollView>
     <Space
         android:layout_width="match_parent"
