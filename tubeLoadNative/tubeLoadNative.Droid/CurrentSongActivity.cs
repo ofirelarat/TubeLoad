@@ -29,7 +29,7 @@ namespace tubeLoadNative.Droid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);    
+            base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.current_song_layout);
 
 
@@ -97,7 +97,7 @@ namespace tubeLoadNative.Droid
                 if (e.FromUser)
                 {
                     SongsHandler.SeekTo(e.Progress);
-                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".",":");
+                    songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
                 }
             };
         }
@@ -163,7 +163,7 @@ namespace tubeLoadNative.Droid
             }
 
             songTitle.Text = title;
-            songLength.Text = length.Replace(".",":");
+            songLength.Text = length.Replace(".", ":");
 
             Drawable picture = SongsHandler.GetSongPicture(songId);
             if (picture != null)
@@ -193,7 +193,10 @@ namespace tubeLoadNative.Droid
                 {
                     songPosition.Text = TimeSpan.FromMilliseconds(SongsHandler.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message + '\n' + ex.StackTrace);
+                }
             }
         }
 
