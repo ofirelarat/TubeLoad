@@ -11,6 +11,8 @@ using Android.Media;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using System.Threading;
+using System.IO;
+using Android.Text;
 
 namespace tubeLoadNative.Droid
 {
@@ -189,8 +191,15 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.item_delete:
-                    SongsHandler.DeleteSong(selectedSong.Id);
-                    UpdateList();
+                    try
+                    {
+                        SongsHandler.DeleteSong(selectedSong.Id);
+                        UpdateList();
+                    }
+                    catch
+                    {
+                        Toast.MakeText(Application.Context, "could not delete this song", ToastLength.Long).Show();
+                    }
 
                     return true;
 
@@ -204,15 +213,29 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.item_rename:
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
-                    edittext.Text = selectedSong.Name;
+                    edittext.Text = selectedSong.Name.Replace(".mp3","");
+                    edittext.SetSingleLine();
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);
 
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
-                        SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
-
-                        UpdateList();
+                        try
+                        {
+                            if (edittext.Text != string.Empty && FileHandler.FindSong(edittext.Text) == null && !File.Exists(FileHandler.PATH + edittext.Text) && edittext.Text.Length <= 100)
+                            {
+                                SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
+                                UpdateList();
+                            }
+                            else
+                            {
+                                Toast.MakeText(Application.Context, "not valid name", ToastLength.Long).Show();
+                            }
+                        }
+                        catch
+                        {
+                            Toast.MakeText(Application.Context, "could not rename this song", ToastLength.Long).Show();
+                        }
                     });
 
                     alertRename.Show();

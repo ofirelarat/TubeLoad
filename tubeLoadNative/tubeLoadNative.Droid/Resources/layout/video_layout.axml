@@ -6,24 +6,29 @@
     <ImageView
         android:src="@android:drawable/ic_menu_gallery"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="225dp"
         android:id="@+id/videoImg" />
     <TextView
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/videoName" />
+        android:id="@+id/videoName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
     <TextView
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/channelName" />
+        android:id="@+id/channelName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
     <Button
         android:text="Download"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/downloadBtn"
-        android:backgroundTint="#99b4d1ff" />
+        android:backgroundTint="#ff2980b9"
+        android:layout_marginTop="10dp" />
 </LinearLayout>

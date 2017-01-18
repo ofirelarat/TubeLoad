@@ -13,7 +13,7 @@ using Android.Graphics;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad", MainLauncher = false, Icon = "@drawable/icon")]
+    [Activity(Label = "TubeLoad", MainLauncher = false, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance, Icon = "@drawable/icon")]
     public class MainActivity : Android.App.Activity
     {
         private static List<SearchResult> videos;
@@ -21,7 +21,7 @@ namespace tubeLoadNative.Droid
         private ListView myVideosListView;
         private EditText searchTxt;
 
-        protected override async void OnCreate(Bundle savedInstanceState)
+        protected async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
@@ -29,6 +29,7 @@ namespace tubeLoadNative.Droid
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
             ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchTxt = FindViewById<EditText>(Resource.Id.searchEditText);
+            searchTxt.Text = string.Empty;
 
             searchBtn.Click += async delegate
             {
@@ -111,7 +112,7 @@ namespace tubeLoadNative.Droid
 
             foreach (var result in searchResults)
             {
-                Thumbnail logo = result.Snippet.Thumbnails.High;
+                Thumbnail logo = result.Snippet.Thumbnails.Medium;
                 Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(logo.Url);
                 images.Add(result.Id.VideoId, imageBitmap);
             }
