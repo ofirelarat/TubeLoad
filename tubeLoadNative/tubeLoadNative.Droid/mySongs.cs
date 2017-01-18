@@ -11,6 +11,8 @@ using Android.Media;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using System.Threading;
+using System.IO;
+using Android.Text;
 
 namespace tubeLoadNative.Droid
 {
@@ -36,12 +38,9 @@ namespace tubeLoadNative.Droid
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
 
-            string videoId = Intent.GetStringExtra("videoId");
-
-            if (videoId != null)
-            {
-                Play(videoId);
-            }
+            playBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            nextBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            prevBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
 
             SongsHandler.CheckFilesExist();
             UpdateList();
@@ -72,6 +71,15 @@ namespace tubeLoadNative.Droid
 
             SongsHandler.OnSongSaved += (sender, e) => UpdateList();
 
+            SongsHandler.OnSongPlayedSetBackground += delegate
+            {
+                int index = songsListView.FirstVisiblePosition;
+                View v = songsListView.GetChildAt(0);
+                int top = (v == null) ? 0 : v.Top - songsListView.ListPaddingTop;
+                UpdateList();
+                songsListView.SetSelectionFromTop(index,top);
+            }; 
+
             if (SongsHandler.IsPlaying)
             {
                 playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
@@ -81,6 +89,7 @@ namespace tubeLoadNative.Droid
             {
                 playBtn.Click += Start;
             }
+   
 
             nextBtn.Click += delegate
             {
@@ -105,7 +114,8 @@ namespace tubeLoadNative.Droid
 
             if (songs.Count > 0)
             {
-                ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
+                //ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
+                BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
                 songsListView.Adapter = adapter;
             }
         }
@@ -181,15 +191,21 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.item_delete:
-                    SongsHandler.DeleteSong(selectedSong.Id);
-                    UpdateList();
+                    try
+                    {
+                        SongsHandler.DeleteSong(selectedSong.Id);
+                        UpdateList();
+                    }
+                    catch
+                    {
+                        Toast.MakeText(Application.Context, "could not delete this song", ToastLength.Long).Show();
+                    }
 
                     return true;
 
                 case Resource.Id.item_play:
                     Play(selectedSong.Id);
                     Intent intent = new Intent(this, typeof(CurrentSongActivity));
-                    intent.PutExtra("currentSongId", selectedSong.Id);
                     StartActivity(intent);
 
                     return true;
@@ -197,15 +213,29 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.item_rename:
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
-                    edittext.Text = selectedSong.Name;
+                    edittext.Text = selectedSong.Name.Replace(".mp3","");
+                    edittext.SetSingleLine();
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);
 
                     alertRename.SetPositiveButton("ok", (s, e) =>
                     {
-                        SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
-
-                        UpdateList();
+                        try
+                        {
+                            if (edittext.Text != string.Empty && FileHandler.FindSong(edittext.Text) == null && !File.Exists(FileHandler.PATH + edittext.Text) && edittext.Text.Length <= 100)
+                            {
+                                SongsHandler.RenameSong(selectedSong.Id, edittext.Text);
+                                UpdateList();
+                            }
+                            else
+                            {
+                                Toast.MakeText(Application.Context, "not valid name", ToastLength.Long).Show();
+                            }
+                        }
+                        catch
+                        {
+                            Toast.MakeText(Application.Context, "could not rename this song", ToastLength.Long).Show();
+                        }
                     });
 
                     alertRename.Show();
@@ -300,10 +330,9 @@ namespace tubeLoadNative.Droid
                     return true;
 
                 case Resource.Id.currentSong:
-                    if (SongsHandler.IsPlaying)
+                    if (SongsHandler.CurrentSong != null)
                     {
                         intent = new Intent(this, typeof(CurrentSongActivity));
-                        intent.PutExtra("currentSongId", SongsHandler.CurrentSong.Id);
                         StartActivity(intent);
                     }
                     else

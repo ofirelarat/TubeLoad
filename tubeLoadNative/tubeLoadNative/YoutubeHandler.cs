@@ -9,26 +9,37 @@ using Google.Apis.Services;
 using System.Net;
 using System.Net.Http;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace tubeLoadNative
 {
     public static class YoutubeHandler
     {
-        public static List<SearchResult> Search(string query)
+        static YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = "AIzaSyD99DDTmpBI79gKReSgYj001I7IK2jBGao",
-                ApplicationName = "TubeLoad"
-            });
+            ApiKey = "AIzaSyD99DDTmpBI79gKReSgYj001I7IK2jBGao",
+            ApplicationName = "TubeLoad"
+        });
 
+        private static SearchResource.ListRequest youtubeSearcher;
 
-            var searchListRequest = youtubeService.Search.List("snippet");
-            searchListRequest.Q = query; // Replace with your search term.
-            searchListRequest.MaxResults = 10;
+        public static List<SearchResult> MostPopularSongs { get; private set; }
+
+        static YoutubeHandler()
+        {
+            youtubeSearcher = youtubeService.Search.List("snippet");
+            youtubeSearcher.MaxResults = 10;
+            youtubeSearcher.VideoCategoryId = "10";
+            youtubeSearcher.Type = "video";
+        }
+
+        public static async Task<List<SearchResult>> Search(string query)
+        {
+            youtubeSearcher.Q = query;
 
             // Call the search.list method to retrieve results matching the specified query term.
-            var searchListResponse = searchListRequest.Execute();
+            var searchListResponse = await youtubeSearcher.ExecuteAsync();
 
             List<SearchResult> Videos = new List<SearchResult>();
             List<string> channels = new List<string>();
@@ -51,9 +62,56 @@ namespace tubeLoadNative
                     case "youtube#playlist":
                         playlists.Add(string.Format("{0} ({1})", searchResult.Snippet.Title, searchResult.Id.PlaylistId));
                         break;
+                    default:
+                        break;
                 }
             }
+
             return Videos;
+        }
+
+        // Gets most popular songs
+        public static async Task<List<SearchResult>> Search()
+        {
+            List<SearchResult> songs = new List<SearchResult>();
+            HttpClient client = new HttpClient();
+
+            HttpResponseMessage res = await client.GetAsync("https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=10&regionCode=US&videoCategoryId=10&key=AIzaSyD99DDTmpBI79gKReSgYj001I7IK2jBGao");
+
+            if (res.StatusCode == HttpStatusCode.OK)
+            {
+                var jsonString = res.Content.ReadAsStringAsync();
+                jsonString.Wait();
+                JObject json = JObject.Parse(jsonString.Result);
+                var parser = json["items"].Children().ToList();
+
+                // Getting youtube most popular songs and converting them to SearchResult class
+                List<YoutubeOutput> outputSongs = parser.Select((x) => JsonConvert.DeserializeObject<YoutubeOutput>(x.ToString())).ToList();
+                songs = ConvertYoutubeOutputToSearchResults(outputSongs);
+            }
+
+            MostPopularSongs = songs;
+
+            return songs;
+        }
+
+        // Converting the YoutubeOutput class we have created to youtube's API SearchResult class
+        public static List<SearchResult> ConvertYoutubeOutputToSearchResults(List<YoutubeOutput> youtubeOutput)
+        {
+            return new List<SearchResult>(youtubeOutput.Select((result) => new SearchResult()
+            {
+                ETag = result.etag,
+                Id = new ResourceId()
+                {
+                    ETag = result.etag,
+                    ChannelId = result.snippet.ChannelId,
+                    Kind = result.kind,
+                    PlaylistId = string.Empty,
+                    VideoId = result.id
+                },
+                Kind = result.kind,
+                Snippet = result.snippet
+            }));
         }
 
         public static async Task<HttpResponseMessage> downloadStream(string videoId)
@@ -77,7 +135,6 @@ namespace tubeLoadNative
                     return response;
                 }
                 
-                // TODO: change the exception message to this await response.Content.ReadAsStringAsync() when the API is fixed
                 throw new Exception("This video has been blocked");
             }
         }

@@ -18,6 +18,8 @@ namespace tubeLoadNative.Droid.Resources
         private Button downloadBtn;
         private string path;
         private TextView videoName;
+        private ImageView videoImg;
+        private TextView channelName;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -27,46 +29,19 @@ namespace tubeLoadNative.Droid.Resources
             video = MainActivity.video;
 
             videoName = FindViewById<TextView>(Resource.Id.videoName);
-            TextView channelName = FindViewById<TextView>(Resource.Id.channelName);
-            ImageView videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
+            channelName = FindViewById<TextView>(Resource.Id.channelName);
+            videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
 
-            if (video.Id.VideoId != null)
-            {
-                Thumbnail logo = video.Snippet.Thumbnails.High;
-                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
-                videoImg.SetImageBitmap(imageBitmap);
+            UpdateView(video);    
+        }
 
-                videoImg.Click += delegate
-                {
-                    var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.Id.VideoId);
-                    var intent = new Intent(Intent.ActionView, uri);
-                    StartActivity(intent);
-                };
+        protected override void OnResume()
+        {
+            base.OnResume();
 
-                videoName.Text = video.Snippet.Title;
-                channelName.Text = video.Snippet.ChannelTitle;
-
-                SongsHandler.CheckFilesExist();
-                path = FileHandler.GetSongNameById(video.Id.VideoId);
-
-                if (path != null)
-                {
-                    downloadBtn.Text = "Play";
-                    downloadBtn.Click += OnPlayClick;
-                }
-                else
-                {
-                    downloadBtn.Text = "Download";
-                    downloadBtn.Click += OnDownloadClick;
-                }
-            }
-            else
-            {
-                Toast.MakeText(this, "Error - Data not available", ToastLength.Long).Show();
-                Intent intent = new Intent(this, typeof(MainActivity));
-                StartActivity(intent);
-            }
+            video = MainActivity.video;
+            UpdateView(video);
         }
 
         private async void OnDownloadClick(object sender, EventArgs e)
@@ -115,9 +90,50 @@ namespace tubeLoadNative.Droid.Resources
 
         private void OnPlayClick(object sender, EventArgs e)
         {
+            SongsHandler.Play(video.Id.VideoId);
             Intent intent = new Intent(this, typeof(mySongs));
-            intent.PutExtra("videoId", video.Id.VideoId);
             StartActivity(intent);
+        }
+
+        private void UpdateView(SearchResult video)
+        {
+            if (video != null)
+            {
+                Thumbnail logo = video.Snippet.Thumbnails.High;
+                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
+                videoImg.SetImageBitmap(imageBitmap);
+
+                videoImg.Click += delegate
+                {
+                    var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.Id.VideoId);
+                    var intent = new Intent(Intent.ActionView, uri);
+                    StartActivity(intent);
+                };
+
+                videoName.Text = video.Snippet.Title;
+                channelName.Text = video.Snippet.ChannelTitle;
+                downloadBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+
+                SongsHandler.CheckFilesExist();
+                path = FileHandler.GetSongNameById(video.Id.VideoId);
+
+                if (path != null)
+                {
+                    downloadBtn.Text = "Play";
+                    downloadBtn.Click += OnPlayClick;
+                }
+                else
+                {
+                    downloadBtn.Text = "Download";
+                    downloadBtn.Click += OnDownloadClick;
+                }
+            }
+            else
+            {
+                Toast.MakeText(this, "Error - Data not available", ToastLength.Long).Show();
+                Intent intent = new Intent(this, typeof(MainActivity));
+                StartActivity(intent);
+            }
         }
         
         public override bool OnCreateOptionsMenu(IMenu menu)
