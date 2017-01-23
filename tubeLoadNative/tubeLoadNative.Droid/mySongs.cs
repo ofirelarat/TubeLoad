@@ -150,6 +150,16 @@ namespace tubeLoadNative.Droid
             SongsHandler.CheckFilesExist();
             UpdateList();
 
+            if (SongsHandler.IsPlaying)
+            {
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+                playBtn.Click += Pause;
+            }
+            else
+            {
+                playBtn.Click += Start;
+            }
+
             base.OnResume();
         }
 
