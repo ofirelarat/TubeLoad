@@ -82,7 +82,7 @@ namespace tubeLoadNative.Droid
 
             if (SongsHandler.IsPlaying)
             {
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
                 playBtn.Click += Pause;
             }
             else
@@ -93,7 +93,7 @@ namespace tubeLoadNative.Droid
 
             nextBtn.Click += delegate
             {
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
                 playBtn.Click -= Start;
                 playBtn.Click += Pause;
                 SongsHandler.PlayNext();
@@ -101,7 +101,7 @@ namespace tubeLoadNative.Droid
 
             prevBtn.Click += delegate
             {
-                playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
                 playBtn.Click -= Start;
                 playBtn.Click += Pause;
                 SongsHandler.PlayPrev();
@@ -125,7 +125,7 @@ namespace tubeLoadNative.Droid
             SongsHandler.Start();
             playBtn.Click -= Start;
             playBtn.Click += Pause;
-            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
         }
 
         private void Pause(object sender, EventArgs e)
@@ -133,7 +133,7 @@ namespace tubeLoadNative.Droid
             SongsHandler.Pause();
             playBtn.Click -= Pause;
             playBtn.Click += Start;
-            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_play));
+            playBtn.SetImageResource(Resource.Drawable.ic_media_play);
         }
 
         private void Play(string id)
@@ -142,7 +142,7 @@ namespace tubeLoadNative.Droid
             SongsHandler.Play(id);
             playBtn.Click -= Start;
             playBtn.Click += Pause;
-            playBtn.SetImageDrawable(GetDrawable(Resource.Drawable.ic_media_pause));
+            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
         }
 
         protected override void OnResume()

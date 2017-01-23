@@ -80,10 +80,10 @@ namespace tubeLoadNative.Droid
         {
             mediaPlayer.Reset();
             string fileName = FileHandler.PATH + songName;
-            mediaPlayer.SetDataSource(fileName);
 
             try
             {
+                mediaPlayer.SetDataSource(fileName);
                 mediaPlayer.Prepare();
                 mediaPlayer.Start();
                     
