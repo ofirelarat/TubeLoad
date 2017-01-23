@@ -11,7 +11,7 @@ using System.Net.Http;
 
 namespace tubeLoadNative.Droid.Resources
 {
-    [Activity(Label = "TubeLoad")]
+    [Activity(Label = "TubeLoad" ,NoHistory = true)]
     public class VideoLayout : Android.App.Activity
     {
         private SearchResult video;
@@ -34,14 +34,6 @@ namespace tubeLoadNative.Droid.Resources
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
 
             UpdateView(video);    
-        }
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-
-            video = MainActivity.video;
-            UpdateView(video);
         }
 
         private async void OnDownloadClick(object sender, EventArgs e)
@@ -156,8 +148,15 @@ namespace tubeLoadNative.Droid.Resources
                     return true;
 
                 case Resource.Id.mySong:
-                    intent = new Intent(this, typeof(mySongs));
-                    StartActivity(intent);
+                    if (SongsHandler.Songs.Count > 0)
+                    {
+                        intent = new Intent(this, typeof(mySongs));
+                        StartActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "first download some songs", ToastLength.Long).Show();
+                    }
                     return true;
 
                 default:

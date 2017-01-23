@@ -137,8 +137,15 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.mySong:
-                    intent = new Intent(this, typeof(mySongs));
-                    StartActivity(intent);
+                    if (SongsHandler.Songs.Count > 0)
+                    {
+                        intent = new Intent(this, typeof(mySongs));
+                        StartActivity(intent);
+                    }
+                    else
+                    {
+                        Toast.MakeText(this, "first download some songs", ToastLength.Long).Show();
+                    }
                     return true;
 
                 case Resource.Id.currentSong:
