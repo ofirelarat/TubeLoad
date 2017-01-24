@@ -63,15 +63,16 @@ namespace tubeLoadNative.Droid
         }
 
         // Start the current song
-        public static void Start()
+        public static bool Start()
         {
             if (CurrentSongIndex == -1)
             {
-                PlayNext();
+                return PlayNext();
             }
             else
             {
                 mediaPlayer.Start();
+                return true;
             }
         }
 
@@ -108,22 +109,36 @@ namespace tubeLoadNative.Droid
             Start(fileName);
         }
 
-        public static void PlayNext()
+        public static bool PlayNext()
         {
-            CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
-            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            if (Songs.Count > 0)
+            {
+                CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
+                string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
 
-            Start(fileName);
+                Start(fileName);
+
+                return true;
+            }
+
+            return false;
         }
 
-        public static void PlayPrev()
+        public static bool PlayPrev()
         {
-            // If no song has played yet
-            CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
-            CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
-            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
+            if (Songs.Count > 0)
+            {
+                // If no song has played yet
+                CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
+                CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
+                string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
 
-            Start(fileName);
+                Start(fileName);
+
+                return true;
+            }
+
+            return false;
         }
 
         public static void Pause()
@@ -191,12 +206,13 @@ namespace tubeLoadNative.Droid
         public static void DeleteSong(string id)
         {
             int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
+
             if (pos < CurrentSongIndex)
             {
                 CurrentSongIndex--;
             }
 
-            if (CurrentSong.Id == id)
+            if (CurrentSong != null && CurrentSong.Id == id)
             {
                 CurrentSong = null;
                 CurrentSongIndex = -1;
@@ -210,15 +226,22 @@ namespace tubeLoadNative.Droid
         public static void RenameSong(string id, string newName)
         {
             int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-            if (pos < CurrentSongIndex)
+
+            string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
+
+            foreach (string c in forbiddenChars)
             {
-                CurrentSongIndex--;
+                newName = newName.Replace(c, string.Empty);
             }
 
             if (pos == CurrentSongIndex)
             {
                 CurrentSongIndex = Songs.Count - 1;
                 CurrentSong = new Song() { Id = id,Name = newName};
+            }
+            else if(pos < CurrentSongIndex)
+            {
+                CurrentSongIndex--;
             }
 
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);

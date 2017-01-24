@@ -16,7 +16,7 @@ using Android.Text;
 
 namespace tubeLoadNative.Droid
 {
-    [Activity(Label = "TubeLoad",LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad", LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
     public class mySongs : Activity
     {
         private ListView songsListView;
@@ -65,8 +65,11 @@ namespace tubeLoadNative.Droid
                 {
                     seekThread.Abort();
                 }
-               
-                SongsHandler.PlayNext();
+
+                if (!SongsHandler.PlayNext())
+                {
+                    playBtn.SetImageResource(Resource.Drawable.ic_media_play);
+                }
             };
 
             SongsHandler.OnSongSaved += (sender, e) => UpdateList();
@@ -77,8 +80,8 @@ namespace tubeLoadNative.Droid
                 View v = songsListView.GetChildAt(0);
                 int top = (v == null) ? 0 : v.Top - songsListView.ListPaddingTop;
                 UpdateList();
-                songsListView.SetSelectionFromTop(index,top);
-            }; 
+                songsListView.SetSelectionFromTop(index, top);
+            };
 
             if (SongsHandler.IsPlaying)
             {
@@ -89,22 +92,26 @@ namespace tubeLoadNative.Droid
             {
                 playBtn.Click += Start;
             }
-   
+
 
             nextBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
-                SongsHandler.PlayNext();
+                if (SongsHandler.PlayNext())
+                {
+                    playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+                    playBtn.Click -= Start;
+                    playBtn.Click += Pause;
+                }
             };
 
             prevBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
-                SongsHandler.PlayPrev();
+                if (SongsHandler.PlayPrev())
+                {
+                    playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+                    playBtn.Click -= Start;
+                    playBtn.Click += Pause;
+                }
             };
         }
 
@@ -112,20 +119,19 @@ namespace tubeLoadNative.Droid
         {
             songs = SongsHandler.Songs;
 
-            if (songs.Count > 0)
-            {
-                //ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
-                BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
-                songsListView.Adapter = adapter;
-            }
+            //ArrayAdapter<string> adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, songs.Select((x) => x.Name.Replace(".mp3",string.Empty)).ToArray());
+            BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
+            songsListView.Adapter = adapter;
         }
 
         private void Start(object sender, EventArgs e)
         {
-            SongsHandler.Start();
-            playBtn.Click -= Start;
-            playBtn.Click += Pause;
-            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            if (SongsHandler.Start())
+            {
+                playBtn.Click -= Start;
+                playBtn.Click += Pause;
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            }
         }
 
         private void Pause(object sender, EventArgs e)
@@ -169,7 +175,7 @@ namespace tubeLoadNative.Droid
             {
                 var info = (AdapterView.AdapterContextMenuInfo)menuInfo;
                 selectedSong = songs[info.Position];
-                
+
                 MediaMetadataRetriever metadata = SongsHandler.GetMetadata(selectedSong.Id);
                 string title = metadata.ExtractMetadata(MetadataKey.Title);
                 if (title == null)
@@ -189,7 +195,7 @@ namespace tubeLoadNative.Droid
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
 
-                if (SongsHandler.IsPlaying && selectedSong.Id == SongsHandler.CurrentSong.Id)
+                if (SongsHandler.CurrentSong != null && SongsHandler.IsPlaying && selectedSong.Id == SongsHandler.CurrentSong.Id)
                 {
                     menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
@@ -223,7 +229,7 @@ namespace tubeLoadNative.Droid
                 case Resource.Id.item_rename:
                     AlertDialog.Builder alertRename = new AlertDialog.Builder(this);
                     EditText edittext = new EditText(this);
-                    edittext.Text = selectedSong.Name.Replace(".mp3","");
+                    edittext.Text = selectedSong.Name.Replace(".mp3", "");
                     edittext.SetSingleLine();
                     alertRename.SetTitle("Rename");
                     alertRename.SetView(edittext);

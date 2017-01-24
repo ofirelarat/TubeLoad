@@ -43,7 +43,8 @@ namespace tubeLoadNative.Droid.Resources
             string FileName = video.Snippet.Title + ".mp3";
 
             // Erasing illegal charachters from file name
-            string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">"};
+            string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
+
             foreach (string c in forbiddenChars)
             {
                 FileName = FileName.Replace(c, string.Empty);
