@@ -93,18 +93,22 @@ namespace tubeLoadNative.Droid
 
             nextBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
-                SongsHandler.PlayNext();
+                if (SongsHandler.PlayNext())
+                {
+                    playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+                    playBtn.Click -= Start;
+                    playBtn.Click += Pause;
+                }
             };
 
             prevBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
-                SongsHandler.PlayPrev();
+                if (SongsHandler.PlayPrev())
+                {
+                    playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+                    playBtn.Click -= Start;
+                    playBtn.Click += Pause;
+                }
             };
         }
 
@@ -122,10 +126,12 @@ namespace tubeLoadNative.Droid
 
         private void Start(object sender, EventArgs e)
         {
-            SongsHandler.Start();
-            playBtn.Click -= Start;
-            playBtn.Click += Pause;
-            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            if (SongsHandler.Start())
+            {
+                playBtn.Click -= Start;
+                playBtn.Click += Pause;
+                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            }
         }
 
         private void Pause(object sender, EventArgs e)
@@ -189,7 +195,7 @@ namespace tubeLoadNative.Droid
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.popup_menu, menu);
 
-                if (SongsHandler.IsPlaying && selectedSong.Id == SongsHandler.CurrentSong.Id)
+                if (SongsHandler.CurrentSong != null && SongsHandler.IsPlaying && selectedSong.Id == SongsHandler.CurrentSong.Id)
                 {
                     menu.FindItem(Resource.Id.seek_bar).SetVisible(true);
                 }
