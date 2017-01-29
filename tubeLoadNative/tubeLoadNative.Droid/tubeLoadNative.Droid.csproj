@@ -109,19 +109,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
-    <Compile Include="CurrentSongActivity.cs" />
+    <Compile Include="Activities\CurrentSongActivity.cs" />
     <Compile Include="NotificationHandler.cs" />
-    <Compile Include="SongsAdapter.cs" />
-    <Compile Include="VideosAdapter.cs" />
+    <Compile Include="Adapters\SongsAdapter.cs" />
+    <Compile Include="Adapters\VideosAdapter.cs" />
     <Compile Include="FileHandler.cs" />
-    <Compile Include="MainActivity.cs" />
-    <Compile Include="mySongs.cs" />
+    <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Activities\mySongs.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
     <Compile Include="SongsHandler.cs" />
-    <Compile Include="SplashActivity.cs" />
-    <Compile Include="VideoLayout.cs" />
+    <Compile Include="Activities\SplashActivity.cs" />
+    <Compile Include="Activities\VideoLayout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
