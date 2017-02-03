@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <item android:id="@+id/mySong"
+        android:title="My Songs"></item>
+  
+  <item android:id="@+id/addSong"
+      android:title="Add Songs"></item>
+  
+  <item android:id="@+id/currentSong"
+     android:title="Current Songs"
+     android:visible="false"></item>
+</menu>

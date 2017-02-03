@@ -1,21 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Java.Lang;
-using Android.Graphics.Drawables;
+using tubeLoadNative.Droid.Utils;
 
 namespace tubeLoadNative.Droid
 {
     class SongsAdapter : BaseAdapter
     {
+        AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
+
         private Android.App.Activity context;
         private string[] songsNames;
         private static LayoutInflater inflater = null;
@@ -49,13 +42,13 @@ namespace tubeLoadNative.Droid
         {
             if (convertView == null)
             {
-                convertView = inflater.Inflate(Resource.Layout.song_adapter, null);
+                convertView = inflater.Inflate(Resource.Layout.adapter_songs, null);
             }
 
             TextView songName = convertView.FindViewById<TextView>(Resource.Id.songName);
             songName.Text = songsNames[position];
 
-            if (position == SongsHandler.CurrentSongIndex)
+            if (mediaPlayer.Songs[position] == mediaPlayer.CurrentSong)
             {
                 convertView.SetBackgroundColor(new Android.Graphics.Color(52, 152, 219));
             }
