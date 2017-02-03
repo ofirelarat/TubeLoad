@@ -5,26 +5,28 @@ using System.Collections.Generic;
 using Google.Apis.YouTube.v3.Data;
 using Android.Widget;
 using Android.Content;
-using tubeLoadNative.Droid.Resources;
 using Android.Views;
 using Android.Views.InputMethods;
 using System.Threading.Tasks;
 using Android.Graphics;
+using tubeLoadNative.Droid.Utils;
 
-namespace tubeLoadNative.Droid
+namespace tubeLoadNative.Droid.Activities
 {
     [Activity(Label = "TubeLoad", MainLauncher = false, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance, Icon = "@drawable/icon")]
-    public class MainActivity : Android.App.Activity
+    public class SearchSongs : Android.App.Activity
     {
-        private static List<SearchResult> videos;
+        AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
+
+        static List<SearchResult> videos;
         public static SearchResult video;
-        private ListView myVideosListView;
-        private EditText searchTxt;
+        ListView myVideosListView;
+        EditText searchTxt;
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.Main);
+            SetContentView(Resource.Layout.activity_search_songs);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
             ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
@@ -54,14 +56,14 @@ namespace tubeLoadNative.Droid
             myVideosListView.ItemClick += (sender, e) =>
             {
                 video = videos[e.Position];
-                Intent intent = new Intent(this, typeof(VideoLayout));
+                Intent intent = new Intent(this, typeof(DownloadSong));
                 StartActivity(intent);
             };
 
             await UpdateVideos(string.Empty);
         }
 
-        private async Task UpdateVideos(string searchQuery)
+        async Task UpdateVideos(string searchQuery)
         {
             ProgressDialog progress = new ProgressDialog(this);
             progress.SetMessage("loading...");
@@ -89,7 +91,7 @@ namespace tubeLoadNative.Droid
                 if (videos != null)
                 {
                     Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
-                    var adapter = new VideosAdapter(this, videos.ToArray(),images);
+                    var adapter = new VideosAdapter(this, videos.ToArray(), images);
                     myVideosListView.Adapter = adapter;
                 }
                 else
@@ -99,14 +101,14 @@ namespace tubeLoadNative.Droid
 
                 progress.Dismiss();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 progress.Dismiss();
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
         }
 
-        private async Task<Dictionary<string,Bitmap>> LoadImages(SearchResult[] searchResults)
+        async Task<Dictionary<string, Bitmap>> LoadImages(SearchResult[] searchResults)
         {
             Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
 
@@ -123,7 +125,7 @@ namespace tubeLoadNative.Droid
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             var inflater = MenuInflater;
-            inflater.Inflate(Resource.Menu.menu_details, menu);
+            inflater.Inflate(Resource.Menu.main_menu, menu);
             menu.FindItem(Resource.Id.addSong).SetVisible(false);
             menu.FindItem(Resource.Id.currentSong).SetVisible(true);
 
@@ -137,9 +139,9 @@ namespace tubeLoadNative.Droid
             switch (item.ItemId)
             {
                 case Resource.Id.mySong:
-                    if (SongsHandler.Songs.Count > 0)
+                    if (mediaPlayer.Songs.Count > 0)
                     {
-                        intent = new Intent(this, typeof(mySongs));
+                        intent = new Intent(this, typeof(SongsPlayer));
                         StartActivity(intent);
                     }
                     else
@@ -149,9 +151,9 @@ namespace tubeLoadNative.Droid
                     return true;
 
                 case Resource.Id.currentSong:
-                    if (SongsHandler.CurrentSong != null)
+                    if (mediaPlayer.CurrentSong != null)
                     {
-                        intent = new Intent(this, typeof(CurrentSongActivity));
+                        intent = new Intent(this, typeof(CurrentSong));
                         StartActivity(intent);
                     }
                     else

@@ -44,7 +44,7 @@ namespace tubeLoadNative.Droid
         {
             if (convertView == null)
             {
-                convertView = inflater.Inflate(Resource.Layout.custom_row, null);
+                convertView = inflater.Inflate(Resource.Layout.adapter_videos, null);
             }
 
             TextView videoName = convertView.FindViewById<TextView>(Resource.Id.videoName);

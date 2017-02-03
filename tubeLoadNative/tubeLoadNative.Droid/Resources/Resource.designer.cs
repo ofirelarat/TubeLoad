@@ -84,14 +84,14 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f070018
 			public const int addSong = 2131165208;
 			
-			// aapt resource value: 0x7f070015
-			public const int channelName = 2131165205;
+			// aapt resource value: 0x7f07000f
+			public const int channelName = 2131165199;
 			
 			// aapt resource value: 0x7f070019
 			public const int currentSong = 2131165209;
 			
-			// aapt resource value: 0x7f070016
-			public const int downloadBtn = 2131165206;
+			// aapt resource value: 0x7f070010
+			public const int downloadBtn = 2131165200;
 			
 			// aapt resource value: 0x7f07001a
 			public const int item_delete = 2131165210;
@@ -108,8 +108,8 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f070005
 			public const int linearLayout2 = 2131165189;
 			
-			// aapt resource value: 0x7f07000f
-			public const int linearLayout3 = 2131165199;
+			// aapt resource value: 0x7f070015
+			public const int linearLayout3 = 2131165205;
 			
 			// aapt resource value: 0x7f070017
 			public const int mySong = 2131165207;
@@ -162,8 +162,8 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f070003
 			public const int space3 = 2131165187;
 			
-			// aapt resource value: 0x7f070010
-			public const int videoChannelName = 2131165200;
+			// aapt resource value: 0x7f070016
+			public const int videoChannelName = 2131165206;
 			
 			// aapt resource value: 0x7f07000d
 			public const int videoImg = 2131165197;
@@ -185,22 +185,22 @@ namespace tubeLoadNative.Droid
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int current_song_layout = 2130903040;
+			public const int activity_current_song = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int custom_row = 2130903041;
+			public const int activity_download_song = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int Main = 2130903042;
+			public const int activity_search_songs = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int my_songs = 2130903043;
+			public const int activity_songs_player = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int song_adapter = 2130903044;
+			public const int adapter_songs = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int video_layout = 2130903045;
+			public const int adapter_videos = 2130903045;
 			
 			static Layout()
 			{
@@ -216,10 +216,10 @@ namespace tubeLoadNative.Droid
 		{
 			
 			// aapt resource value: 0x7f060000
-			public const int menu_details = 2131099648;
+			public const int main_menu = 2131099648;
 			
 			// aapt resource value: 0x7f060001
-			public const int popup_menu = 2131099649;
+			public const int song_actions_menu = 2131099649;
 			
 			static Menu()
 			{

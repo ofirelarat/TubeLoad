@@ -10,18 +10,29 @@ namespace tubeLoadNative.Abstracts
 {
     public abstract class SongsManager
     {
+        #region Data Members
+
+        protected int currentSongIndex;
         protected IMediaPlayer mediaPlayer;
+
+        #endregion
+
+        #region Events
 
         public event EventHandler Completing;
         public event EventHandler Starting;
         public event EventHandler Saving;
 
-        protected int currentSongIndex;
+        #endregion
+
+        #region Ctor
 
         protected SongsManager()
         {
-           currentSongIndex = -1;
+            currentSongIndex = -1;
         }
+
+        #endregion
 
         #region Props
 
@@ -29,7 +40,12 @@ namespace tubeLoadNative.Abstracts
         {
             get
             {
-                return Songs[currentSongIndex];
+                if (currentSongIndex != -1)
+                {
+                    return Songs[currentSongIndex];
+                }
+
+                return null;
             }
         }
 
@@ -39,43 +55,83 @@ namespace tubeLoadNative.Abstracts
 
         public abstract bool IsPlaying { get; }
 
-        public List<Song> Songs { get; protected set; } 
+        public virtual List<Song> Songs { get; protected set; }
 
         #endregion
 
-        public abstract void Start();
+        #region Functions
+
+        #region Private Functions
+
+        string GetValidFileName(string name)
+        {
+            string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
+
+            foreach (string c in forbiddenChars)
+            {
+                name = name.Replace(c, string.Empty);
+            }
+
+            if (!name.EndsWith(".mp3", StringComparison.OrdinalIgnoreCase))
+            {
+                name += ".mp3";
+            }
+
+            return name;
+        }
+
+        #endregion
+
+        #region Abstract Functions
+
+        public abstract bool Start();
         public abstract void Start(string songId);
         public abstract void Pause();
+        public abstract void SeekTo(int position);
+        public abstract Task<bool> SaveSong(string path, string songName, string id, Stream songStream);
+
+        #endregion
+
+        #region Public Functions
 
         public void Stop()
         {
             currentSongIndex = -1;
         }
 
-        public abstract void SeekTo(int position);
-
-        public void PlayNext()
+        public bool PlayNext()
         {
-            currentSongIndex = (++currentSongIndex) % Songs.Count;
-
-            Start(Songs[currentSongIndex].Name);
-        }
-
-        public void PlayPrev()
-        {
-            if (currentSongIndex == -1)
+            if (Songs.Count > 0)
             {
-                currentSongIndex = Songs.Count;
-            }
-            else
-            {
-                currentSongIndex = (--currentSongIndex + Songs.Count) % Songs.Count;
+                currentSongIndex = (++currentSongIndex) % Songs.Count;
+                Start(Songs[currentSongIndex].Id);
+
+                return true;
             }
 
-            Start(Songs[currentSongIndex].Name);
+            return false;
         }
 
-        public abstract Task<bool> SaveSong(string path, string songName, string id, Stream songStream);
+        public bool PlayPrev()
+        {
+            if (Songs.Count > 0)
+            {
+                if (currentSongIndex == -1)
+                {
+                    currentSongIndex = Songs.Count;
+                }
+                else
+                {
+                    currentSongIndex = (--currentSongIndex + Songs.Count) % Songs.Count;
+                }
+
+                Start(Songs[currentSongIndex].Id);
+
+                return true;
+            }
+
+            return false;
+        }
 
         public void DeleteSong(string id)
         {
@@ -91,9 +147,12 @@ namespace tubeLoadNative.Abstracts
             }
         }
 
-        public void RenameSong(string id, string newName)
+        public void RenameSong(string id, ref string newName)
         {
+            newName = GetValidFileName(newName);
+
             int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
+
             if (pos < currentSongIndex)
             {
                 currentSongIndex--;
@@ -118,5 +177,9 @@ namespace tubeLoadNative.Abstracts
         {
             Starting?.Invoke(sender, e);
         }
+
+        #endregion 
+
+        #endregion
     }
 }

@@ -1,23 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Newtonsoft.Json;
 using tubeLoadNative.Models;
 
-namespace tubeLoadNative.Droid
+namespace tubeLoadNative.Droid.Utils
 {
-    public static class FileHandler
+    public static class FileManager
     {
-        static FileHandler()
+        static FileManager()
         {
             Java.IO.File directory = new Java.IO.File(PATH);
             directory.Mkdirs();
@@ -28,7 +19,7 @@ namespace tubeLoadNative.Droid
 
         public const string ID_FILE = "ids.json";
 
-        private static void UpdateFile(List<Song> songsList)
+        static void UpdateFile(List<Song> songsList)
         {
             var jsonData = JsonConvert.SerializeObject(songsList, Formatting.Indented);
             File.WriteAllText(PATH + ID_FILE, jsonData, Encoding.UTF8);
@@ -37,14 +28,7 @@ namespace tubeLoadNative.Droid
         public static string GetSongNameById(string id)
         {
             List<Song> songs = ReadFile();
-            Song song = songs.FirstOrDefault((x) => x.Id == id);
-
-            if (song != null)
-            {
-                return song.Name;
-            }
-
-            return null;
+            return Song.GetSongNameById(songs, id);
         }
 
         public static List<Song> ReadFile()
@@ -63,31 +47,11 @@ namespace tubeLoadNative.Droid
             return songsList;
         }
 
-        public static void WriteToJsonFile(Dictionary<string, string> values)
+        public static void WriteToJsonFile(Dictionary<string, string> songsToAdd)
         {
-            var songsList = ReadFile();
-
-            // Add the new songs
-            foreach (string id in values.Keys)
-            {
-                Song song = new Song()
-                {
-                    Id = id,
-                    Name = values[id]
-                };
-
-                int index = songsList.FindIndex((x) => x.Id == song.Id);
-
-                if (index != -1)
-                {
-                    songsList.RemoveAt(index);
-                }
-
-                songsList.Add(song);
-            }
-
-            // Update json data string
-            UpdateFile(songsList);
+            var currentList = ReadFile();
+            Song.AddSongsToList(currentList, songsToAdd);
+            UpdateFile(currentList);
         }
 
         public static void WriteToJsonFile(string id, string name)
@@ -99,34 +63,41 @@ namespace tubeLoadNative.Droid
 
         public static string FindSong(string name)
         {
-            string songId = null;
             List<Song> songs = ReadFile();
-            Song song = songs.FirstOrDefault((x) => x.Name == name);
-
-            if (song != null)
-            {
-                songId = song.Id;
-            }
-
-            return songId;
+            return Song.GetSongIdByName(songs, name);
         }
 
         public static bool DeleteSong(string id)
         {
-            bool didDelete = false;
             var songsList = ReadFile();
 
-            int index = songsList.FindIndex((x) => x.Id == id);
-
-            if (index != -1)
+            if (Song.DeleteSongFromList(songsList, id))
             {
-                didDelete = true;
-                songsList.RemoveAt(index);
+                UpdateFile(songsList);
+                return true;
             }
 
-            UpdateFile(songsList);
+            return false;
+        }
 
-            return didDelete;
+        public static void SongsListUpdate()
+        {
+            List<Song> songsInJsonFile = ReadFile();
+
+            foreach (Song song in songsInJsonFile)
+            {
+                SongsListUpdate(song.Id);
+            }
+        }
+
+        public static void SongsListUpdate(string songId)
+        {
+            string name = GetSongNameById(songId);
+
+            if (!File.Exists(PATH + name))
+            {
+                DeleteSong(songId);
+            }
         }
     }
 }

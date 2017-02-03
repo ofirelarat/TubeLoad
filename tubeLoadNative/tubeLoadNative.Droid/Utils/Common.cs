@@ -1,9 +1,8 @@
 using Android.Graphics;
-using Android.Graphics.Drawables;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace tubeLoadNative.Droid
+namespace tubeLoadNative.Droid.Utils
 {
     internal static class Common
     {

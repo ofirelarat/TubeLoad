@@ -1,14 +1,19 @@
 using System;
 using Android.Media;
 
-namespace tubeLoadNative.Droid.Services
+namespace tubeLoadNative.Droid.Utils
 {
     public class AndroidMediaPlayer : Interfaces.IMediaPlayer
     {
-        static AndroidMediaPlayer instance = new AndroidMediaPlayer();
-        MediaPlayer mediaPlayer;
+        #region Data Members
 
-        #region Ctor
+        MediaPlayer mediaPlayer; 
+
+        #endregion
+
+        #region Singleton
+
+        static AndroidMediaPlayer instance = new AndroidMediaPlayer();
 
         static AndroidMediaPlayer()
         {
@@ -17,10 +22,11 @@ namespace tubeLoadNative.Droid.Services
         AndroidMediaPlayer()
         {
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.Completion += OnComplete;
-        } 
-
-        #endregion
+            mediaPlayer.Completion += (sender, e) =>
+            {
+                OnComplete?.Invoke(sender, e);
+            };
+        }
 
         public static AndroidMediaPlayer Instance
         {
@@ -29,6 +35,8 @@ namespace tubeLoadNative.Droid.Services
                 return instance;
             }
         }
+
+        #endregion
 
         #region Props
 
