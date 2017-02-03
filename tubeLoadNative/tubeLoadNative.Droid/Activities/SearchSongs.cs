@@ -10,6 +10,7 @@ using Android.Views.InputMethods;
 using System.Threading.Tasks;
 using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -73,19 +74,19 @@ namespace tubeLoadNative.Droid.Activities
             {
                 if (searchQuery == string.Empty)
                 {
-                    if (YoutubeHandler.MostPopularSongs == null)
+                    if (YoutubeApiClient.MostPopularSongs == null)
                     {
                         progress.Show();
-                        await YoutubeHandler.Search();
+                        await YoutubeApiClient.Search();
                     }
 
-                    videos = YoutubeHandler.MostPopularSongs;
+                    videos = YoutubeApiClient.MostPopularSongs;
                 }
                 else
                 {
                     progress.Show();
 
-                    videos = await YoutubeHandler.Search(searchQuery);
+                    videos = await YoutubeApiClient.Search(searchQuery);
                 }
 
                 if (videos != null)

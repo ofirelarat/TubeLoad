@@ -2,6 +2,7 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -19,7 +20,7 @@ namespace tubeLoadNative.Droid.Activities
        
             try
             {
-                await YoutubeHandler.Search();
+                await YoutubeApiClient.Search();
                 StartActivity(new Intent(Application.Context, typeof(SearchSongs)));
             }
             catch

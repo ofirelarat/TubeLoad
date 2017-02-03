@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Google.Apis.Services;
 using System.Net;
 using System.Net.Http;
-using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using tubeLoadNative.Models;
 
-namespace tubeLoadNative
+namespace tubeLoadNative.Services
 {
-    public static class YoutubeHandler
+    public static class YoutubeApiClient
     {
         static YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
@@ -26,7 +25,7 @@ namespace tubeLoadNative
 
         public static List<SearchResult> MostPopularSongs { get; private set; }
 
-        static YoutubeHandler()
+        static YoutubeApiClient()
         {
             youtubeSearcher = youtubeService.Search.List("snippet");
             youtubeSearcher.MaxResults = 10;

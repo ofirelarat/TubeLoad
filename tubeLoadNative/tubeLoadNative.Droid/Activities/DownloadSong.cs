@@ -9,6 +9,7 @@ using Android.Graphics;
 using System.Net;
 using System.Net.Http;
 using tubeLoadNative.Droid.Utils;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -55,7 +56,7 @@ namespace tubeLoadNative.Droid.Activities
 
             try
             {
-                response = await YoutubeHandler.downloadStream(video.Id.VideoId);
+                response = await YoutubeApiClient.downloadStream(video.Id.VideoId);
             }
             catch (Exception ex)
             {
