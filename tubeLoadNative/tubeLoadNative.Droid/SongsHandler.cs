@@ -1,57 +1,37 @@
 using Android.App;
-using Android.Graphics;
-using Android.Graphics.Drawables;
-using Android.Media;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
+using tubeLoadNative.Abstracts;
+using tubeLoadNative.Droid.Services;
+using tubeLoadNative.Models;
 
 namespace tubeLoadNative.Droid
 {
-    public class SongsHandler
-    {
-        static Java.IO.File directory;
+    public class SongsHandler : SongsManager
+    {        
+        public override int Duration { get { return mediaPlayer.Duration; } }
 
-        public static event EventHandler OnComplete;
+        public override int CurrentPosition { get { return mediaPlayer.CurrentPosition; } }
 
-        public static event EventHandler OnSongSaved;
-
-        public static event EventHandler OnSongPlayedSetBackground;
-
-        static MediaPlayer mediaPlayer = new MediaPlayer();
-
-        public static List<Song> Songs { get; private set; } 
-
-        public static int CurrentSongIndex { get; private set; }
-
-        public static Song CurrentSong { get; private set; }
-
-        public static int Duration { get { return mediaPlayer.Duration; } }
-
-        public static int CurrentPosition { get { return mediaPlayer.CurrentPosition; } }
-
-        public static bool IsPlaying { get { return mediaPlayer.IsPlaying; } }
+        public override bool IsPlaying { get { return mediaPlayer.IsPlaying; } }
 
         static readonly SongsHandler instance = new SongsHandler();
 
         static SongsHandler()
         {
-            Songs = FileHandler.ReadFile();
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
-            directory = new Java.IO.File(FileHandler.PATH);
-            directory.Mkdirs();
-            CurrentSongIndex = -1;
-            mediaPlayer.Completion += (sender, e) =>
-            {
-                OnComplete?.Invoke(sender, e);
-            };
         }
 
         SongsHandler()
         {
+            Songs = FileHandler.ReadFile();
+            mediaPlayer = AndroidMediaPlayer.Instance;
+            mediaPlayer.OnComplete += (sender, e) =>
+            {
+                OnComplete(sender, e);
+            };
         }
 
         public static SongsHandler Instance
@@ -62,165 +42,18 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        // Start the current song
-        public static void Start()
+        public new void DeleteSong(string id)
         {
-            if (CurrentSongIndex == -1)
-            {
-                PlayNext();
-            }
-            else
-            {
-                mediaPlayer.Start();
-            }
-        }
-
-        // Start a song from the begining
-        public static void Start(string songName)
-        {
-            mediaPlayer.Reset();
-            string fileName = FileHandler.PATH + songName;
-
-            try
-            {
-                mediaPlayer.SetDataSource(fileName);
-                mediaPlayer.Prepare();
-                mediaPlayer.Start();
-                    
-                string songId = FileHandler.FindSong(songName);
-                CurrentSong = new Song() { Id = songId, Name = songName };
-
-                OnSongPlayedSetBackground?.Invoke(null, null);
-
-                NotificationHandler.BuildNotification(songId);
-            }
-            catch (Java.Lang.Exception)
-            {
-                Toast.MakeText(Application.Context, "can't open this file", ToastLength.Long).Show();
-            }
-        }
-
-        public static void Play(string id)
-        {
-            string fileName = FileHandler.GetSongNameById(id);
-            CurrentSongIndex = Songs.FindIndex((x) => x.Id == id);
-
-            Start(fileName);
-        }
-
-        public static void PlayNext()
-        {
-            CurrentSongIndex = (++CurrentSongIndex) % Songs.Count;
-            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
-
-            Start(fileName);
-        }
-
-        public static void PlayPrev()
-        {
-            // If no song has played yet
-            CurrentSongIndex = CurrentSongIndex == -1 ? 0 : CurrentSongIndex;
-            CurrentSongIndex = (--CurrentSongIndex + Songs.Count) % Songs.Count;
-            string fileName = FileHandler.GetSongNameById(Songs[CurrentSongIndex].Id);
-
-            Start(fileName);
-        }
-
-        public static void Pause()
-        {
-            mediaPlayer.Pause();
-        }
-
-        public static void Stop()
-        {
-            mediaPlayer.Stop();
-        }
-
-        public static void SeekTo(int position)
-        {
-            mediaPlayer.SeekTo(position);
-        }
-
-        public static MediaMetadataRetriever GetMetadata(string id)
-        {
-            MediaMetadataRetriever metadata = new MediaMetadataRetriever();
-            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
-            metadata.SetDataSource(fileName);
-            return metadata;
-        }
-
-        public static Drawable GetSongPicture(string id)
-        {
-            MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
-            byte[] pictureByteArray = metadata.GetEmbeddedPicture();
-
-            if (pictureByteArray != null)
-            {
-                return new BitmapDrawable(Application.Context.Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public async Task<bool> SaveSong(string path, string songName, string id, System.IO.Stream songStream)
-        {
-            string fileName = path + songName;
-
-            try
-            {
-                using (System.IO.Stream output = File.OpenWrite(fileName))
-                using (System.IO.Stream input = songStream)
-                {
-                    await input.CopyToAsync(output);
-                }
-
-                FileHandler.WriteToJsonFile(id, songName);
-                Songs = FileHandler.ReadFile();
-                OnSongSaved?.Invoke(null, null);
-            }
-            catch
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public static void DeleteSong(string id)
-        {
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-            if (pos < CurrentSongIndex)
-            {
-                CurrentSongIndex--;
-            }
-
-            if (CurrentSong.Id == id)
-            {
-                CurrentSong = null;
-                CurrentSongIndex = -1;
-            }
+            base.DeleteSong(id);
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
             File.Delete(fileName);
             FileHandler.DeleteSong(id);
             Songs = FileHandler.ReadFile();
         }
 
-        public static void RenameSong(string id, string newName)
+        public new void RenameSong(string id, string newName)
         {
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-            if (pos < CurrentSongIndex)
-            {
-                CurrentSongIndex--;
-            }
-
-            if (pos == CurrentSongIndex)
-            {
-                CurrentSongIndex = Songs.Count - 1;
-                CurrentSong = new Song() { Id = id,Name = newName};
-            }
-
+            base.RenameSong(id, newName);
             string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
 
             if (!newName.EndsWith(".mp3", System.StringComparison.OrdinalIgnoreCase))
@@ -232,26 +65,129 @@ namespace tubeLoadNative.Droid
             FileHandler.WriteToJsonFile(id, newName);
             Songs = FileHandler.ReadFile();
         }
-
-        public static void CheckFilesExist()
+        
+        public override void Start()
         {
-            List<Song> songsInJsonFile = FileHandler.ReadFile();
-
-            foreach (Song song in songsInJsonFile)
+            if (mediaPlayer.HasDataSource)
             {
-                CheckFileExist(song.Id);
+                PlayNext();
+            }
+            else
+            {
+                mediaPlayer.Continue();
             }
         }
 
-        public static void CheckFileExist(string songId)
+        public override void Start(string songId)
         {
-            string name = FileHandler.GetSongNameById(songId);
+            string fileName = FileHandler.PATH + FileHandler.GetSongNameById(songId);
 
-            if (!File.Exists(FileHandler.PATH + name))
+            if(mediaPlayer.Start(fileName))
             {
-                FileHandler.DeleteSong(songId);
-                Songs = FileHandler.ReadFile();
+                currentSongIndex = Songs.FindIndex((x) => x.Id == songId); 
+                OnStart(null, null);
+                NotificationHandler.BuildNotification(songId);
             }
+            else
+            {
+                Toast.MakeText(Application.Context, "can't open this file", ToastLength.Long).Show();
+            }
+        }
+
+        public override void Pause()
+        {
+            mediaPlayer.Pause();
+        }
+
+        public new void Stop()
+        {
+            base.Stop();
+            mediaPlayer.Stop();
+        }
+
+        public override void SeekTo(int position)
+        {
+            mediaPlayer.SeekTo(position);
+        }
+
+        public override async Task<bool> SaveSong(string path, string songName, string id, Stream songStream)
+        {
+            string fileName = path + songName;
+
+            try
+            {
+                using (Stream output = File.OpenWrite(fileName))
+                using (Stream input = songStream)
+                {
+                    await input.CopyToAsync(output);
+                }
+
+                FileHandler.WriteToJsonFile(id, songName);
+                Songs = FileHandler.ReadFile();
+                OnSave(null, null);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
+
+
+
+
+
+
+//public static MediaMetadataRetriever GetMetadata(string id)
+//{
+//    MediaMetadataRetriever metadata = new MediaMetadataRetriever();
+//    string fileName = FileHandler.PATH + FileHandler.GetSongNameById(id);
+//    metadata.SetDataSource(fileName);
+//    return metadata;
+//}
+
+//public static Drawable GetSongPicture(string id)
+//{
+//    MediaMetadataRetriever metadata = SongsHandler.GetMetadata(id);
+//    byte[] pictureByteArray = metadata.GetEmbeddedPicture();
+
+//    if (pictureByteArray != null)
+//    {
+//        return new BitmapDrawable(Application.Context.Resources, BitmapFactory.DecodeByteArray(pictureByteArray, 0, pictureByteArray.Length));
+//    }
+//    else
+//    {
+//        return null;
+//    }
+//}
+
+
+
+
+
+
+
+
+//public static void CheckFilesExist()
+//{
+//    List<Song> songsInJsonFile = FileHandler.ReadFile();
+
+//    foreach (Song song in songsInJsonFile)
+//    {
+//        CheckFileExist(song.Id);
+//    }
+//}
+
+//public static void CheckFileExist(string songId)
+//{
+//    string name = FileHandler.GetSongNameById(songId);
+
+//    if (!File.Exists(FileHandler.PATH + name))
+//    {
+//        FileHandler.DeleteSong(songId);
+//        Songs = FileHandler.ReadFile();
+//    }
+//}

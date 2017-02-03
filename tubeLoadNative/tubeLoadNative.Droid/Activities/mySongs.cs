@@ -71,7 +71,7 @@ namespace tubeLoadNative.Droid
 
             SongsHandler.OnSongSaved += (sender, e) => UpdateList();
 
-            SongsHandler.OnSongPlayedSetBackground += delegate
+            SongsHandler.OnSongPlayed += delegate
             {
                 int index = songsListView.FirstVisiblePosition;
                 View v = songsListView.GetChildAt(0);

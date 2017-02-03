@@ -11,6 +11,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Newtonsoft.Json;
+using tubeLoadNative.Models;
 
 namespace tubeLoadNative.Droid
 {
@@ -18,12 +19,11 @@ namespace tubeLoadNative.Droid
     {
         static FileHandler()
         {
-            Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
             Java.IO.File directory = new Java.IO.File(PATH);
             directory.Mkdirs();
         }
 
-        private static Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+        static Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
         public static readonly string PATH = sdCard.AbsolutePath + "/TubeLoad/";
 
         public const string ID_FILE = "ids.json";
