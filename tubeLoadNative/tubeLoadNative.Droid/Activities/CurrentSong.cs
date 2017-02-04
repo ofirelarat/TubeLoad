@@ -96,7 +96,7 @@ namespace tubeLoadNative.Droid.Activities
                 if (e.FromUser)
                 {
                     mediaPlayer.SeekTo(e.Progress);
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
                 }
             };
         }
@@ -153,7 +153,7 @@ namespace tubeLoadNative.Droid.Activities
 
             MediaMetadataRetriever mmr = SongMetadata.GetMetadata(songId);
             string title = mmr.ExtractMetadata(MetadataKey.Title) + " - " + mmr.ExtractMetadata(MetadataKey.Artist);
-            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).TotalMinutes.ToString("0.00");
+            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).ToString(@"mm\:ss");
 
             if (title == null || length == null)
             {
@@ -176,7 +176,7 @@ namespace tubeLoadNative.Droid.Activities
 
             seekBar.Max = mediaPlayer.Duration;
             seekBar.Progress = mediaPlayer.CurrentPosition;
-            songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+            songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
 
             seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
             seekbarThread.Start();
@@ -190,7 +190,7 @@ namespace tubeLoadNative.Droid.Activities
                 seekBar.Progress = mediaPlayer.CurrentPosition;
                 try
                 {
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
                 }
                 catch (Exception ex)
                 {
