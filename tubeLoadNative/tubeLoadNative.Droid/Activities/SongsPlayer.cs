@@ -10,11 +10,11 @@ using Android.Widget;
 using Android.Media;
 using Android.Graphics.Drawables;
 using Android.Graphics;
-using System.Threading;
 using System.IO;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Views;
+using Android.Support.V4.Content;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -41,9 +41,9 @@ namespace tubeLoadNative.Droid.Activities
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
 
-            playBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
-            nextBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
-            prevBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
+            playBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
+            nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
+            prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             FileManager.SongsListUpdate();
             UpdateList();

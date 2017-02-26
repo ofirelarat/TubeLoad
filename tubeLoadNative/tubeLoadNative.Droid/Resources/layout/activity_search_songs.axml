@@ -14,7 +14,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:singleLine="true"
-            android:backgroundTint="#99b4d1ff"
             android:hint="Search" />
         <ImageButton
             android:src="@android:drawable/ic_menu_search"

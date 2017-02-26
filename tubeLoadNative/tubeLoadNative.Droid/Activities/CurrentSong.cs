@@ -11,6 +11,7 @@ using System.Threading;
 using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Droid.Views;
+using Android.Support.V4.Content;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -37,9 +38,9 @@ namespace tubeLoadNative.Droid.Activities
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
 
-            playBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
-            nextBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
-            prevBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
+            playBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
+            nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
+            prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             if (mediaPlayer.CurrentSong != null)
             {

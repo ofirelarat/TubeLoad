@@ -1,5 +1,4 @@
-﻿using System;
-using Android.App;
+﻿using Android.App;
 using Android.OS;
 using System.Collections.Generic;
 using Google.Apis.YouTube.v3.Data;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
+using Android.Support.V4.Content;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -33,12 +33,11 @@ namespace tubeLoadNative.Droid.Activities
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchString = FindViewById<EditText>(Resource.Id.searchEditText);
             searchString.Text = string.Empty;
-            searchString.ClearFocus();
+            searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
 
             searchButton.Click += async delegate
             {
-                InputMethodManager imm = (InputMethodManager)GetSystemService(InputMethodService);
-                imm.HideSoftInputFromWindow(searchString.WindowToken, 0);
+                HideKeyboard(searchButton.Context);
                 await UpdateVideos(searchString.Text);
             };
 
@@ -48,8 +47,7 @@ namespace tubeLoadNative.Droid.Activities
 
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
-                    InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
-                    imm.HideSoftInputFromWindow(searchString.WindowToken, 0);
+                    HideKeyboard(searchString.Context);
                     await UpdateVideos(searchString.Text);
                     e.Handled = true;
                 }
@@ -65,11 +63,22 @@ namespace tubeLoadNative.Droid.Activities
             await UpdateVideos(string.Empty);
         }
 
+        void HideKeyboard(Context context)
+        {
+            var inputMethodManager = context.GetSystemService(InputMethodService) as InputMethodManager;
+            if (inputMethodManager != null && context is Android.App.Activity)
+            {
+                var activity = context as Android.App.Activity;
+                var token = activity.CurrentFocus == null ? null : activity.CurrentFocus.WindowToken;
+                inputMethodManager.HideSoftInputFromWindow(token, HideSoftInputFlags.ImplicitOnly);
+            }
+
+        }
+
         async Task UpdateVideos(string searchQuery)
         {
             ProgressDialog progress = new ProgressDialog(this);
             progress.SetMessage("loading...");
-
 
             try
             {
@@ -100,13 +109,14 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
                 }
-
-                progress.Dismiss();
             }
-            catch (Exception)
+            catch
+            {
+                Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
+            }
+            finally
             {
                 progress.Dismiss();
-                Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
         }
 
