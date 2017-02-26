@@ -100,95 +100,98 @@ namespace tubeLoadNative.Droid
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f080018
-			public const int addSong = 2131230744;
-			
-			// aapt resource value: 0x7f08000f
-			public const int channelName = 2131230735;
-			
 			// aapt resource value: 0x7f080019
-			public const int currentSong = 2131230745;
-			
-			// aapt resource value: 0x7f080010
-			public const int downloadBtn = 2131230736;
-			
-			// aapt resource value: 0x7f08001a
-			public const int item_delete = 2131230746;
-			
-			// aapt resource value: 0x7f08001b
-			public const int item_play = 2131230747;
-			
-			// aapt resource value: 0x7f08001c
-			public const int item_rename = 2131230748;
-			
-			// aapt resource value: 0x7f080009
-			public const int linearLayout1 = 2131230729;
-			
-			// aapt resource value: 0x7f080005
-			public const int linearLayout2 = 2131230725;
-			
-			// aapt resource value: 0x7f080015
-			public const int linearLayout3 = 2131230741;
-			
-			// aapt resource value: 0x7f080017
-			public const int mySong = 2131230743;
+			public const int addSong = 2131230745;
 			
 			// aapt resource value: 0x7f08000c
-			public const int nextBtn = 2131230732;
+			public const int channelName = 2131230732;
 			
-			// aapt resource value: 0x7f08000b
-			public const int playBtn = 2131230731;
+			// aapt resource value: 0x7f08001a
+			public const int currentSong = 2131230746;
 			
-			// aapt resource value: 0x7f08000a
-			public const int prevBtn = 2131230730;
+			// aapt resource value: 0x7f08000d
+			public const int downloadBtn = 2131230733;
 			
-			// aapt resource value: 0x7f080012
-			public const int searchBtn = 2131230738;
+			// aapt resource value: 0x7f08001b
+			public const int item_delete = 2131230747;
 			
-			// aapt resource value: 0x7f080011
-			public const int searchEditText = 2131230737;
-			
-			// aapt resource value: 0x7f080004
-			public const int seekBar = 2131230724;
+			// aapt resource value: 0x7f08001c
+			public const int item_play = 2131230748;
 			
 			// aapt resource value: 0x7f08001d
-			public const int seek_bar = 2131230749;
+			public const int item_rename = 2131230749;
+			
+			// aapt resource value: 0x7f080006
+			public const int linearLayout1 = 2131230726;
+			
+			// aapt resource value: 0x7f080012
+			public const int linearLayout2 = 2131230738;
+			
+			// aapt resource value: 0x7f080013
+			public const int linearLayout3 = 2131230739;
+			
+			// aapt resource value: 0x7f080018
+			public const int mySong = 2131230744;
+			
+			// aapt resource value: 0x7f080009
+			public const int nextBtn = 2131230729;
+			
+			// aapt resource value: 0x7f080008
+			public const int playBtn = 2131230728;
+			
+			// aapt resource value: 0x7f080007
+			public const int prevBtn = 2131230727;
+			
+			// aapt resource value: 0x7f08000f
+			public const int searchBtn = 2131230735;
+			
+			// aapt resource value: 0x7f08000e
+			public const int searchEditText = 2131230734;
+			
+			// aapt resource value: 0x7f080015
+			public const int seekBar = 2131230741;
+			
+			// aapt resource value: 0x7f08001e
+			public const int seek_bar = 2131230750;
+			
+			// aapt resource value: 0x7f080004
+			public const int seekbar = 2131230724;
 			
 			// aapt resource value: 0x7f080000
 			public const int songImg = 2131230720;
 			
-			// aapt resource value: 0x7f080014
-			public const int songName = 2131230740;
+			// aapt resource value: 0x7f080017
+			public const int songLength = 2131230743;
 			
-			// aapt resource value: 0x7f080006
-			public const int songPosition = 2131230726;
+			// aapt resource value: 0x7f080011
+			public const int songName = 2131230737;
 			
-			// aapt resource value: 0x7f080007
-			public const int songSize = 2131230727;
+			// aapt resource value: 0x7f080016
+			public const int songPosition = 2131230742;
 			
 			// aapt resource value: 0x7f080002
 			public const int songTitle = 2131230722;
 			
-			// aapt resource value: 0x7f080013
-			public const int songsListView = 2131230739;
+			// aapt resource value: 0x7f080010
+			public const int songsListView = 2131230736;
 			
 			// aapt resource value: 0x7f080001
 			public const int space1 = 2131230721;
 			
-			// aapt resource value: 0x7f080008
-			public const int space2 = 2131230728;
+			// aapt resource value: 0x7f080005
+			public const int space2 = 2131230725;
 			
 			// aapt resource value: 0x7f080003
 			public const int space3 = 2131230723;
 			
-			// aapt resource value: 0x7f080016
-			public const int videoChannelName = 2131230742;
+			// aapt resource value: 0x7f080014
+			public const int videoChannelName = 2131230740;
 			
-			// aapt resource value: 0x7f08000d
-			public const int videoImg = 2131230733;
+			// aapt resource value: 0x7f08000a
+			public const int videoImg = 2131230730;
 			
-			// aapt resource value: 0x7f08000e
-			public const int videoName = 2131230734;
+			// aapt resource value: 0x7f08000b
+			public const int videoName = 2131230731;
 			
 			static Id()
 			{
@@ -220,6 +223,9 @@ namespace tubeLoadNative.Droid
 			
 			// aapt resource value: 0x7f030005
 			public const int adapter_videos = 2130903045;
+			
+			// aapt resource value: 0x7f030006
+			public const int view_seekbar = 2130903046;
 			
 			static Layout()
 			{

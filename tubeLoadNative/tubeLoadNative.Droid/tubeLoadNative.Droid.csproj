@@ -118,11 +118,17 @@
     <Compile Include="Activities\SplashScreen.cs" />
     <Compile Include="Activities\DownloadSong.cs" />
     <Compile Include="Utils\SongMetadata.cs" />
+    <Compile Include="Views\SeekbarView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <AndroidResource Include="Resources\layout\activity_current_song.axml" />
+    <AndroidResource Include="Resources\layout\activity_current_song.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\adapter_songs.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\view_seekbar.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <ProguardConfiguration Include="packages.config" />

@@ -14,6 +14,7 @@ using System.Threading;
 using System.IO;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Models;
+using tubeLoadNative.Droid.Views;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -26,9 +27,8 @@ namespace tubeLoadNative.Droid.Activities
         List<Song> songs;
         ImageButton playBtn;
 
-        SeekBar seekBar;
+        SeekbarView seekbarview;
         AlertDialog seekbarDialog;
-        Thread seekThread;
         Song selectedSong;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -63,9 +63,9 @@ namespace tubeLoadNative.Droid.Activities
                     CloseContextMenu();
                 }
 
-                if (seekThread != null)
+                if(seekbarview != null)
                 {
-                    seekThread.Abort();
+                    seekbarview.AbortSeekbarThread();
                 }
 
                 if (!mediaPlayer.IsPlaying)
@@ -79,8 +79,8 @@ namespace tubeLoadNative.Droid.Activities
             mediaPlayer.Starting += delegate
             {
                 int index = songsListView.FirstVisiblePosition;
-                View v = songsListView.GetChildAt(0);
-                int top = (v == null) ? 0 : v.Top - songsListView.ListPaddingTop;
+                View songView = songsListView.GetChildAt(0);
+                int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
                 UpdateList();
                 songsListView.SetSelectionFromTop(index, top);
             };
@@ -233,17 +233,14 @@ namespace tubeLoadNative.Droid.Activities
 
                 case Resource.Id.seek_bar:
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                    CreateSeekBar();
 
-                    seekThread = new Thread(new ThreadStart(UpdateSongTime));
-                    seekThread.Start();
-
-                    alertDialogBuilder.SetView(seekBar);
+                    seekbarview = new SeekbarView(alertDialogBuilder.Context, null);
+                    alertDialogBuilder.SetView(seekbarview);
 
                     alertDialogBuilder.SetCancelable(false);
                     alertDialogBuilder.SetPositiveButton("OK", (s, e) =>
                     {
-                        seekThread.Abort();
+                        seekbarview.AbortSeekbarThread();
                     });
 
                     alertDialogBuilder.SetTitle(GetSelectedSongTitle());
@@ -263,21 +260,6 @@ namespace tubeLoadNative.Droid.Activities
                 default:
                     return base.OnContextItemSelected(item);
             }
-        }
-
-        void CreateSeekBar()
-        {
-            seekBar = new SeekBar(this);
-            seekBar.Max = mediaPlayer.Duration;
-            seekBar.Progress = mediaPlayer.CurrentPosition;
-
-            seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
-            {
-                if (e.FromUser)
-                {
-                    mediaPlayer.SeekTo(e.Progress);
-                }
-            };
         }
 
         string GetSelectedSongTitle()
@@ -323,14 +305,6 @@ namespace tubeLoadNative.Droid.Activities
             });
 
             renameDialog.Show();
-        }
-
-        void UpdateSongTime()
-        {
-            while (mediaPlayer.IsPlaying)
-            {
-                seekBar.Progress = mediaPlayer.CurrentPosition;
-            }
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

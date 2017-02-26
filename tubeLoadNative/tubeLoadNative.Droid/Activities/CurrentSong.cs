@@ -10,6 +10,7 @@ using Android.Graphics.Drawables;
 using System.Threading;
 using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
+using tubeLoadNative.Droid.Views;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -19,24 +20,18 @@ namespace tubeLoadNative.Droid.Activities
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
 
         ImageButton playBtn;
-        TextView songLength;
         TextView songTitle;
         ImageView songImg;
-        SeekBar seekBar;
-        Thread seekbarThread;
-        TextView songPosition;
+        SeekbarView seekbar;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_current_song);
-
-
+            
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
-            songLength = FindViewById<TextView>(Resource.Id.songSize);
-            songPosition = FindViewById<TextView>(Resource.Id.songPosition);
-            seekBar = FindViewById<SeekBar>(Resource.Id.seekBar);
+            seekbar = FindViewById<SeekbarView>(Resource.Id.seekbar);
 
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
@@ -59,45 +54,23 @@ namespace tubeLoadNative.Droid.Activities
 
             nextBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
+                TogglePlay();
                 mediaPlayer.PlayNext();
                 UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
             prevBtn.Click += delegate
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
+                TogglePlay();
                 mediaPlayer.PlayPrev();
                 UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
-            if (mediaPlayer.IsPlaying)
-            {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click += Pause;
-            }
-            else
-            {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_play);
-                playBtn.Click += Start;
-            }
+            ChangePlayingView();
 
             mediaPlayer.Completing += delegate
             {
                 UpdatePage(mediaPlayer.CurrentSong.Id);
-            };
-
-            seekBar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
-            {
-                if (e.FromUser)
-                {
-                    mediaPlayer.SeekTo(e.Progress);
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
-                }
             };
         }
 
@@ -116,55 +89,63 @@ namespace tubeLoadNative.Droid.Activities
                 StartActivity(intent);
             }
 
+            ChangePlayingView();
+        }
+
+        void ChangePlayingView()
+        {
             if (mediaPlayer.IsPlaying)
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-                playBtn.Click += Pause;
+                TogglePlay();
             }
             else
             {
-                playBtn.SetImageResource(Resource.Drawable.ic_media_play);
-                playBtn.Click += Start;
+                TogglePause();
             }
+        }
+
+        void TogglePlay()
+        {
+            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            playBtn.Click -= Start;
+            playBtn.Click += Pause;
+        }
+
+        void TogglePause()
+        {
+            playBtn.SetImageResource(Resource.Drawable.ic_media_play);
+            playBtn.Click -= Pause;
+            playBtn.Click += Start;
         }
 
         void Start(object sender, EventArgs e)
         {
             mediaPlayer.Start();
-            playBtn.Click -= Start;
-            playBtn.Click += Pause;
-            playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
+            TogglePlay();
         }
 
         void Pause(object sender, EventArgs e)
         {
             mediaPlayer.Pause();
-            playBtn.Click -= Pause;
-            playBtn.Click += Start;
-            playBtn.SetImageResource(Resource.Drawable.ic_media_play);
+            TogglePause();
         }
 
         void UpdatePage(string songId)
         {
-            if (seekbarThread != null)
-            {
-                seekbarThread.Abort();
-            }
-
             MediaMetadataRetriever mmr = SongMetadata.GetMetadata(songId);
             string title = mmr.ExtractMetadata(MetadataKey.Title) + " - " + mmr.ExtractMetadata(MetadataKey.Artist);
-            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).ToString(@"mm\:ss");
 
-            if (title == null || length == null)
+            if (title == null)
             {
                 title = FileManager.GetSongNameById(songId);
-                length = string.Empty;
             }
 
             songTitle.Text = title;
-            songLength.Text = length.Replace(".", ":");
+
+            seekbar.SetSongLength();
 
             Drawable picture = SongMetadata.GetSongPicture(songId);
+
             if (picture != null)
             {
                 songImg.SetImageDrawable(picture);
@@ -172,31 +153,6 @@ namespace tubeLoadNative.Droid.Activities
             else
             {
                 songImg.SetImageResource(Resource.Drawable.icon);
-            }
-
-            seekBar.Max = mediaPlayer.Duration;
-            seekBar.Progress = mediaPlayer.CurrentPosition;
-            songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
-
-            seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
-            seekbarThread.Start();
-        }
-
-        void UpdateSekkbarProgress()
-        {
-            while (mediaPlayer.CurrentSong != null)
-            {
-                Thread.Sleep(1000);
-                seekBar.Progress = mediaPlayer.CurrentPosition;
-
-                try
-                {
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex.Message + '\n' + ex.StackTrace);
-                }
             }
         }
 
