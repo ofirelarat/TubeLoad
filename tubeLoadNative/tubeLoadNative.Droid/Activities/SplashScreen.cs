@@ -25,7 +25,7 @@ namespace tubeLoadNative.Droid.Activities
             }
             catch
             {
-                Toast.MakeText(Application.Context, "could not connect, please check your internet connection", ToastLength.Long).Show();
+                Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show();
                 StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
             }
         }

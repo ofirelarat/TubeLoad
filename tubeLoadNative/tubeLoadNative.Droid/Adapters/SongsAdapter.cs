@@ -1,4 +1,5 @@
 using Android.App;
+using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using tubeLoadNative.Droid.Utils;
@@ -50,11 +51,11 @@ namespace tubeLoadNative.Droid
 
             if (mediaPlayer.Songs[position] == mediaPlayer.CurrentSong)
             {
-                convertView.SetBackgroundColor(new Android.Graphics.Color(52, 152, 219));
+                convertView.SetBackgroundColor(new Color(Resource.Color.brightassets));
             }
             else
             {
-                convertView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                convertView.SetBackgroundColor(Color.Transparent);
             }
 
             return convertView;

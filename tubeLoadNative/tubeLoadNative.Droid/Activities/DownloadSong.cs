@@ -109,7 +109,7 @@ namespace tubeLoadNative.Droid.Activities
 
                 videoName.Text = video.Snippet.Title;
                 channelName.Text = video.Snippet.ChannelTitle;
-                downloadBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+                downloadBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
 
                 FileManager.SongsListUpdate();
                 path = FileManager.GetSongNameById(video.Id.VideoId);

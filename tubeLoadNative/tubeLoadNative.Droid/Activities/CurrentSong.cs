@@ -42,9 +42,9 @@ namespace tubeLoadNative.Droid.Activities
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
 
-            playBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
-            nextBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
-            prevBtn.SetBackgroundColor(Color.Rgb(41, 128, 185));
+            playBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
+            nextBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
+            prevBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
 
             if (mediaPlayer.CurrentSong != null)
             {
@@ -96,7 +96,7 @@ namespace tubeLoadNative.Droid.Activities
                 if (e.FromUser)
                 {
                     mediaPlayer.SeekTo(e.Progress);
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
                 }
             };
         }
@@ -153,7 +153,7 @@ namespace tubeLoadNative.Droid.Activities
 
             MediaMetadataRetriever mmr = SongMetadata.GetMetadata(songId);
             string title = mmr.ExtractMetadata(MetadataKey.Title) + " - " + mmr.ExtractMetadata(MetadataKey.Artist);
-            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).TotalMinutes.ToString("0.00");
+            string length = TimeSpan.FromMilliseconds(Double.Parse(mmr.ExtractMetadata(MetadataKey.Duration))).ToString(@"mm\:ss");
 
             if (title == null || length == null)
             {
@@ -176,7 +176,7 @@ namespace tubeLoadNative.Droid.Activities
 
             seekBar.Max = mediaPlayer.Duration;
             seekBar.Progress = mediaPlayer.CurrentPosition;
-            songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+            songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
 
             seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
             seekbarThread.Start();
@@ -188,9 +188,10 @@ namespace tubeLoadNative.Droid.Activities
             {
                 Thread.Sleep(1000);
                 seekBar.Progress = mediaPlayer.CurrentPosition;
+
                 try
                 {
-                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).TotalMinutes.ToString("0.00").Replace(".", ":");
+                    songPosition.Text = TimeSpan.FromMilliseconds(mediaPlayer.CurrentPosition).ToString(@"mm\:ss");
                 }
                 catch (Exception ex)
                 {

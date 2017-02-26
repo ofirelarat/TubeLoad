@@ -22,7 +22,7 @@ namespace tubeLoadNative.Droid.Activities
         static List<SearchResult> videos;
         public static SearchResult video;
         ListView myVideosListView;
-        EditText searchTxt;
+        EditText searchString;
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,26 +30,27 @@ namespace tubeLoadNative.Droid.Activities
             SetContentView(Resource.Layout.activity_search_songs);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
-            ImageButton searchBtn = FindViewById<ImageButton>(Resource.Id.searchBtn);
-            searchTxt = FindViewById<EditText>(Resource.Id.searchEditText);
-            searchTxt.Text = string.Empty;
+            ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
+            searchString = FindViewById<EditText>(Resource.Id.searchEditText);
+            searchString.Text = string.Empty;
+            searchString.ClearFocus();
 
-            searchBtn.Click += async delegate
+            searchButton.Click += async delegate
             {
                 InputMethodManager imm = (InputMethodManager)GetSystemService(InputMethodService);
-                imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                await UpdateVideos(searchTxt.Text);
+                imm.HideSoftInputFromWindow(searchString.WindowToken, 0);
+                await UpdateVideos(searchString.Text);
             };
 
-            searchTxt.KeyPress += async (object sender, View.KeyEventArgs e) =>
+            searchString.KeyPress += async (object sender, View.KeyEventArgs e) =>
             {
                 e.Handled = false;
 
                 if (e.Event.Action == KeyEventActions.Down && e.KeyCode == Keycode.Enter)
                 {
                     InputMethodManager imm = (InputMethodManager)GetSystemService(Context.InputMethodService);
-                    imm.HideSoftInputFromWindow(searchTxt.WindowToken, 0);
-                    await UpdateVideos(searchTxt.Text);
+                    imm.HideSoftInputFromWindow(searchString.WindowToken, 0);
+                    await UpdateVideos(searchString.Text);
                     e.Handled = true;
                 }
             };
