@@ -116,7 +116,6 @@
 	<Target Name="XamarinBuildDownloadGetItemsToDownload" Returns="@(XamarinBuildDownloadItemToDownload)">
 		<XamarinBuildGetArchivesToDownload
 			Archives="@(XamarinBuildDownload)"
-			PartialZipDownloads="@(XamarinBuildDownloadPartialZip)"
 			DestinationBase="$(XamarinBuildDownloadDir)"
 			CacheDirectory="$(XamarinBuildDownloadDir)">
 			<Output TaskParameter="ArchivesToDownload" ItemName="XamarinBuildDownloadItemToDownload" />

@@ -43,9 +43,6 @@ namespace tubeLoadNative.Droid.Views
         {
             AbortSeekbarThread();
             SetSongLength();
-            songPosition.Text = Converter.MillisecondsToString(mediaPlayer.CurrentPosition);
-            seekbar.Max = mediaPlayer.Duration;
-            seekbar.Progress = mediaPlayer.CurrentPosition;
 
             seekbar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
             {
@@ -62,7 +59,10 @@ namespace tubeLoadNative.Droid.Views
 
         public void SetSongLength()
         {
+            seekbar.Max = mediaPlayer.Duration;
             songLength.Text = Converter.MillisecondsToString(mediaPlayer.Duration);
+            songPosition.Text = Converter.MillisecondsToString(mediaPlayer.CurrentPosition);
+            seekbar.Progress = mediaPlayer.CurrentPosition;
         }
 
         void UpdateSekkbarProgress()

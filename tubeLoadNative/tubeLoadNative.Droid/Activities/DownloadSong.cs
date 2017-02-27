@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
+using Android.Support.V4.Content;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -36,6 +37,7 @@ namespace tubeLoadNative.Droid.Activities
             channelName = FindViewById<TextView>(Resource.Id.channelName);
             videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
+            downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             UpdateView();
         }

@@ -87,6 +87,9 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f020007
 			public const int splashimg = 2130837511;
 			
+			// aapt resource value: 0x7f020008
+			public const int youtubeic2 = 2130837512;
+			
 			static Drawable()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
