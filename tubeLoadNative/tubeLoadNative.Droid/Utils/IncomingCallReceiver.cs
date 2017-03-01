@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.Telephony;
 
 namespace tubeLoadNative.Droid.Utils
@@ -17,6 +9,7 @@ namespace tubeLoadNative.Droid.Utils
     [IntentFilter(new[] { "android.intent.action.PHONE_STATE" })]
     public class IncomingCallReceiver : BroadcastReceiver
     {
+        static bool isPlayed = false;
         public override void OnReceive(Context context, Intent intent)
         {
             // ensure there is information
@@ -31,7 +24,15 @@ namespace tubeLoadNative.Droid.Utils
                     // incoming call ring
                     if (AndroidSongsManager.Instance.CurrentSong != null)
                     {
-                        AndroidSongsManager.Instance.Pause();
+                        if (AndroidSongsManager.Instance.IsPlaying)
+                        {
+                            isPlayed = true;
+                            AndroidSongsManager.Instance.Pause();
+                        }
+                        else
+                        {
+                            isPlayed = false;
+                        }
                     }
                 }
                 else if (state == TelephonyManager.ExtraStateOffhook)
@@ -41,7 +42,7 @@ namespace tubeLoadNative.Droid.Utils
                 else if (state == TelephonyManager.ExtraStateIdle)
                 {
                     // incoming call end
-                    if (AndroidSongsManager.Instance.CurrentSong != null)
+                    if (AndroidSongsManager.Instance.CurrentSong != null && isPlayed)
                     {
                         AndroidSongsManager.Instance.Start();
                     }

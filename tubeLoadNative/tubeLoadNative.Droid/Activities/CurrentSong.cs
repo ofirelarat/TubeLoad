@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Widget;
 using Android.Media;
 using Android.Graphics.Drawables;
-using System.Threading;
 using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Droid.Views;
