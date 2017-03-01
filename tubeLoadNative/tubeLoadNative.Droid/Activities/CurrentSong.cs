@@ -42,16 +42,7 @@ namespace tubeLoadNative.Droid.Activities
             nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
-            if (mediaPlayer.CurrentSong != null)
-            {
-                UpdatePage(mediaPlayer.CurrentSong.Id);
-            }
-            else
-            {
-                NotificationHandler.DeleteNotification();
-                Intent intent = new Intent(this, typeof(SongsPlayer));
-                StartActivity(intent);
-            }
+            checkCurrentSong();
 
             nextBtn.Click += delegate
             {
@@ -79,16 +70,7 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnResume();
 
-            if (mediaPlayer.CurrentSong != null)
-            {
-                UpdatePage(mediaPlayer.CurrentSong.Id);
-            }
-            else
-            {
-                NotificationHandler.DeleteNotification();
-                Intent intent = new Intent(this, typeof(SongsPlayer));
-                StartActivity(intent);
-            }
+            checkCurrentSong();
 
             ChangePlayingView();
         }
@@ -102,6 +84,20 @@ namespace tubeLoadNative.Droid.Activities
             else
             {
                 TogglePause();
+            }
+        }
+
+        void checkCurrentSong()
+        {
+            if (mediaPlayer.CurrentSong != null)
+            {
+                UpdatePage(mediaPlayer.CurrentSong.Id);
+            }
+            else
+            {
+                NotificationHandler.DeleteNotification();
+                Intent intent = new Intent(this, typeof(SongsPlayer));
+                StartActivity(intent);
             }
         }
 
