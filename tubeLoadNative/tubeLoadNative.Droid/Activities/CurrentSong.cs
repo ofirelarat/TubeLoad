@@ -138,7 +138,7 @@ namespace tubeLoadNative.Droid.Activities
 
             songTitle.Text = title;
 
-            seekbar.SetSongLength();
+            seekbar.CreateSeekBar();
 
             Drawable picture = SongMetadata.GetSongPicture(songId);
 

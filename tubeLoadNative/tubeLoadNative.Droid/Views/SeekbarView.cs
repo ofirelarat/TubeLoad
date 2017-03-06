@@ -36,14 +36,6 @@ namespace tubeLoadNative.Droid.Views
             songLength = seekbarView.FindViewById<TextView>(Resource.Id.songLength);
             songPosition = seekbarView.FindViewById<TextView>(Resource.Id.songPosition);
 
-            CreateSeekBar();
-        }
-
-        void CreateSeekBar()
-        {
-            AbortSeekbarThread();
-            SetSongLength();
-
             seekbar.ProgressChanged += (object sender, SeekBar.ProgressChangedEventArgs e) =>
             {
                 if (e.FromUser)
@@ -53,16 +45,20 @@ namespace tubeLoadNative.Droid.Views
                 }
             };
 
-            seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
-            seekbarThread.Start();
+            CreateSeekBar();
         }
 
-        public void SetSongLength()
+        public void CreateSeekBar()
         {
+            AbortSeekbarThread();
+
             seekbar.Max = mediaPlayer.Duration;
             songLength.Text = Converter.MillisecondsToString(mediaPlayer.Duration);
             songPosition.Text = Converter.MillisecondsToString(mediaPlayer.CurrentPosition);
             seekbar.Progress = mediaPlayer.CurrentPosition;
+
+            seekbarThread = new Thread(new ThreadStart(UpdateSekkbarProgress));
+            seekbarThread.Start();
         }
 
         void UpdateSekkbarProgress()
