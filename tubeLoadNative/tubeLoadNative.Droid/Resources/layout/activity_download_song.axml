@@ -44,4 +44,11 @@
         android:id="@+id/downloadBtn"
         android:layout_marginTop="10dp"
         android:backgroundTint="#ff2980b9" />
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/downloadingProgressBar"
+        android:layout_margin="20dp"
+        style="@android:style/Widget.Holo.Light.ProgressBar"
+        android:visibility="invisible" />
 </LinearLayout>

@@ -25,6 +25,7 @@ namespace tubeLoadNative.Droid.Activities
         TextView videoName;
         ImageView videoImg;
         TextView channelName;
+        ProgressBar progressBar;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -36,6 +37,7 @@ namespace tubeLoadNative.Droid.Activities
             videoName = FindViewById<TextView>(Resource.Id.videoName);
             channelName = FindViewById<TextView>(Resource.Id.channelName);
             videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
+            progressBar = FindViewById<ProgressBar>(Resource.Id.downloadingProgressBar);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
             downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
@@ -46,6 +48,7 @@ namespace tubeLoadNative.Droid.Activities
         {
             HttpResponseMessage response;
             downloadBtn.Enabled = false;
+            progressBar.Visibility = ViewStates.Visible;
             string FileName = video.Snippet.Title + ".mp3";
 
             // Erasing illegal charachters from file name
@@ -64,6 +67,7 @@ namespace tubeLoadNative.Droid.Activities
             {
                 Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
                 downloadBtn.Enabled = true;
+                progressBar.Visibility = ViewStates.Invisible;
 
                 return;
             }
@@ -72,18 +76,16 @@ namespace tubeLoadNative.Droid.Activities
             {
                 if (await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, FileName, video.Id.VideoId, await response.Content.ReadAsStreamAsync()))
                 {
-                    downloadBtn.Enabled = true;
-                    downloadBtn.Text = "Play";
-                    downloadBtn.Click -= OnDownloadClick;
-                    downloadBtn.Click += OnPlayClick;
-
+                    TogglePlay();
                     Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
-                    downloadBtn.Enabled = true;
                     Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
                 }
+
+                downloadBtn.Enabled = true;
+                progressBar.Visibility = ViewStates.Invisible;
             }
         }
 
@@ -92,6 +94,20 @@ namespace tubeLoadNative.Droid.Activities
             mediaPlayer.Start(video.Id.VideoId);
             Intent intent = new Intent(this, typeof(CurrentSong));
             StartActivity(intent);
+        }
+
+        private void TogglePlay()
+        {
+            downloadBtn.Text = "Play";
+            downloadBtn.Click -= OnDownloadClick;
+            downloadBtn.Click += OnPlayClick;
+        }
+
+        private void ToggelDwonload()
+        {
+            downloadBtn.Text = "Download";
+            downloadBtn.Click -= OnPlayClick;
+            downloadBtn.Click += OnDownloadClick;
         }
 
         void UpdateView()
@@ -111,20 +127,18 @@ namespace tubeLoadNative.Droid.Activities
 
                 videoName.Text = video.Snippet.Title;
                 channelName.Text = video.Snippet.ChannelTitle;
-                downloadBtn.SetBackgroundColor(new Color(Resource.Color.darkassets));
+                downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
                 FileManager.SongsListUpdate();
                 path = FileManager.GetSongNameById(video.Id.VideoId);
 
                 if (path != null)
                 {
-                    downloadBtn.Text = "Play";
-                    downloadBtn.Click += OnPlayClick;
+                    TogglePlay();
                 }
                 else
                 {
-                    downloadBtn.Text = "Download";
-                    downloadBtn.Click += OnDownloadClick;
+                    ToggelDwonload();
                 }
             }
             else
