@@ -118,7 +118,7 @@ namespace tubeLoadNative.Abstracts
             {
                 if (currentSongIndex == -1)
                 {
-                    currentSongIndex = Songs.Count;
+                    currentSongIndex = Songs.Count - 1;
                 }
                 else
                 {
