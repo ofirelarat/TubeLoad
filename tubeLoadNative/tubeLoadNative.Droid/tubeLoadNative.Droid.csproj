@@ -130,7 +130,7 @@
   <ItemGroup>
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Activities\CurrentSong.cs" />
-    <Compile Include="Utils\IncomingCallReceiver.cs" />
+    <Compile Include="Utils\IncomingOutgoingCallReceiver.cs" />
     <Compile Include="Utils\NotificationHandler.cs" />
     <Compile Include="Adapters\SongsAdapter.cs" />
     <Compile Include="Adapters\VideosAdapter.cs" />
