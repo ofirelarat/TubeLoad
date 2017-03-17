@@ -191,6 +191,10 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     menu.SetHeaderIcon(picture);
                 }
+                else
+                {
+                    menu.SetHeaderIcon(Resource.Drawable.default_song_image);
+                }
 
                 var inflater = MenuInflater;
                 inflater.Inflate(Resource.Menu.song_actions_menu, menu);
@@ -251,6 +255,10 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         alertDialogBuilder.SetIcon(picture);
                     }
+                    else
+                    {
+                        alertDialogBuilder.SetIcon(Resource.Drawable.default_song_image);
+                    }
 
                     seekbarDialog = alertDialogBuilder.Create();
                     seekbarDialog.Show();
@@ -267,9 +275,9 @@ namespace tubeLoadNative.Droid.Activities
             MediaMetadataRetriever metadata = SongMetadata.GetMetadata(selectedSong.Id);
             string title = metadata.ExtractMetadata(MetadataKey.Title);
 
-            if (title == null && !title.Equals(string.Empty))
+            if (title == null)
             {
-                title = selectedSong.Name;
+                title = selectedSong.Name.Replace(".mp3", string.Empty);
             }
 
             return title;

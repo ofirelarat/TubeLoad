@@ -129,15 +129,17 @@ namespace tubeLoadNative.Droid.Activities
         void UpdatePage(string songId)
         {
             MediaMetadataRetriever mmr = SongMetadata.GetMetadata(songId);
-            string title = mmr.ExtractMetadata(MetadataKey.Title) + " - " + mmr.ExtractMetadata(MetadataKey.Artist);
+            string title = mmr.ExtractMetadata(MetadataKey.Title);
+            string artist = mmr.ExtractMetadata(MetadataKey.Artist);
 
-            if (title == null)
+            if (title == null || artist == null)
             {
-                title = FileManager.GetSongNameById(songId);
+                songTitle.Text = FileManager.GetSongNameById(songId).Replace(".mp3",string.Empty);
             }
-
-            songTitle.Text = title;
-
+            else
+            {
+                songTitle.Text = title + " - " + artist;
+            }
             seekbar.CreateSeekBar();
 
             Drawable picture = SongMetadata.GetSongPicture(songId);
@@ -148,7 +150,7 @@ namespace tubeLoadNative.Droid.Activities
             }
             else
             {
-                songImg.SetImageResource(Resource.Drawable.icon);
+                songImg.SetImageResource(Resource.Drawable.default_song_image);
             }
         }
 
