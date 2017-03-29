@@ -17,8 +17,9 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/linearLayout2">
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout2"
+            android:layout_weight="1">
             <TextView
                 android:text="Large Text"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -28,18 +29,21 @@
                 android:layout_margin="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="5dp" />
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/linearLayout3">
-                <TextView
-                    android:text="Medium Text"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/videoChannelName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+            <TextView
+                android:text="Medium Text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/videoChannelName"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp" />
         </LinearLayout>
+        <ImageButton
+            android:src="@drawable/ic_download"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/searchActivityDownloadButton"
+            android:layout_gravity="right"
+            android:backgroundTint="#00ffffff" />
     </LinearLayout>
 </LinearLayout>

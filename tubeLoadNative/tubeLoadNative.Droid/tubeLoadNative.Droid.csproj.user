@@ -2,7 +2,7 @@
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <AndroidDesignerPreferredDevice>Nexus 4</AndroidDesignerPreferredDevice>
-    <SelectedDevice>Asus _Z00AD</SelectedDevice>
-    <DefaultDevice>Android_Accelerated_x86</DefaultDevice>
+    <SelectedDevice>LGE Nexus 5</SelectedDevice>
+    <DefaultDevice>AVD_GalaxyNexus_ToolsForApacheCordova</DefaultDevice>
   </PropertyGroup>
 </Project>

@@ -46,35 +46,13 @@ namespace tubeLoadNative.Droid.Activities
 
         async void OnDownloadClick(object sender, EventArgs e)
         {
-            HttpResponseMessage response;
             downloadBtn.Enabled = false;
             progressBar.Visibility = ViewStates.Visible;
-            string FileName = video.Snippet.Title + ".mp3";
-
-            // Erasing illegal charachters from file name
-            string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
-
-            foreach (string c in forbiddenChars)
-            {
-                FileName = FileName.Replace(c, string.Empty);
-            }
+            string fileName = video.Snippet.Title + ".mp3";
 
             try
             {
-                response = await YoutubeApiClient.downloadStream(video.Id.VideoId);
-            }
-            catch (Exception ex)
-            {
-                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
-                downloadBtn.Enabled = true;
-                progressBar.Visibility = ViewStates.Invisible;
-
-                return;
-            }
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                if (await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, FileName, video.Id.VideoId, await response.Content.ReadAsStreamAsync()))
+                if(await Downloader.DownloadSong(video.Id.VideoId, fileName))
                 {
                     TogglePlay();
                     Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
@@ -83,7 +61,13 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
                 }
-
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();                
+            }
+            finally
+            {
                 downloadBtn.Enabled = true;
                 progressBar.Visibility = ViewStates.Invisible;
             }
