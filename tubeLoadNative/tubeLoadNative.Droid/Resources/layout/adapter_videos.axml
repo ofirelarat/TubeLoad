@@ -44,6 +44,7 @@
             android:layout_height="match_parent"
             android:id="@+id/searchActivityDownloadButton"
             android:layout_gravity="right"
-            android:backgroundTint="#00ffffff" />
+            android:backgroundTint="#00ffffff"
+            android:focusable="false"/>
     </LinearLayout>
 </LinearLayout>

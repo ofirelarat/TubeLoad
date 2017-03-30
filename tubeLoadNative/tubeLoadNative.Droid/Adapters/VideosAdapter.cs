@@ -3,6 +3,8 @@ using Android.Views;
 using Android.Widget;
 using Google.Apis.YouTube.v3.Data;
 using Android.Graphics;
+using System;
+using tubeLoadNative.Droid.Utils;
 
 namespace tubeLoadNative.Droid
 {
@@ -50,6 +52,8 @@ namespace tubeLoadNative.Droid
             TextView videoName = convertView.FindViewById<TextView>(Resource.Id.videoName);
             TextView channelName = convertView.FindViewById<TextView>(Resource.Id.videoChannelName);
             ImageView videoImg = convertView.FindViewById<ImageView>(Resource.Id.videoImg);
+            ImageButton downloadButton = convertView.FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
+            downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, searchResults[position]);
 
             videoName.Text = searchResults[position].Snippet.Title;
             channelName.Text = searchResults[position].Snippet.ChannelTitle;
@@ -62,6 +66,30 @@ namespace tubeLoadNative.Droid
             }
 
             return convertView;
+        }
+
+        private async void OnDownloadClick(object sender, EventArgs e, SearchResult video)
+        {
+            var downloadButton = (ImageButton)sender;
+            downloadButton.Enabled = false;
+            string fileName = video.Snippet.Title + ".mp3";
+
+            try
+            {
+                if (!await Downloader.DownloadSong(video.Id.VideoId, fileName))
+                {
+                    Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(context, ex.Message, ToastLength.Long).Show();
+                downloadButton.Enabled = true;
+            }
+            finally
+            {
+                downloadButton.Enabled = true;
+            }
         }
     }
 }

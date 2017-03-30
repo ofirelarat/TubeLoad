@@ -24,7 +24,7 @@ namespace tubeLoadNative.Droid.Activities
         public static SearchResult video;
         ListView myVideosListView;
         EditText searchString;
-        ImageButton downloadButton;
+        
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,12 +32,11 @@ namespace tubeLoadNative.Droid.Activities
             SetContentView(Resource.Layout.activity_search_songs);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
-            downloadButton = FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
+            
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchString = FindViewById<EditText>(Resource.Id.searchEditText);
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
-            downloadButton.Click += OnDownloadClick;
 
             searchButton.Click += async delegate
             {
@@ -70,35 +69,12 @@ namespace tubeLoadNative.Droid.Activities
         void HideKeyboard(Context context)
         {
             var inputMethodManager = context.GetSystemService(InputMethodService) as InputMethodManager;
+            
             if (inputMethodManager != null && context is Android.App.Activity)
             {
                 var activity = context as Android.App.Activity;
                 var token = activity.CurrentFocus == null ? null : activity.CurrentFocus.WindowToken;
                 inputMethodManager.HideSoftInputFromWindow(token, HideSoftInputFlags.ImplicitOnly);
-            }
-
-        }
-
-        private async void OnDownloadClick(object sender, EventArgs e)
-        {
-            downloadButton.Enabled = false;
-            string fileName = video.Snippet.Title + ".mp3";
-
-            try
-            {
-                if (!await Downloader.DownloadSong(video.Id.VideoId, fileName))
-                { 
-                    Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
-                }                
-            }
-            catch (Exception ex)
-            {
-                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
-                downloadButton.Enabled = true;
-            }
-            finally
-            {
-                downloadButton.Enabled = true;
             }
         }
 
