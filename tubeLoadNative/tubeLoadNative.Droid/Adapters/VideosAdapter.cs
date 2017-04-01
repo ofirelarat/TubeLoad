@@ -76,7 +76,12 @@ namespace tubeLoadNative.Droid
 
             try
             {
-                if (!await Downloader.DownloadSong(video.Id.VideoId, fileName))
+                if (await Downloader.DownloadSong(video.Id.VideoId, fileName))
+                {
+                    downloadButton.Display.Dispose();
+                    Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
+                }
+                else
                 {
                     Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
                 }
@@ -84,7 +89,6 @@ namespace tubeLoadNative.Droid
             catch (Exception ex)
             {
                 Toast.MakeText(context, ex.Message, ToastLength.Long).Show();
-                downloadButton.Enabled = true;
             }
             finally
             {
