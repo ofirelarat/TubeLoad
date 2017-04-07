@@ -53,7 +53,16 @@ namespace tubeLoadNative.Droid
             TextView channelName = convertView.FindViewById<TextView>(Resource.Id.videoChannelName);
             ImageView videoImg = convertView.FindViewById<ImageView>(Resource.Id.videoImg);
             ImageButton downloadButton = convertView.FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
-            downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, searchResults[position]);
+
+            if (FileManager.GetSongNameById(searchResults[position].Id.VideoId) == null)
+            {
+                downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, searchResults[position]);
+            }
+            else
+            {
+                downloadButton.Enabled = false;
+                downloadButton.Visibility = ViewStates.Gone;
+            }
 
             videoName.Text = searchResults[position].Snippet.Title;
             channelName.Text = searchResults[position].Snippet.ChannelTitle;
@@ -72,28 +81,32 @@ namespace tubeLoadNative.Droid
         {
             var downloadButton = (ImageButton)sender;
             downloadButton.Enabled = false;
+            downloadButton.SetImageResource(Resource.Drawable.ic_downloading);
             string fileName = video.Snippet.Title + ".mp3";
 
             try
             {
                 if (await Downloader.DownloadSong(video.Id.VideoId, fileName))
                 {
-                    downloadButton.Display.Dispose();
+                    downloadButton.Visibility = ViewStates.Gone;
                     Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
-                    Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
+                    FailDownload(downloadButton);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Toast.MakeText(context, ex.Message, ToastLength.Long).Show();
+                FailDownload(downloadButton);
             }
-            finally
-            {
-                downloadButton.Enabled = true;
-            }
+        }
+
+        private void FailDownload(ImageButton downloadButton)
+        {
+            downloadButton.SetImageResource(Resource.Drawable.ic_download);
+            downloadButton.Enabled = true;
+            Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
         }
     }
 }
