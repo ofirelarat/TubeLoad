@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -45,6 +46,8 @@
             android:id="@+id/searchActivityDownloadButton"
             android:layout_gravity="right"
             android:backgroundTint="#00ffffff"
-            android:focusable="false"/>
+            android:clickable="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
     </LinearLayout>
 </LinearLayout>

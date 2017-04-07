@@ -32,7 +32,7 @@ namespace tubeLoadNative.Droid.Activities
             SetContentView(Resource.Layout.activity_search_songs);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
-            
+
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchString = FindViewById<EditText>(Resource.Id.searchEditText);
             searchString.Text = string.Empty;
