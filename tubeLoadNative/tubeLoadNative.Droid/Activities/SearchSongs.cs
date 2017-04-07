@@ -11,6 +11,7 @@ using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
 using Android.Support.V4.Content;
+using System;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -23,6 +24,7 @@ namespace tubeLoadNative.Droid.Activities
         public static SearchResult video;
         ListView myVideosListView;
         EditText searchString;
+        
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,6 +32,7 @@ namespace tubeLoadNative.Droid.Activities
             SetContentView(Resource.Layout.activity_search_songs);
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
+
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchString = FindViewById<EditText>(Resource.Id.searchEditText);
             searchString.Text = string.Empty;
@@ -66,13 +69,13 @@ namespace tubeLoadNative.Droid.Activities
         void HideKeyboard(Context context)
         {
             var inputMethodManager = context.GetSystemService(InputMethodService) as InputMethodManager;
+            
             if (inputMethodManager != null && context is Android.App.Activity)
             {
                 var activity = context as Android.App.Activity;
                 var token = activity.CurrentFocus == null ? null : activity.CurrentFocus.WindowToken;
                 inputMethodManager.HideSoftInputFromWindow(token, HideSoftInputFlags.ImplicitOnly);
             }
-
         }
 
         async Task UpdateVideos(string searchQuery)

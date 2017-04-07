@@ -14,6 +14,7 @@ namespace tubeLoadNative.Abstracts
 
         protected int currentSongIndex;
         protected IMediaPlayer mediaPlayer;
+        private string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
 
         #endregion
 
@@ -161,6 +162,17 @@ namespace tubeLoadNative.Abstracts
             {
                 currentSongIndex = Songs.Count - 1;
             }
+        }
+
+        public string CorrectSongNameForSave(string fileName)
+        {
+            // Erasing illegal charachters from file name
+            foreach (string charachter in forbiddenChars)
+            {
+                fileName = fileName.Replace(charachter, string.Empty);
+            }
+
+            return fileName;
         }
 
         protected void OnComplete(object sender, EventArgs e)
