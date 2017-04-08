@@ -14,6 +14,9 @@
 project.lock.json
 *.nuget.props
 
+# Ignore backup files
+*.bak
+
 ### XamarinStudio ###
 bin/
 obj/
