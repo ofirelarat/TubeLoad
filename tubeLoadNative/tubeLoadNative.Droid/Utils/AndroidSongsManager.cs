@@ -70,7 +70,7 @@ namespace tubeLoadNative.Droid.Utils
 
         public override void Start(string songId)
         {
-            string fileName = FileManager.PATH + FileManager.GetSongNameById(songId);
+            string fileName = FileManager.PATH + GetSong(songId).Name;
 
             if (mediaPlayer.Start(fileName))
             {
@@ -127,7 +127,7 @@ namespace tubeLoadNative.Droid.Utils
         public new void DeleteSong(string id)
         {
             base.DeleteSong(id);
-            string fileName = FileManager.PATH + FileManager.GetSongNameById(id);
+            string fileName = FileManager.PATH + GetSong(id).Name;
             File.Delete(fileName);
             FileManager.DeleteSong(id);
             Songs = FileManager.ReadFile();
@@ -136,7 +136,7 @@ namespace tubeLoadNative.Droid.Utils
         public void RenameSong(string id, string newName)
         {
             RenameSong(id, ref newName);
-            string fileName = FileManager.PATH + FileManager.GetSongNameById(id);
+            string fileName = FileManager.PATH + GetSong(id).Name;
 
             // Renaming the song file
             File.Move(fileName, FileManager.PATH + newName);

@@ -95,6 +95,11 @@ namespace tubeLoadNative.Abstracts
 
         #region Public Functions
 
+        public Song GetSong(string id)
+        {
+            return Songs.FirstOrDefault(song => song.Id == id);
+        }
+
         public void Stop()
         {
             currentSongIndex = -1;

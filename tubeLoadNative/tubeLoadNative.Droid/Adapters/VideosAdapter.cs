@@ -5,6 +5,7 @@ using Google.Apis.YouTube.v3.Data;
 using Android.Graphics;
 using System;
 using tubeLoadNative.Droid.Utils;
+using System.Linq;
 
 namespace tubeLoadNative.Droid
 {
@@ -54,11 +55,12 @@ namespace tubeLoadNative.Droid
             ImageView videoImg = convertView.FindViewById<ImageView>(Resource.Id.videoImg);
             ImageButton downloadButton = convertView.FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
 
-            if (FileManager.GetSongNameById(searchResults[position].Id.VideoId) == null)
+            if (!downloadButton.HasOnClickListeners)
             {
                 downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, searchResults[position]);
             }
-            else
+
+            if (AndroidSongsManager.Instance.GetSong(searchResults[position].Id.VideoId) != null)
             {
                 downloadButton.Enabled = false;
                 downloadButton.Visibility = ViewStates.Gone;

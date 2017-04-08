@@ -23,8 +23,7 @@ namespace tubeLoadNative.Droid.Activities
         static List<SearchResult> videos;
         public static SearchResult video;
         ListView myVideosListView;
-        EditText searchString;
-        
+        EditText searchString;        
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -63,6 +62,12 @@ namespace tubeLoadNative.Droid.Activities
                 StartActivity(intent);
             };
 
+            await UpdateVideos(string.Empty);
+        }
+
+        protected async override void OnResume()
+        {
+            base.OnResume();
             await UpdateVideos(string.Empty);
         }
 

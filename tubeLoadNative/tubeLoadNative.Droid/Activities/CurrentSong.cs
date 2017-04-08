@@ -134,7 +134,7 @@ namespace tubeLoadNative.Droid.Activities
 
             if (title == null || artist == null)
             {
-                songTitle.Text = FileManager.GetSongNameById(songId).Replace(".mp3",string.Empty);
+                songTitle.Text = AndroidSongsManager.Instance.GetSong(songId).Name.Replace(".mp3",string.Empty);
             }
             else
             {

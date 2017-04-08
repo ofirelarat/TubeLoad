@@ -2,6 +2,8 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
+using Java.Lang;
+using System.Threading.Tasks;
 using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
@@ -14,20 +16,24 @@ namespace tubeLoadNative.Droid.Activities
             base.OnCreate(savedInstanceState);
         }
 
-        protected override async void OnResume()
+        protected override void OnResume()
         {
             base.OnResume();
-       
-            try
+
+            Task.Run(async () =>
             {
-                await YoutubeApiClient.Search();
-                StartActivity(new Intent(Application.Context, typeof(SearchSongs)));
-            }
-            catch
-            {
-                Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show();
-                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
-            }
+                try
+                {
+                    await YoutubeApiClient.Search();
+                }
+                catch
+                {
+                    RunOnUiThread(new Runnable(
+                        () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
+                };
+            });                
+
+            StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace tubeLoadNative.Droid.Utils
         public static MediaMetadataRetriever GetMetadata(string id)
         {
             MediaMetadataRetriever metadata = new MediaMetadataRetriever();
-            string fileName = FileManager.PATH + FileManager.GetSongNameById(id);
+            string fileName = FileManager.PATH + AndroidSongsManager.Instance.GetSong(id).Name;
             metadata.SetDataSource(fileName);
 
             return metadata;
