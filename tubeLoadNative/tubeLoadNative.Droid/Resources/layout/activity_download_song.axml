@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="225dp"
+            android:id="@+id/videoImg" />
+        <ImageView
+            android:src="@drawable/youtubeic2"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_gravity="bottom|right"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="-17dp" />
+    </FrameLayout>
+    <TextView
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <TextView
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/channelName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+    <Button
+        android:text="Download"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/downloadBtn"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="#ff2980b9" />
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/downloadingProgressBar"
+        android:layout_margin="20dp"
+        style="@android:style/Widget.Holo.Light.ProgressBar"
+        android:visibility="invisible" />
+</LinearLayout>
