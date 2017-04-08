@@ -34,6 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Interfaces\IMediaPlayer.cs" />
+    <Compile Include="Models\SearchResultDownloadItem.cs" />
     <Compile Include="Models\Song.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Abstracts\SongsManager.cs" />
