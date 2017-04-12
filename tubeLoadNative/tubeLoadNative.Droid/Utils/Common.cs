@@ -1,6 +1,9 @@
 using Android.Graphics;
 using System.Net;
 using System.Threading.Tasks;
+using tubeLoadNative.Models;
+using Google.Apis.YouTube.v3.Data;
+using System.Collections.Generic;
 
 namespace tubeLoadNative.Droid.Utils
 {
@@ -39,5 +42,18 @@ namespace tubeLoadNative.Droid.Utils
 
             return imageBitmap;
         }
+
+        public static List<SearchResultDownloadItem> GetSearchResultsItems(SearchResult[] searchResults)
+        {
+            List<SearchResultDownloadItem> outputResults = new List<SearchResultDownloadItem>();
+
+            foreach (var searchResult in searchResults)
+            {
+                outputResults.Add(new SearchResultDownloadItem(searchResult));
+            }
+
+            return outputResults;
+        }
+
     }
 }

@@ -6,34 +6,28 @@ using Android.Views;
 using Android.Widget;
 using Google.Apis.YouTube.v3.Data;
 using Android.Graphics;
-using System.Net;
-using System.Net.Http;
 using tubeLoadNative.Droid.Utils;
-using tubeLoadNative.Services;
 using Android.Support.V4.Content;
+using tubeLoadNative.Models;
 
 namespace tubeLoadNative.Droid.Activities
 {
     [Activity(Label = "TubeLoad", NoHistory = true)]
     public class DownloadSong : Android.App.Activity
     {
-        AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
-
-        SearchResult video;
-        Button downloadBtn;
-        string path;
+        static AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
+        static SearchResultDownloadItem video;
+        static Button downloadBtn;
         TextView videoName;
         ImageView videoImg;
         TextView channelName;
-        ProgressBar progressBar;
+        static ProgressBar progressBar;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_download_song);
-
-            video = SearchSongs.video;
-
+            video = SearchSongs.getSelectedVideo();
             videoName = FindViewById<TextView>(Resource.Id.videoName);
             channelName = FindViewById<TextView>(Resource.Id.channelName);
             videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
@@ -44,29 +38,29 @@ namespace tubeLoadNative.Droid.Activities
             UpdateView();
         }
 
-        async void OnDownloadClick(object sender, EventArgs e)
+        async static void OnDownloadClick(object sender, EventArgs e)
         {
             downloadBtn.Enabled = false;
             progressBar.Visibility = ViewStates.Visible;
-            string fileName = video.Snippet.Title + ".mp3";
+            string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
 
             try
             {
-                if(await Downloader.DownloadSong(video.Id.VideoId, fileName))
+                if(await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
                     TogglePlay();
-                    Toast.MakeText(this, "Download succeed", ToastLength.Short).Show();
+                    Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
                     downloadBtn.Click -= OnDownloadClick;
                     downloadBtn.Click += OnPlayClick;
                 }
                 else
                 {
-                    Toast.MakeText(this, "Download failed", ToastLength.Short).Show();
+                    Toast.MakeText(Application.Context, "Download failed", ToastLength.Short).Show();
                 }
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();                
+                Toast.MakeText(Application.Context, ex.Message, ToastLength.Long).Show();                
             }
             finally
             {
@@ -75,14 +69,14 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        void OnPlayClick(object sender, EventArgs e)
+        static void OnPlayClick(object sender, EventArgs e)
         {
-            mediaPlayer.Start(video.Id.VideoId);
-            Intent intent = new Intent(this, typeof(CurrentSong));
-            StartActivity(intent);
+            mediaPlayer.Start(video.YoutubeResult.Id.VideoId);
+            Intent intent = new Intent(Application.Context, typeof(CurrentSong));
+            Application.Context.StartActivity(intent);
         }
 
-        private void TogglePlay()
+        private static void TogglePlay()
         {
             downloadBtn.Text = "Play";
             downloadBtn.Click -= OnDownloadClick;
@@ -96,42 +90,71 @@ namespace tubeLoadNative.Droid.Activities
             downloadBtn.Click += OnDownloadClick;
         }
 
+        private static void ToggleDownloading()
+        {
+            progressBar.Visibility = ViewStates.Visible;
+            downloadBtn.Enabled = false;
+        }
+
         void UpdateView()
         {
             if (video != null)
             {
-                Thumbnail logo = video.Snippet.Thumbnails.High;
+                Thumbnail logo = video.YoutubeResult.Snippet.Thumbnails.High;
                 Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
                 videoImg.SetImageBitmap(imageBitmap);
 
                 videoImg.Click += delegate
                 {
-                    var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.Id.VideoId);
+                    var uri = Android.Net.Uri.Parse("http://www.youtube.com/watch?v=" + video.YoutubeResult.Id.VideoId);
                     var intent = new Intent(Intent.ActionView, uri);
                     StartActivity(intent);
                 };
 
-                videoName.Text = video.Snippet.Title;
-                channelName.Text = video.Snippet.ChannelTitle;
+                videoName.Text = video.YoutubeResult.Snippet.Title;
+                channelName.Text = video.YoutubeResult.Snippet.ChannelTitle;
                 downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
-                FileManager.SongsListUpdate();
-                path = FileManager.GetSongNameById(video.Id.VideoId);
-
-                if (path != null)
-                {
-                    TogglePlay();
-                }
-                else
-                {
-                    ToggelDwonload();
-                }
+                updateViewReferState(video.DownloadState);
             }
             else
             {
                 Toast.MakeText(this, "Error - Data not available", ToastLength.Long).Show();
                 Intent intent = new Intent(this, typeof(SearchSongs));
                 StartActivity(intent);
+            }
+        }
+
+        public static void updateStateFromDownloadEvent() 
+        {
+            progressBar.Visibility = ViewStates.Invisible;
+            downloadBtn.Enabled = true;
+            TogglePlay();
+        }
+
+        public void updateViewReferState(SearchResultDownloadItem.State DownloadState)
+        {
+            switch(DownloadState)
+            {
+                case (SearchResultDownloadItem.State.Downloadable):
+                    {
+                        ToggelDwonload();
+                        break;
+                    }
+                case (SearchResultDownloadItem.State.Downloaded):
+                    {
+                        TogglePlay();
+                        break;
+                    }
+                case (SearchResultDownloadItem.State.Downloading):
+                    {
+                        ToggleDownloading();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
             }
         }
 

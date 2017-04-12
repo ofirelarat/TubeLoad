@@ -7,6 +7,7 @@ using System;
 using tubeLoadNative.Droid.Utils;
 using System.Linq;
 using tubeLoadNative.Models;
+using tubeLoadNative.Droid.Activities;
 
 namespace tubeLoadNative.Droid
 {
@@ -18,24 +19,12 @@ namespace tubeLoadNative.Droid
 
         private Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
     
-        public VideosAdapter(Android.App.Activity context, SearchResult[] searchResults, Dictionary<string, Bitmap> images)
+        public VideosAdapter(Android.App.Activity context, List<SearchResultDownloadItem> searchResults, Dictionary<string, Bitmap> images)
         {
             this.context = context;
-            this.searchResults = GetSearchResultsItems(searchResults);
+            this.searchResults = searchResults;
             this.images = images;
             inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);       
-        }
-
-        private List<SearchResultDownloadItem> GetSearchResultsItems(SearchResult[] searchResults)
-        {
-            List<SearchResultDownloadItem> outputResults = new List<SearchResultDownloadItem>();
-
-            foreach (var searchResult in searchResults)
-            {
-                outputResults.Add(new SearchResultDownloadItem(searchResult));
-            }
-
-            return outputResults;
         }
 
         public override int Count
@@ -131,6 +120,12 @@ namespace tubeLoadNative.Droid
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
                     downloadButton.Visibility = ViewStates.Gone;
                     Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
+
+                    if (video.YoutubeResult.Id.VideoId.
+                        Equals(SearchSongs.getSelectedVideo().YoutubeResult.Id.VideoId))
+                    {
+                        DownloadSong.updateStateFromDownloadEvent();
+                    }
                 }
                 else
                 {
