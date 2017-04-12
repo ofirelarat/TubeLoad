@@ -11,6 +11,7 @@ using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
 using Android.Support.V4.Content;
+using tubeLoadNative.Models;
 using System;
 
 namespace tubeLoadNative.Droid.Activities
@@ -19,9 +20,9 @@ namespace tubeLoadNative.Droid.Activities
     public class SearchSongs : Android.App.Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
-
-        static List<SearchResult> videos;
-        public static SearchResult video;
+        
+        static List<SearchResultDownloadItem> videos;
+        static SearchResultDownloadItem selectedVideo;
         ListView myVideosListView;
         EditText searchString;        
 
@@ -57,7 +58,7 @@ namespace tubeLoadNative.Droid.Activities
 
             myVideosListView.ItemClick += (sender, e) =>
             {
-                video = videos[e.Position];
+                selectedVideo = videos[e.Position];
                 Intent intent = new Intent(this, typeof(DownloadSong));
                 StartActivity(intent);
             };
@@ -98,19 +99,21 @@ namespace tubeLoadNative.Droid.Activities
                         await YoutubeApiClient.Search();
                     }
 
-                    videos = YoutubeApiClient.MostPopularSongs;
+                    List<SearchResult> originalResults = YoutubeApiClient.MostPopularSongs;
+                    videos = Common.GetSearchResultsItems(originalResults.ToArray());
                 }
                 else
                 {
                     progress.Show();
-
-                    videos = await YoutubeApiClient.Search(searchQuery);
+                   
+                    List<SearchResult> originalResults = await YoutubeApiClient.Search(searchQuery);
+                    videos = Common.GetSearchResultsItems(originalResults.ToArray());
                 }
 
                 if (videos != null)
                 {
                     Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
-                    var adapter = new VideosAdapter(this, videos.ToArray(), images);
+                    var adapter = new VideosAdapter(this, videos, images);
                     myVideosListView.Adapter = adapter;
                 }
                 else
@@ -128,15 +131,15 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        async Task<Dictionary<string, Bitmap>> LoadImages(SearchResult[] searchResults)
+        async Task<Dictionary<string, Bitmap>> LoadImages(SearchResultDownloadItem[] searchResults)
         {
             Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
 
-            foreach (var result in searchResults)
+            foreach (SearchResultDownloadItem result in searchResults)
             {
-                Thumbnail logo = result.Snippet.Thumbnails.Medium;
+                Thumbnail logo = result.YoutubeResult.Snippet.Thumbnails.Medium;
                 Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(logo.Url);
-                images.Add(result.Id.VideoId, imageBitmap);
+                images.Add(result.YoutubeResult.Id.VideoId, imageBitmap);
             }
 
             return images;
@@ -185,6 +188,16 @@ namespace tubeLoadNative.Droid.Activities
                 default:
                     return false;
             }
+        }
+
+        public static List<SearchResultDownloadItem> getSearchedVideos()
+        {
+            return videos;
+        }
+
+        public static SearchResultDownloadItem getSelectedVideo()
+        {
+            return selectedVideo;
         }
     }
 }
