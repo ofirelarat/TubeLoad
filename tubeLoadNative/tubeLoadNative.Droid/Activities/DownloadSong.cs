@@ -43,16 +43,19 @@ namespace tubeLoadNative.Droid.Activities
             downloadBtn.Enabled = false;
             progressBar.Visibility = ViewStates.Visible;
             string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
+            video.DownloadState = SearchResultDownloadItem.State.Downloading;
 
             try
             {
                 if(await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
+                    video.DownloadState = SearchResultDownloadItem.State.Downloaded;
                     TogglePlay();
                     Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
+                    video.DownloadState = SearchResultDownloadItem.State.Downloadable;
                     Toast.MakeText(Application.Context, "Download failed", ToastLength.Short).Show();
                 }
             }
