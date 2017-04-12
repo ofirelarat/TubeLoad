@@ -50,8 +50,6 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     TogglePlay();
                     Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
-                    downloadBtn.Click -= OnDownloadClick;
-                    downloadBtn.Click += OnPlayClick;
                 }
                 else
                 {
