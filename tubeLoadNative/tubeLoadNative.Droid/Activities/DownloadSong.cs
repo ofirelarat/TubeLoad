@@ -15,13 +15,14 @@ namespace tubeLoadNative.Droid.Activities
     [Activity(Label = "TubeLoad", NoHistory = true)]
     public class DownloadSong : Android.App.Activity
     {
-        static AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
-        static SearchResultDownloadItem video;
-        static Button downloadBtn;
+        AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
+        SearchResultDownloadItem video;
+        Button downloadBtn;
         TextView videoName;
         ImageView videoImg;
         TextView channelName;
-        static ProgressBar progressBar;
+        ProgressBar progressBar;
+        public static event Action onDownloaded;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -38,19 +39,19 @@ namespace tubeLoadNative.Droid.Activities
             UpdateView();
         }
 
-        async static void OnDownloadClick(object sender, EventArgs e)
+        async void OnDownloadClick(object sender, EventArgs e)
         {
-            downloadBtn.Enabled = false;
-            progressBar.Visibility = ViewStates.Visible;
+            ToggleDownloading();
             string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
             video.DownloadState = SearchResultDownloadItem.State.Downloading;
 
             try
             {
-                if(await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
+                if (await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
                     TogglePlay();
+                    onDownloaded();
                     Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
@@ -61,7 +62,7 @@ namespace tubeLoadNative.Droid.Activities
             }
             catch (Exception ex)
             {
-                Toast.MakeText(Application.Context, ex.Message, ToastLength.Long).Show();                
+                Toast.MakeText(Application.Context, ex.Message, ToastLength.Long).Show();
             }
             finally
             {
@@ -70,14 +71,14 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        static void OnPlayClick(object sender, EventArgs e)
+        void OnPlayClick(object sender, EventArgs e)
         {
             mediaPlayer.Start(video.YoutubeResult.Id.VideoId);
             Intent intent = new Intent(Application.Context, typeof(CurrentSong));
-            Application.Context.StartActivity(intent);
+            StartActivity(intent);
         }
 
-        private static void TogglePlay()
+        private void TogglePlay()
         {
             downloadBtn.Text = "Play";
             downloadBtn.Click -= OnDownloadClick;
@@ -91,7 +92,7 @@ namespace tubeLoadNative.Droid.Activities
             downloadBtn.Click += OnDownloadClick;
         }
 
-        private static void ToggleDownloading()
+        private void ToggleDownloading()
         {
             progressBar.Visibility = ViewStates.Visible;
             downloadBtn.Enabled = false;
@@ -126,16 +127,9 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        public static void updateStateFromDownloadEvent() 
-        {
-            progressBar.Visibility = ViewStates.Invisible;
-            downloadBtn.Enabled = true;
-            TogglePlay();
-        }
-
         public void updateViewReferState(SearchResultDownloadItem.State DownloadState)
         {
-            switch(DownloadState)
+            switch (DownloadState)
             {
                 case (SearchResultDownloadItem.State.Downloadable):
                     {

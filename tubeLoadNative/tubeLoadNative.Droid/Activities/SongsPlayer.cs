@@ -63,7 +63,7 @@ namespace tubeLoadNative.Droid.Activities
                     CloseContextMenu();
                 }
 
-                if(seekbarview != null)
+                if (seekbarview != null)
                 {
                     seekbarview.AbortSeekbarThread();
                 }
@@ -78,11 +78,7 @@ namespace tubeLoadNative.Droid.Activities
 
             mediaPlayer.Starting += delegate
             {
-                int index = songsListView.FirstVisiblePosition;
-                View songView = songsListView.GetChildAt(0);
-                int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
                 UpdateList();
-                songsListView.SetSelectionFromTop(index, top);
             };
 
             if (mediaPlayer.IsPlaying)
@@ -130,8 +126,14 @@ namespace tubeLoadNative.Droid.Activities
         {
             songs = mediaPlayer.Songs;
 
+            int index = songsListView.FirstVisiblePosition;
+            View songView = songsListView.GetChildAt(0);
+            int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
+
             BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
             songsListView.Adapter = adapter;
+
+            songsListView.SetSelectionFromTop(index, top);
         }
 
         void Start(object sender, EventArgs e)
@@ -248,7 +250,7 @@ namespace tubeLoadNative.Droid.Activities
                     });
 
                     alertDialogBuilder.SetTitle(GetSelectedSongTitle());
-                    
+
                     Drawable picture = SongMetadata.GetSongPicture(selectedSong.Id);
 
                     if (picture != null)
