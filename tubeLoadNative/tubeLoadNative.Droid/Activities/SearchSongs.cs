@@ -20,11 +20,11 @@ namespace tubeLoadNative.Droid.Activities
     public class SearchSongs : Android.App.Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
-        
+
         static List<SearchResultDownloadItem> videos;
         static SearchResultDownloadItem selectedVideo;
         ListView myVideosListView;
-        EditText searchString;        
+        EditText searchString;
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -37,6 +37,8 @@ namespace tubeLoadNative.Droid.Activities
             searchString = FindViewById<EditText>(Resource.Id.searchEditText);
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
+
+            DownloadSong.onDownloaded += LoadListView;
 
             searchButton.Click += async delegate
             {
@@ -69,13 +71,13 @@ namespace tubeLoadNative.Droid.Activities
         protected async override void OnResume()
         {
             base.OnResume();
-            await UpdateVideos(string.Empty);
+            LoadListView();
         }
 
         void HideKeyboard(Context context)
         {
             var inputMethodManager = context.GetSystemService(InputMethodService) as InputMethodManager;
-            
+
             if (inputMethodManager != null && context is Android.App.Activity)
             {
                 var activity = context as Android.App.Activity;
@@ -105,16 +107,14 @@ namespace tubeLoadNative.Droid.Activities
                 else
                 {
                     progress.Show();
-                   
+
                     List<SearchResult> originalResults = await YoutubeApiClient.Search(searchQuery);
                     videos = Common.GetSearchResultsItems(originalResults.ToArray());
                 }
 
                 if (videos != null)
                 {
-                    Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
-                    var adapter = new VideosAdapter(this, videos, images);
-                    myVideosListView.Adapter = adapter;
+                    LoadListView();
                 }
                 else
                 {
@@ -129,6 +129,20 @@ namespace tubeLoadNative.Droid.Activities
             {
                 progress.Dismiss();
             }
+        }
+
+        private async void LoadListView()
+        {
+            Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
+
+            int index = myVideosListView.FirstVisiblePosition;
+            View songView = myVideosListView.GetChildAt(0);
+            int top = (songView == null) ? 0 : songView.Top - myVideosListView.ListPaddingTop;
+
+            var adapter = new VideosAdapter(this, videos, images);
+            myVideosListView.Adapter = adapter;
+
+            myVideosListView.SetSelectionFromTop(index, top);
         }
 
         async Task<Dictionary<string, Bitmap>> LoadImages(SearchResultDownloadItem[] searchResults)
