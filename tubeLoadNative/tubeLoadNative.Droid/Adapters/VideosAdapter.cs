@@ -18,13 +18,13 @@ namespace tubeLoadNative.Droid
         private static LayoutInflater inflater = null;
 
         private Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
-    
+
         public VideosAdapter(Android.App.Activity context, List<SearchResultDownloadItem> searchResults, Dictionary<string, Bitmap> images)
         {
             this.context = context;
             this.searchResults = searchResults;
             this.images = images;
-            inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);       
+            inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);
         }
 
         public override int Count
@@ -62,10 +62,14 @@ namespace tubeLoadNative.Droid
             }
 
             var currentVideoYoutube = searchResults[position].YoutubeResult;
-            
+
             if (AndroidSongsManager.Instance.GetSong(currentVideoYoutube.Id.VideoId) != null)
             {
                 searchResults[position].DownloadState = SearchResultDownloadItem.State.Downloaded;
+            }
+            else if (searchResults[position].DownloadState == SearchResultDownloadItem.State.Downloaded)
+            {
+                searchResults[position].DownloadState = SearchResultDownloadItem.State.Downloadable;
             }
 
             UpdateVideoButtonByState(searchResults[position], downloadButton);
@@ -120,12 +124,6 @@ namespace tubeLoadNative.Droid
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
                     downloadButton.Visibility = ViewStates.Gone;
                     Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
-
-                    if (video.YoutubeResult.Id.VideoId.
-                        Equals(SearchSongs.getSelectedVideo().YoutubeResult.Id.VideoId))
-                    {
-                        DownloadSong.updateStateFromDownloadEvent();
-                    }
                 }
                 else
                 {
