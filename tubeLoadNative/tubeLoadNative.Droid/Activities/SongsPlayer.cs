@@ -354,12 +354,12 @@ namespace tubeLoadNative.Droid.Activities
                     return true;
 
                 case Resource.Id.alphabeticSort:
-                    mediaPlayer.SortSongs(Common.AlphabeticTest);
+                    mediaPlayer.SortSongs(Song.AlphabeticCompare);
                     item.SetChecked(true);
                     UpdateList();
                     return true;
 
-                case Resource.Id.originSort:
+                case Resource.Id.modifiedSort:
                     mediaPlayer.UpdateSongsList();
                     item.SetChecked(true);
                     UpdateList();

@@ -147,12 +147,13 @@ namespace tubeLoadNative.Droid.Utils
 
         public void UpdateSongsList()
         {
-            Models.Song cur = CurrentSong;
+            Models.Song currentSong = CurrentSong;
             Songs = FileManager.ReadFile();
             Songs.Reverse();
-            if (cur != null)
+
+            if (currentSong != null)
             {
-                Models.Song songCur = Songs.Find(song => song.Id.Equals(cur.Id));
+                Models.Song songCur = Songs.Find(song => song.Id.Equals(currentSong.Id));
                 currentSongIndex = Songs.IndexOf(songCur);
             }
         }

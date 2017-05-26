@@ -55,38 +55,5 @@ namespace tubeLoadNative.Droid.Utils
 
             return outputResults;
         }
-
-        public static int AlphabeticTest(Song s1, Song s2)
-        {
-            return s1.Name.CompareTo(s2.Name);
-        }
-
-        public static int ArtistNameTest(Song s1, Song s2)
-        {
-            MediaMetadataRetriever mmr1 = SongMetadata.GetMetadata(s1.Id);
-            MediaMetadataRetriever mmr2 = SongMetadata.GetMetadata(s2.Id);
-            string artistS1 = mmr1.ExtractMetadata(MetadataKey.Date);
-            string artistS2 = mmr2.ExtractMetadata(MetadataKey.Date);
-            if (artistS1 == null || artistS2 == null)
-            {
-                return 0;
-            }
-
-            return artistS1.CompareTo(artistS2);
-        }
-
-        public static int SongDateTest(Song s1, Song s2)
-        {
-            MediaMetadataRetriever mmr1 = SongMetadata.GetMetadata(s1.Id);
-            MediaMetadataRetriever mmr2 = SongMetadata.GetMetadata(s2.Id);
-            string dateS1 = mmr1.ExtractMetadata(MetadataKey.Date);
-            string dateS2 = mmr2.ExtractMetadata(MetadataKey.Date);
-            if (dateS1 == null || dateS2 == null)
-            {
-                return 0;
-            }
-
-            return dateS1.CompareTo(dateS2);
-        }
     }
 }

@@ -67,5 +67,10 @@ namespace tubeLoadNative.Models
 
             return didDelete;
         }
+
+        public static int AlphabeticCompare(Song song1, Song song2)
+        {
+            return song1.Name.CompareTo(song2.Name);
+        }
     }
 }

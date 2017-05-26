@@ -145,6 +145,9 @@ namespace tubeLoadNative.Droid
 			// aapt resource value: 0x7f080013
 			public const int linearLayout2 = 2131230739;
 			
+			// aapt resource value: 0x7f08001e
+			public const int modifiedSort = 2131230750;
+			
 			// aapt resource value: 0x7f080019
 			public const int mySong = 2131230745;
 			
@@ -153,9 +156,6 @@ namespace tubeLoadNative.Droid
 			
 			// aapt resource value: 0x7f08001c
 			public const int orderSongs = 2131230748;
-			
-			// aapt resource value: 0x7f08001e
-			public const int originSort = 2131230750;
 			
 			// aapt resource value: 0x7f080008
 			public const int playBtn = 2131230728;
