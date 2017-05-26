@@ -324,6 +324,7 @@ namespace tubeLoadNative.Droid.Activities
             menu.FindItem(Resource.Id.mySong).SetVisible(false);
 
             menu.FindItem(Resource.Id.currentSong).SetVisible(true);
+            menu.FindItem(Resource.Id.orderSongs).SetVisible(true);
 
             return true;
         }
@@ -351,6 +352,19 @@ namespace tubeLoadNative.Droid.Activities
                         Toast.MakeText(this, "No song is playing", ToastLength.Long).Show();
                     }
                     return true;
+
+                case Resource.Id.alphabeticSort:
+                    mediaPlayer.SortSongs(Song.AlphabeticCompare);
+                    item.SetChecked(true);
+                    UpdateList();
+                    return true;
+
+                case Resource.Id.modifiedSort:
+                    mediaPlayer.UpdateSongsList();
+                    item.SetChecked(true);
+                    UpdateList();
+                    return true;
+
                 default:
                     return base.OnOptionsItemSelected(item);
             }
