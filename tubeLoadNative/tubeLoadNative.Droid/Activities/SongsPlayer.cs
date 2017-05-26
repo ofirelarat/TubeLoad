@@ -359,12 +359,6 @@ namespace tubeLoadNative.Droid.Activities
                     UpdateList();
                     return true;
 
-                case Resource.Id.artistSort:
-                    mediaPlayer.SortSongs(Common.ArtistNameTest);
-                    item.SetChecked(true);
-                    UpdateList();
-                    return true;
-
                 case Resource.Id.originSort:
                     mediaPlayer.UpdateSongsList();
                     item.SetChecked(true);
