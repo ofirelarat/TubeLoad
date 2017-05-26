@@ -195,6 +195,13 @@ namespace tubeLoadNative.Abstracts
             Starting?.Invoke(sender, e);
         }
 
+        public void SortSongs(Comparison<Song> compare)
+        {
+            Song cur = CurrentSong;
+            Songs.Sort(compare);
+            currentSongIndex = Songs.IndexOf(cur);
+        }
+
         #endregion 
 
         #endregion

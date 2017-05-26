@@ -18,7 +18,7 @@ namespace tubeLoadNative.Droid.Utils
 
         AndroidSongsManager()
         {
-            Songs = FileManager.ReadFile();
+            UpdateSongsList();
             mediaPlayer = AndroidMediaPlayer.Instance;
             mediaPlayer.OnComplete += (sender, e) =>
             {
@@ -143,6 +143,12 @@ namespace tubeLoadNative.Droid.Utils
 
             FileManager.WriteToJsonFile(id, newName);
             Songs = FileManager.ReadFile();
+        }
+
+        public void UpdateSongsList()
+        {
+            Songs = FileManager.ReadFile();
+            Songs.Reverse();
         }
 
         #endregion

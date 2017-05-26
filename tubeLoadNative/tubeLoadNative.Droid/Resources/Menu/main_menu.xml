@@ -11,4 +11,22 @@
   <item android:id="@+id/currentSong"
      android:title="Current Songs"
      android:visible="false"></item>
+
+  <item android:id="@+id/orderSongs"
+    android:title="Order Songs"
+    android:visible="false">
+    <menu>
+      <group android:checkableBehavior="single">
+        <item android:id="@+id/alphabeticSort"
+              android:title="Alphabetic"></item>
+
+        <item android:id="@+id/artistSort"
+            android:title="Artist"></item>
+
+        <item android:id="@+id/originSort"
+            android:checked="true"
+            android:title="Download Date"></item>
+      </group>
+    </menu>
+  </item>
 </menu>
