@@ -135,7 +135,6 @@ namespace tubeLoadNative.Droid.Activities
 
         private async void LoadListView()
         {
-            //Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
             if (images == null)
             {
                 images = await LoadImages(videos.ToArray());
