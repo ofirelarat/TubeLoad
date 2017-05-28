@@ -4,41 +4,53 @@ using System.Threading.Tasks;
 using tubeLoadNative.Models;
 using Google.Apis.YouTube.v3.Data;
 using System.Collections.Generic;
-using Android.Media;
+using Android.Content;
 
 namespace tubeLoadNative.Droid.Utils
 {
     internal static class Common
     {
-        public static Task<Bitmap> GetImageBitmapFromUrlAsync(string url)
+        public static Task<Bitmap> GetImageBitmapFromUrlAsync(Context context, string url)
         {
             Task<Bitmap> imageBitmap = null;
-
-            using (var webClient = new WebClient())
+            try
             {
-                var imageBytes = webClient.DownloadData(url);
-
-                if (imageBytes != null && imageBytes.Length > 0)
+                using (var webClient = new WebClient())
                 {
-                    imageBitmap = BitmapFactory.DecodeByteArrayAsync(imageBytes, 0, imageBytes.Length);
+                    var imageBytes = webClient.DownloadData(url);
+
+                    if (imageBytes != null && imageBytes.Length > 0)
+                    {
+                        imageBitmap = BitmapFactory.DecodeByteArrayAsync(imageBytes, 0, imageBytes.Length);
+                    }
                 }
+            }
+            catch
+            {
+                return Task.Run(() => (BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.default_song_image)));
             }
 
             return imageBitmap;
         }
 
-        public static Bitmap GetImageBitmapFromUrl(string url)
+        public static Bitmap GetImageBitmapFromUrl(Context context, string url)
         {
             Bitmap imageBitmap = null;
-
-            using (var webClient = new WebClient())
+            try
             {
-                var imageBytes = webClient.DownloadData(url);
-
-                if (imageBytes != null && imageBytes.Length > 0)
+                using (var webClient = new WebClient())
                 {
-                    imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
+                    var imageBytes = webClient.DownloadData(url);
+
+                    if (imageBytes != null && imageBytes.Length > 0)
+                    {
+                        imageBitmap = BitmapFactory.DecodeByteArray(imageBytes, 0, imageBytes.Length);
+                    }
                 }
+            }
+            catch
+            {
+                imageBitmap = BitmapFactory.DecodeResource(context.Resources, Resource.Drawable.default_song_image);
             }
 
             return imageBitmap;
@@ -55,5 +67,6 @@ namespace tubeLoadNative.Droid.Utils
 
             return outputResults;
         }
+
     }
 }
