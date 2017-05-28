@@ -25,6 +25,7 @@ namespace tubeLoadNative.Droid.Activities
         static SearchResultDownloadItem selectedVideo;
         ListView myVideosListView;
         EditText searchString;
+        Dictionary<string, Bitmap> images;
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -114,6 +115,7 @@ namespace tubeLoadNative.Droid.Activities
 
                 if (videos != null)
                 {
+                    images = await LoadImages(videos.ToArray());
                     LoadListView();
                 }
                 else
@@ -133,7 +135,10 @@ namespace tubeLoadNative.Droid.Activities
 
         private async void LoadListView()
         {
-            Dictionary<string, Bitmap> images = await LoadImages(videos.ToArray());
+            if (images == null)
+            {
+                images = await LoadImages(videos.ToArray());
+            }
 
             int index = myVideosListView.FirstVisiblePosition;
             View songView = myVideosListView.GetChildAt(0);
@@ -152,7 +157,7 @@ namespace tubeLoadNative.Droid.Activities
             foreach (SearchResultDownloadItem result in searchResults)
             {
                 Thumbnail logo = result.YoutubeResult.Snippet.Thumbnails.Medium;
-                Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(logo.Url);
+                Bitmap imageBitmap = await Common.GetImageBitmapFromUrlAsync(this,logo.Url);
                 images.Add(result.YoutubeResult.Id.VideoId, imageBitmap);
             }
 

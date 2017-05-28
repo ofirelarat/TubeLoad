@@ -103,7 +103,7 @@ namespace tubeLoadNative.Droid.Activities
             if (video != null)
             {
                 Thumbnail logo = video.YoutubeResult.Snippet.Thumbnails.High;
-                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(logo.Url);
+                Bitmap imageBitmap = Common.GetImageBitmapFromUrl(this,logo.Url);
                 videoImg.SetImageBitmap(imageBitmap);
 
                 videoImg.Click += delegate
