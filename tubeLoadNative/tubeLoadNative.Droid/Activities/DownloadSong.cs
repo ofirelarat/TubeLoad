@@ -56,19 +56,19 @@ namespace tubeLoadNative.Droid.Activities
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
                     TogglePlay();
                     onDownloaded();
-                    GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DonloadingSong, $"Donwloading {video.YoutubeResult.Snippet.Title}");
+                    GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DonloadingSong, $"Donwloaded {video.YoutubeResult.Snippet.Title}");
                     Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
-                    GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DownloadFailed, $"Donwload {video.YoutubeResult.Snippet.Title} failed");
+                    GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DownloadFailed, $"Download {video.YoutubeResult.Snippet.Title} failed");
                     video.DownloadState = SearchResultDownloadItem.State.Downloadable;
                     Toast.MakeText(Application.Context, "Download failed", ToastLength.Short).Show();
                 }
             }
             catch (Exception ex)
             {
-                GoogleAnalyticsService.Instance.TrackAppException(ex.Message, true);
+                GoogleAnalyticsService.Instance.TrackAppException(video.YoutubeResult.Snippet.Title + "\t" + ex.Message, true);
                 Toast.MakeText(Application.Context, ex.Message, ToastLength.Long).Show();
             }
             finally
