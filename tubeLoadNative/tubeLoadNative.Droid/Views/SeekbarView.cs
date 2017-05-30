@@ -74,7 +74,7 @@ namespace tubeLoadNative.Droid.Views
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine(ex.Message + '\n' + ex.StackTrace);
+                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
                 }
             }
         }

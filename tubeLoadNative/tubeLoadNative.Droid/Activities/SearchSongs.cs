@@ -32,6 +32,9 @@ namespace tubeLoadNative.Droid.Activities
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_search_songs);
 
+            GoogleAnalyticsService.Instance.Initialize(this);
+            GoogleAnalyticsService.Instance.TrackAppPage("Search Song");
+
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
 
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
@@ -123,8 +126,9 @@ namespace tubeLoadNative.Droid.Activities
                     Toast.MakeText(this, "Didn't find results", ToastLength.Long).Show();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
                 Toast.MakeText(this, "Could not connect to Youtube", ToastLength.Long).Show();
             }
             finally
