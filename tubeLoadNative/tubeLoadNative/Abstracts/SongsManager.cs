@@ -62,9 +62,9 @@ namespace tubeLoadNative.Abstracts
 
         #region Functions
 
-        #region Private Functions
+        #region Protected Functions
 
-        string GetValidFileName(string name)
+        protected string GetValidFileName(string name)
         {
             string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
 
@@ -137,36 +137,6 @@ namespace tubeLoadNative.Abstracts
             }
 
             return false;
-        }
-
-        public void DeleteSong(string id)
-        {
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-
-            if (pos < currentSongIndex)
-            {
-                currentSongIndex--;
-            }
-            else if (pos == currentSongIndex)
-            {
-                currentSongIndex = -1;
-            }
-        }
-
-        public void RenameSong(string id, ref string newName)
-        {
-            newName = GetValidFileName(newName);
-
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-
-            if (pos < currentSongIndex)
-            {
-                currentSongIndex--;
-            }
-            else if (pos == currentSongIndex)
-            {
-                currentSongIndex = Songs.Count - 1;
-            }
         }
 
         public string CorrectSongNameForSave(string fileName)

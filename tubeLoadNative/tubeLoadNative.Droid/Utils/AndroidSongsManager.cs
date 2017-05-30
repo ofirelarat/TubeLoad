@@ -113,7 +113,7 @@ namespace tubeLoadNative.Droid.Utils
                 }
 
                 FileManager.WriteToJsonFile(id, songName);
-                Songs = FileManager.ReadFile();
+                UpdateSongsList();
                 OnSave(null, null);
             }
             catch
@@ -124,25 +124,24 @@ namespace tubeLoadNative.Droid.Utils
             return true;
         }
 
-        public new void DeleteSong(string id)
+        public void DeleteSong(string id)
         {
-            base.DeleteSong(id);
             string fileName = FileManager.PATH + GetSong(id).Name;
             File.Delete(fileName);
             FileManager.DeleteSong(id);
-            Songs = FileManager.ReadFile();
+            UpdateSongsList();
         }
 
         public void RenameSong(string id, string newName)
         {
-            RenameSong(id, ref newName);
+            newName = GetValidFileName(newName);
             string fileName = FileManager.PATH + GetSong(id).Name;
 
             // Renaming the song file
             File.Move(fileName, FileManager.PATH + newName);
 
             FileManager.WriteToJsonFile(id, newName);
-            Songs = FileManager.ReadFile();
+            UpdateSongsList();
         }
 
         public void UpdateSongsList()
