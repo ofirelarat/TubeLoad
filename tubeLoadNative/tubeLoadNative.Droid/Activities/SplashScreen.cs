@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Widget;
 using Java.Lang;
 using System.Threading.Tasks;
+using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
@@ -14,6 +15,10 @@ namespace tubeLoadNative.Droid.Activities
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
+            GoogleAnalyticsService.Instance.Initialize(this);
+            GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
+
         }
 
         protected override void OnResume()
@@ -26,8 +31,9 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     await YoutubeApiClient.Search();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, true);
                     RunOnUiThread(new Runnable(
                         () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
                 };

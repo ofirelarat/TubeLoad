@@ -36,6 +36,9 @@ namespace tubeLoadNative.Droid.Activities
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_songs_player);
 
+            GoogleAnalyticsService.Instance.Initialize(this);
+            GoogleAnalyticsService.Instance.TrackAppPage("Songs player");
+
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
@@ -50,6 +53,7 @@ namespace tubeLoadNative.Droid.Activities
 
             songsListView.ItemClick += (object sender, AdapterView.ItemClickEventArgs e) =>
             {
+                GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.PlayingSong, "Playing " + songs[e.Position].Name);
                 Play(songs[e.Position].Id);
             };
 
@@ -218,8 +222,9 @@ namespace tubeLoadNative.Droid.Activities
                         mediaPlayer.DeleteSong(selectedSong.Id);
                         UpdateList();
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
                         Toast.MakeText(Application.Context, "could not delete this song", ToastLength.Long).Show();
                     }
 
@@ -308,8 +313,9 @@ namespace tubeLoadNative.Droid.Activities
                         Toast.MakeText(Application.Context, "Not a valid name", ToastLength.Long).Show();
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
                     Toast.MakeText(Application.Context, "Could not rename the song", ToastLength.Long).Show();
                 }
             });

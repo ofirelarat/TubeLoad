@@ -28,6 +28,9 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_current_song);
+
+            GoogleAnalyticsService.Instance.Initialize(this);
+            GoogleAnalyticsService.Instance.TrackAppPage("Current Song");
             
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
@@ -105,6 +108,7 @@ namespace tubeLoadNative.Droid.Activities
             playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
             playBtn.Click -= Start;
             playBtn.Click += Pause;
+            GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.PlayingSong, "Playing " + mediaPlayer.CurrentSong.Name);
         }
 
         void TogglePause()
