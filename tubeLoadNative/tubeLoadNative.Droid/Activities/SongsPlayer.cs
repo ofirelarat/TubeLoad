@@ -82,33 +82,29 @@ namespace tubeLoadNative.Droid.Activities
 
             mediaPlayer.Starting += delegate
             {
+                TogglePlay();
+            };
+
+            mediaPlayer.StartingNewSong += delegate
+            {
                 UpdateList();
             };
 
-            if (mediaPlayer.IsPlaying)
-            {
-                TogglePlay();
-            }
-            else
+            mediaPlayer.Pausing += delegate
             {
                 TogglePause();
-            }
+            };
 
+            ChangePlayingView();
 
             nextBtn.Click += delegate
             {
-                if (mediaPlayer.PlayNext())
-                {
-                    TogglePlay();
-                }
+                mediaPlayer.PlayNext();
             };
 
             prevBtn.Click += delegate
             {
-                if (mediaPlayer.PlayPrev())
-                {
-                    TogglePlay();
-                }
+                mediaPlayer.PlayPrev();
             };
         }
 
@@ -142,34 +138,22 @@ namespace tubeLoadNative.Droid.Activities
 
         void Start(object sender, EventArgs e)
         {
-            if (mediaPlayer.Start())
-            {
-                playBtn.Click -= Start;
-                playBtn.Click += Pause;
-                playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
-            }
+            mediaPlayer.Start();
         }
 
         void Pause(object sender, EventArgs e)
         {
             mediaPlayer.Pause();
-            playBtn.Click -= Pause;
-            playBtn.Click += Start;
-            playBtn.SetImageResource(Resource.Drawable.ic_media_play);
         }
 
         void Play(string id)
         {
             FileManager.SongsListUpdate(id);
             mediaPlayer.Start(id);
-            TogglePlay();
         }
 
-        protected override void OnResume()
+        void ChangePlayingView()
         {
-            FileManager.SongsListUpdate();
-            UpdateList();
-
             if (mediaPlayer.IsPlaying)
             {
                 TogglePlay();
@@ -178,6 +162,13 @@ namespace tubeLoadNative.Droid.Activities
             {
                 TogglePause();
             }
+        }
+
+        protected override void OnResume()
+        {
+            FileManager.SongsListUpdate();
+            UpdateList();
+            ChangePlayingView();
 
             base.OnResume();
         }

@@ -62,6 +62,8 @@ namespace tubeLoadNative.Droid.Utils
                     mediaPlayer.Continue();
                 }
 
+                OnStart(null, null);
+
                 return true;
             }
 
@@ -76,6 +78,7 @@ namespace tubeLoadNative.Droid.Utils
             {
                 currentSongIndex = Songs.FindIndex((x) => x.Id == songId);
                 OnStart(null, null);
+                OnStartingNewSong(null, null);
                 NotificationHandler.BuildNotification(songId);
             }
             else
@@ -87,6 +90,7 @@ namespace tubeLoadNative.Droid.Utils
         public override void Pause()
         {
             mediaPlayer.Pause();
+            OnPause(null, null);
         }
 
         public new void Stop()
