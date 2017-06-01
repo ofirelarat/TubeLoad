@@ -18,7 +18,7 @@ namespace tubeLoadNative.Droid.Utils
 
         AndroidSongsManager()
         {
-            Songs = FileManager.ReadFile();
+            UpdateSongsList();
             mediaPlayer = AndroidMediaPlayer.Instance;
             mediaPlayer.OnComplete += (sender, e) =>
             {
@@ -62,6 +62,8 @@ namespace tubeLoadNative.Droid.Utils
                     mediaPlayer.Continue();
                 }
 
+                OnStart(null, null);
+
                 return true;
             }
 
@@ -76,6 +78,7 @@ namespace tubeLoadNative.Droid.Utils
             {
                 currentSongIndex = Songs.FindIndex((x) => x.Id == songId);
                 OnStart(null, null);
+                OnStartingNewSong(null, null);
                 NotificationHandler.BuildNotification(songId);
             }
             else
@@ -87,6 +90,7 @@ namespace tubeLoadNative.Droid.Utils
         public override void Pause()
         {
             mediaPlayer.Pause();
+            OnPause(null, null);
         }
 
         public new void Stop()
@@ -113,7 +117,7 @@ namespace tubeLoadNative.Droid.Utils
                 }
 
                 FileManager.WriteToJsonFile(id, songName);
-                Songs = FileManager.ReadFile();
+                UpdateSongsList();
                 OnSave(null, null);
             }
             catch
@@ -124,25 +128,37 @@ namespace tubeLoadNative.Droid.Utils
             return true;
         }
 
-        public new void DeleteSong(string id)
+        public void DeleteSong(string id)
         {
-            base.DeleteSong(id);
             string fileName = FileManager.PATH + GetSong(id).Name;
             File.Delete(fileName);
             FileManager.DeleteSong(id);
-            Songs = FileManager.ReadFile();
+            UpdateSongsList();
         }
 
         public void RenameSong(string id, string newName)
         {
-            RenameSong(id, ref newName);
+            newName = GetValidFileName(newName);
             string fileName = FileManager.PATH + GetSong(id).Name;
 
             // Renaming the song file
             File.Move(fileName, FileManager.PATH + newName);
 
             FileManager.WriteToJsonFile(id, newName);
+            UpdateSongsList();
+        }
+
+        public void UpdateSongsList()
+        {
+            Models.Song currentSong = CurrentSong;
             Songs = FileManager.ReadFile();
+            Songs.Reverse();
+
+            if (currentSong != null)
+            {
+                Models.Song songCur = Songs.Find(song => song.Id.Equals(currentSong.Id));
+                currentSongIndex = Songs.IndexOf(songCur);
+            }
         }
 
         #endregion

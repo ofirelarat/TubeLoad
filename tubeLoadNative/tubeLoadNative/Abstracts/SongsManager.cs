@@ -22,6 +22,8 @@ namespace tubeLoadNative.Abstracts
 
         public event EventHandler Completing;
         public event EventHandler Starting;
+        public event EventHandler StartingNewSong;
+        public event EventHandler Pausing;
         public event EventHandler Saving;
 
         #endregion
@@ -62,9 +64,9 @@ namespace tubeLoadNative.Abstracts
 
         #region Functions
 
-        #region Private Functions
+        #region Protected Functions
 
-        string GetValidFileName(string name)
+        protected string GetValidFileName(string name)
         {
             string[] forbiddenChars = { "|", "\\", "?", "*", "<", "\"", ":", ">", "/" };
 
@@ -139,36 +141,6 @@ namespace tubeLoadNative.Abstracts
             return false;
         }
 
-        public void DeleteSong(string id)
-        {
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-
-            if (pos < currentSongIndex)
-            {
-                currentSongIndex--;
-            }
-            else if (pos == currentSongIndex)
-            {
-                currentSongIndex = -1;
-            }
-        }
-
-        public void RenameSong(string id, ref string newName)
-        {
-            newName = GetValidFileName(newName);
-
-            int pos = Songs.IndexOf(Songs.Single((x) => x.Id == id));
-
-            if (pos < currentSongIndex)
-            {
-                currentSongIndex--;
-            }
-            else if (pos == currentSongIndex)
-            {
-                currentSongIndex = Songs.Count - 1;
-            }
-        }
-
         public string CorrectSongNameForSave(string fileName)
         {
             // Erasing illegal charachters from file name
@@ -193,6 +165,23 @@ namespace tubeLoadNative.Abstracts
         protected void OnStart(object sender, EventArgs e)
         {
             Starting?.Invoke(sender, e);
+        }
+
+        protected void OnStartingNewSong(object sender, EventArgs e)
+        {
+            StartingNewSong?.Invoke(sender, e);
+        }
+
+        protected void OnPause(object sender, EventArgs e)
+        {
+            Pausing?.Invoke(sender, e);
+        }
+
+        public void SortSongs(Comparison<Song> comparer)
+        {
+            Song currentSong = CurrentSong;
+            Songs.Sort(comparer);
+            currentSongIndex = Songs.IndexOf(currentSong);
         }
 
         #endregion 

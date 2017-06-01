@@ -26,14 +26,7 @@ namespace tubeLoadNative.Droid.Utils
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                if (await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await response.Content.ReadAsStreamAsync()))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await response.Content.ReadAsStreamAsync());
             }
 
             return false;

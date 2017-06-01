@@ -28,6 +28,9 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_current_song);
+
+            GoogleAnalyticsService.Instance.Initialize(this);
+            GoogleAnalyticsService.Instance.TrackAppPage("Current Song");
             
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
@@ -45,16 +48,12 @@ namespace tubeLoadNative.Droid.Activities
 
             nextBtn.Click += delegate
             {
-                TogglePlay();
                 mediaPlayer.PlayNext();
-                UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
             prevBtn.Click += delegate
             {
-                TogglePlay();
                 mediaPlayer.PlayPrev();
-                UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
             ChangePlayingView();
@@ -62,6 +61,21 @@ namespace tubeLoadNative.Droid.Activities
             mediaPlayer.Completing += delegate
             {
                 UpdatePage(mediaPlayer.CurrentSong.Id);
+            };
+
+            mediaPlayer.Starting += delegate
+            {
+                TogglePlay();
+            };
+
+            mediaPlayer.StartingNewSong += delegate
+            {
+                UpdatePage(mediaPlayer.CurrentSong.Id);
+            };
+
+            mediaPlayer.Pausing += delegate
+            {
+                TogglePause();
             };
         }
 
@@ -105,6 +119,7 @@ namespace tubeLoadNative.Droid.Activities
             playBtn.SetImageResource(Resource.Drawable.ic_media_pause);
             playBtn.Click -= Start;
             playBtn.Click += Pause;
+            GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.PlayingSong, "Playing " + mediaPlayer.CurrentSong.Name);
         }
 
         void TogglePause()
@@ -117,13 +132,11 @@ namespace tubeLoadNative.Droid.Activities
         void Start(object sender, EventArgs e)
         {
             mediaPlayer.Start();
-            TogglePlay();
         }
 
         void Pause(object sender, EventArgs e)
         {
             mediaPlayer.Pause();
-            TogglePause();
         }
 
         void UpdatePage(string songId)

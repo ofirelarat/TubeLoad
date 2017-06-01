@@ -50,7 +50,7 @@ namespace tubeLoadNative.Droid
             TextView songName = convertView.FindViewById<TextView>(Resource.Id.songName);
             songName.Text = songsNames[position];
 
-            if (mediaPlayer.Songs[position] == mediaPlayer.CurrentSong)
+            if (mediaPlayer.CurrentSong != null && mediaPlayer.Songs[position].Id.Equals(mediaPlayer.CurrentSong.Id))
             {
                 convertView.SetBackgroundColor(new Color(ContextCompat.GetColor(context, Resource.Color.brightassets)));
             }
