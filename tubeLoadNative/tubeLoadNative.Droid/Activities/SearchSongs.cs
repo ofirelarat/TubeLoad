@@ -75,7 +75,10 @@ namespace tubeLoadNative.Droid.Activities
         protected async override void OnResume()
         {
             base.OnResume();
-            LoadListView();
+            if (videos != null)
+            {
+                LoadListView();
+            }
         }
 
         void HideKeyboard(Context context)

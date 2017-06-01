@@ -19,25 +19,31 @@ namespace tubeLoadNative.Droid.Activities
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
 
+
+            string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
+            if (!VersionChecker.isVersionUpToDate(currentVerion))
+            {
+                Toast.MakeText(this, "Your App is not up to date, you can download newer version at: www.TubeLoadWeb.com", ToastLength.Long).Show();
+            }
         }
 
         protected override void OnResume()
         {
             base.OnResume();
-
+           
             Task.Run(async () =>
-            {
-                try
-                {
-                    await YoutubeApiClient.Search();
-                }
-                catch (Exception ex)
-                {
-                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, true);
-                    RunOnUiThread(new Runnable(
-                        () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
-                };
-            });                
+             {
+                 try
+                 {
+                     await YoutubeApiClient.Search();
+                 }
+                 catch (Exception ex)
+                 {
+                     GoogleAnalyticsService.Instance.TrackAppException(ex.Message, true);
+                     RunOnUiThread(new Runnable(
+                         () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
+                 };
+             });
 
             StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
         }
