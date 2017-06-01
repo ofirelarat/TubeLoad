@@ -12,6 +12,8 @@ namespace tubeLoadNative.Droid.Activities
     [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)]
     public class SplashScreen : Activity
     {
+        bool passedVersionCheck = true;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -19,11 +21,11 @@ namespace tubeLoadNative.Droid.Activities
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
 
-
             string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
             if (!VersionChecker.isVersionUpToDate(currentVerion))
-            {
-                Toast.MakeText(this, "Your App is not up to date, you can download newer version at: www.TubeLoadWeb.com", ToastLength.Long).Show();
+            { 
+                passedVersionCheck = false;
+                createNewVersionDialog();
             }
         }
 
@@ -45,7 +47,29 @@ namespace tubeLoadNative.Droid.Activities
                  };
              });
 
-            StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+            if (passedVersionCheck)
+            {
+                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+            }
+        }
+
+        private void createNewVersionDialog()
+        {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.SetCancelable(false);
+            builder.SetTitle("New Version");
+            builder.SetMessage("Your version is out of date. Do you want to install the new one?");
+            builder.SetPositiveButton("accept", (s, e) =>
+            {
+                var uri = Android.Net.Uri.Parse("http://www.tubeloadweb.com");
+                var intent = new Intent(Intent.ActionView, uri);
+                StartActivity(intent);
+                Finish();
+            });
+            builder.SetNegativeButton("ignore", (s, e) => {
+                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+            });
+            builder.Show();
         }
     }
 }
