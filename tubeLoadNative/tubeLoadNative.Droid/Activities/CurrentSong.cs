@@ -48,16 +48,12 @@ namespace tubeLoadNative.Droid.Activities
 
             nextBtn.Click += delegate
             {
-                TogglePlay();
                 mediaPlayer.PlayNext();
-                UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
             prevBtn.Click += delegate
             {
-                TogglePlay();
                 mediaPlayer.PlayPrev();
-                UpdatePage(mediaPlayer.CurrentSong.Id);
             };
 
             ChangePlayingView();
@@ -65,6 +61,21 @@ namespace tubeLoadNative.Droid.Activities
             mediaPlayer.Completing += delegate
             {
                 UpdatePage(mediaPlayer.CurrentSong.Id);
+            };
+
+            mediaPlayer.Starting += delegate
+            {
+                TogglePlay();
+            };
+
+            mediaPlayer.StartingNewSong += delegate
+            {
+                UpdatePage(mediaPlayer.CurrentSong.Id);
+            };
+
+            mediaPlayer.Pausing += delegate
+            {
+                TogglePause();
             };
         }
 
@@ -121,13 +132,11 @@ namespace tubeLoadNative.Droid.Activities
         void Start(object sender, EventArgs e)
         {
             mediaPlayer.Start();
-            TogglePlay();
         }
 
         void Pause(object sender, EventArgs e)
         {
             mediaPlayer.Pause();
-            TogglePause();
         }
 
         void UpdatePage(string songId)

@@ -157,11 +157,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BroadcastReceivers\BluetoothRemoteControlReciever.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Activities\CurrentSong.cs" />
     <Compile Include="Utils\Downloader.cs" />
     <Compile Include="Utils\GoogleAnalyticsService.cs" />
-    <Compile Include="Utils\IncomingOutgoingCallReceiver.cs" />
+    <Compile Include="BroadcastReceivers\IncomingOutgoingCallReceiver.cs" />
     <Compile Include="Utils\NotificationHandler.cs" />
     <Compile Include="Adapters\SongsAdapter.cs" />
     <Compile Include="Adapters\VideosAdapter.cs" />

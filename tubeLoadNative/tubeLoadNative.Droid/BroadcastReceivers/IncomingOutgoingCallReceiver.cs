@@ -2,8 +2,9 @@
 using Android.App;
 using Android.Content;
 using Android.Telephony;
+using tubeLoadNative.Droid.Utils;
 
-namespace tubeLoadNative.Droid.Utils
+namespace tubeLoadNative.Droid.BroadcastReceivers
 {
     [BroadcastReceiver()]
     [IntentFilter(new[] { "android.intent.action.PHONE_STATE" ,"android.intent.action.NEW_OUTGOING_CALL"})]

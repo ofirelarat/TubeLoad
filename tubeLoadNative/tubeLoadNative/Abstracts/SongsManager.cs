@@ -22,6 +22,8 @@ namespace tubeLoadNative.Abstracts
 
         public event EventHandler Completing;
         public event EventHandler Starting;
+        public event EventHandler StartingNewSong;
+        public event EventHandler Pausing;
         public event EventHandler Saving;
 
         #endregion
@@ -163,6 +165,16 @@ namespace tubeLoadNative.Abstracts
         protected void OnStart(object sender, EventArgs e)
         {
             Starting?.Invoke(sender, e);
+        }
+
+        protected void OnStartingNewSong(object sender, EventArgs e)
+        {
+            StartingNewSong?.Invoke(sender, e);
+        }
+
+        protected void OnPause(object sender, EventArgs e)
+        {
+            Pausing?.Invoke(sender, e);
         }
 
         public void SortSongs(Comparison<Song> comparer)
