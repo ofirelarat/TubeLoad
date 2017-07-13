@@ -26,6 +26,13 @@ namespace tubeLoadNative.Droid.Activities
             AudioManager audioManager = (AudioManager)this.GetSystemService(AudioService);
             ComponentName componentName = new ComponentName(this.PackageName, new BluetoothRemoteControlReciever().ComponentName);
             audioManager.RegisterMediaButtonEventReceiver(componentName);
+            // build the PendingIntent for the remote control client
+            Intent mediaButtonIntent = new Intent(Intent.ActionMediaButton);
+            mediaButtonIntent.SetComponent(componentName);
+            PendingIntent mediaPendingIntent = PendingIntent.GetBroadcast(ApplicationContext, 0, mediaButtonIntent, 0);
+            // create and register the remote control client
+            RemoteControlClient remoteControlClient = new RemoteControlClient(mediaPendingIntent);
+            audioManager.RegisterRemoteControlClient(remoteControlClient);
 
             string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
             if (!VersionChecker.isVersionUpToDate(currentVerion))
