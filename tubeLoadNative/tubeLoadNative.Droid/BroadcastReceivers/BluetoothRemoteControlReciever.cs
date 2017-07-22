@@ -44,6 +44,10 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
                             AndroidSongsManager.Instance.Start();
                             break;
 
+                        case Keycode.MediaPause:
+                            AndroidSongsManager.Instance.Pause();
+                            break;
+
                         case Keycode.MediaStop:
                             // stop music
                             AndroidSongsManager.Instance.Stop();
