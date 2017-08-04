@@ -41,7 +41,6 @@ namespace tubeLoadNative.Droid.Activities
             downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             DownloadWatcher.onDownloaded += (sender, e) => TogglePlay();
-            DownloadWatcher.onDownloading += (sender, e) => ToggleDownloading();
             DownloadWatcher.onDownloadFailed += (sender, e) => ToggelDownload();
 
             UpdateView();
@@ -51,7 +50,7 @@ namespace tubeLoadNative.Droid.Activities
         {
             string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
             video.DownloadState = SearchResultDownloadItem.State.Downloading;
-            DownloadWatcher.Download(null, null);
+            ToggleDownloading();
 
             try
             {

@@ -42,6 +42,9 @@ namespace tubeLoadNative.Droid.Activities
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
 
+            DownloadWatcher.onDownloaded += (sender, e) => LoadListView();
+            DownloadWatcher.onDownloadFailed += (sender, e) => LoadListView();
+
             searchButton.Click += async delegate
             {
                 HideKeyboard(searchButton.Context);
