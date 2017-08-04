@@ -8,6 +8,7 @@ using tubeLoadNative.Droid.Utils;
 using System.Linq;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Activities;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid
 {
@@ -54,25 +55,36 @@ namespace tubeLoadNative.Droid
             ImageView videoImg = convertView.FindViewById<ImageView>(Resource.Id.videoImg);
             ImageButton downloadButton = convertView.FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
 
-            Console.WriteLine(videoName.Text + " - " + position);
-
             if (!downloadButton.HasOnClickListeners)
             {
                 downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, position);
+
+                DownloadWatcher.onDownloading += (sender, e) =>
+                {
+                    UpdateVideoButtonByState(position, SearchResultDownloadItem.State.Downloading, (ImageButton)sender);
+                };
+
+                DownloadWatcher.onDownloaded += (sender, e) =>
+                {
+                    UpdateVideoButtonByState(position, SearchResultDownloadItem.State.Downloaded, (ImageButton)sender);
+                };
+
+                DownloadWatcher.onDownloadFailed += (sender, e) =>
+                {
+                    UpdateVideoButtonByState(position, SearchResultDownloadItem.State.Downloadable, (ImageButton)sender);
+                };
             }
 
             var currentVideoYoutube = searchResults[position].YoutubeResult;
 
             if (AndroidSongsManager.Instance.GetSong(currentVideoYoutube.Id.VideoId) != null)
             {
-                searchResults[position].DownloadState = SearchResultDownloadItem.State.Downloaded;
+                UpdateVideoButtonByState(position, SearchResultDownloadItem.State.Downloaded, downloadButton);
             }
             else if (searchResults[position].DownloadState == SearchResultDownloadItem.State.Downloaded)
             {
-                searchResults[position].DownloadState = SearchResultDownloadItem.State.Downloadable;
+                UpdateVideoButtonByState(position, SearchResultDownloadItem.State.Downloadable, downloadButton);
             }
-
-            UpdateVideoButtonByState(searchResults[position], downloadButton);
 
             videoName.Text = currentVideoYoutube.Snippet.Title;
             channelName.Text = currentVideoYoutube.Snippet.ChannelTitle;
@@ -87,9 +99,12 @@ namespace tubeLoadNative.Droid
             return convertView;
         }
 
-        private void UpdateVideoButtonByState(SearchResultDownloadItem video, ImageButton downloadButton)
+        private void UpdateVideoButtonByState(int position, SearchResultDownloadItem.State state, ImageButton downloadButton)
         {
-            switch (video.DownloadState)
+            SearchResultDownloadItem video = searchResults[position];
+            video.DownloadState = state;
+
+            switch (state)
             {
                 case SearchResultDownloadItem.State.Downloaded:
                     downloadButton.Enabled = false;
@@ -111,28 +126,24 @@ namespace tubeLoadNative.Droid
         private async void OnDownloadClick(object sender, EventArgs e, int videoPosition)
         {
             SearchResultDownloadItem video = searchResults[videoPosition];
-            var downloadButton = (ImageButton)sender;
-            downloadButton.Enabled = false;
-            downloadButton.SetImageResource(Resource.Drawable.ic_downloading);
             string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
-            video.DownloadState = SearchResultDownloadItem.State.Downloading;
+            DownloadWatcher.Download(sender, e);
 
             try
             {
                 if (await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
-                    video.DownloadState = SearchResultDownloadItem.State.Downloaded;
-                    downloadButton.Visibility = ViewStates.Gone;
+                    DownloadWatcher.DownloadFinished(sender, e);
                     Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
-                    FailDownload(downloadButton, video);
+                    FailDownload(sender, e);
                 }
             }
             catch
             {
-                FailDownload(downloadButton, video);
+                FailDownload(sender, e);
             }
             finally
             {
@@ -140,11 +151,9 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        private void FailDownload(ImageButton downloadButton, SearchResultDownloadItem video)
+        private void FailDownload(object sender, EventArgs e)
         {
-            video.DownloadState = SearchResultDownloadItem.State.Downloadable;
-            downloadButton.SetImageResource(Resource.Drawable.ic_download);
-            downloadButton.Enabled = true;
+            DownloadWatcher.DownloadFailed(sender, e);
             Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
         }
     }

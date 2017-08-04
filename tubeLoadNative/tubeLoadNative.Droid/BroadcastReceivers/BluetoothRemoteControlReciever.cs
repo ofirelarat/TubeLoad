@@ -13,11 +13,13 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
     {
         public string ComponentName { get { return Class.Name; } }
         private static bool secondTimeFlag = false;
+
         public override void OnReceive(Context context, Intent intent)
         {
             if (intent.Action.Equals(BluetoothAdapter.ActionStateChanged))
             {
                 State state = (State)intent.GetIntExtra(BluetoothAdapter.ExtraState, BluetoothAdapter.Error);
+
                 if (state.Equals(State.TurningOff))
                 {
                     AndroidSongsManager.Instance.Pause();
@@ -26,6 +28,7 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
             else if (intent.Action.Equals(BluetoothAdapter.ActionConnectionStateChanged))
             {
                 State state = (State)intent.GetIntExtra(BluetoothAdapter.ExtraConnectionState, BluetoothAdapter.Error);
+
                 if (state.Equals(State.Disconnected))
                 {
                     AndroidSongsManager.Instance.Pause();
@@ -49,13 +52,11 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
                             break;
 
                         case Keycode.MediaStop:
-                            // stop music
                             AndroidSongsManager.Instance.Stop();
                             break;
 
                         case Keycode.Headsethook:
                         case Keycode.MediaPlayPause:
-                            // pause music
                             if (AndroidSongsManager.Instance.IsPlaying)
                             {
                                 AndroidSongsManager.Instance.Pause();
@@ -67,12 +68,10 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
                             break;
 
                         case Keycode.MediaNext:
-                            // next track
                             AndroidSongsManager.Instance.PlayNext();
                             break;
 
                         case Keycode.MediaPrevious:
-                            // previous track
                             AndroidSongsManager.Instance.PlayPrev();
                             break;
                     }
