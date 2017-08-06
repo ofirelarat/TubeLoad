@@ -9,6 +9,7 @@ using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using Android.Support.V4.Content;
 using tubeLoadNative.Models;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -22,7 +23,6 @@ namespace tubeLoadNative.Droid.Activities
         ImageView videoImg;
         TextView channelName;
         ProgressBar progressBar;
-        public static event Action onDownloaded;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,22 +40,25 @@ namespace tubeLoadNative.Droid.Activities
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
             downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
+            DownloadWatcher.onDownloaded += (sender, e) => TogglePlay();
+            DownloadWatcher.onDownloadFailed += (sender, e) => ToggelDownload();
+
             UpdateView();
         }
 
         async void OnDownloadClick(object sender, EventArgs e)
         {
-            ToggleDownloading();
             string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
             video.DownloadState = SearchResultDownloadItem.State.Downloading;
+            ToggleDownloading();
 
             try
             {
                 if (await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
-                    TogglePlay();
-                    onDownloaded();
+                    DownloadWatcher.DownloadFinished(null, null);
+
                     GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DonloadingSong, $"Donwloaded {video.YoutubeResult.Snippet.Title}");
                     Toast.MakeText(Application.Context, "Download succeed", ToastLength.Short).Show();
                 }
@@ -63,6 +66,7 @@ namespace tubeLoadNative.Droid.Activities
                 {
                     GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.DownloadFailed, $"Download {video.YoutubeResult.Snippet.Title} failed");
                     video.DownloadState = SearchResultDownloadItem.State.Downloadable;
+                    DownloadWatcher.DownloadFailed(null, null);
                     Toast.MakeText(Application.Context, "Download failed", ToastLength.Short).Show();
                 }
             }
@@ -70,11 +74,8 @@ namespace tubeLoadNative.Droid.Activities
             {
                 GoogleAnalyticsService.Instance.TrackAppException(video.YoutubeResult.Snippet.Title + "\t" + ex.Message, true);
                 Toast.MakeText(Application.Context, ex.Message, ToastLength.Long).Show();
-            }
-            finally
-            {
-                downloadBtn.Enabled = true;
-                progressBar.Visibility = ViewStates.Invisible;
+                video.DownloadState = SearchResultDownloadItem.State.Downloadable;
+                DownloadWatcher.DownloadFailed(null, null);
             }
         }
 
@@ -87,16 +88,24 @@ namespace tubeLoadNative.Droid.Activities
 
         private void TogglePlay()
         {
+            ActivateDownloadButton();
             downloadBtn.Text = "Play";
             downloadBtn.Click -= OnDownloadClick;
             downloadBtn.Click += OnPlayClick;
         }
 
-        private void ToggelDwonload()
+        private void ToggelDownload()
         {
+            ActivateDownloadButton();
             downloadBtn.Text = "Download";
             downloadBtn.Click -= OnPlayClick;
             downloadBtn.Click += OnDownloadClick;
+        }
+
+        private void ActivateDownloadButton()
+        {
+            progressBar.Visibility = ViewStates.Invisible;
+            downloadBtn.Enabled = true;
         }
 
         private void ToggleDownloading()
@@ -139,24 +148,24 @@ namespace tubeLoadNative.Droid.Activities
             switch (DownloadState)
             {
                 case (SearchResultDownloadItem.State.Downloadable):
-                    {
-                        ToggelDwonload();
-                        break;
-                    }
+                {
+                    ToggelDownload();
+                    break;
+                }
                 case (SearchResultDownloadItem.State.Downloaded):
-                    {
-                        TogglePlay();
-                        break;
-                    }
+                {
+                    TogglePlay();
+                    break;
+                }
                 case (SearchResultDownloadItem.State.Downloading):
-                    {
-                        ToggleDownloading();
-                        break;
-                    }
+                {
+                    ToggleDownloading();
+                    break;
+                }
                 default:
-                    {
-                        break;
-                    }
+                {
+                    break;
+                }
             }
         }
 

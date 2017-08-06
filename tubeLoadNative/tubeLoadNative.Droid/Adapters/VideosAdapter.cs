@@ -8,6 +8,7 @@ using tubeLoadNative.Droid.Utils;
 using System.Linq;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Activities;
+using tubeLoadNative.Services;
 
 namespace tubeLoadNative.Droid
 {
@@ -54,8 +55,6 @@ namespace tubeLoadNative.Droid
             ImageView videoImg = convertView.FindViewById<ImageView>(Resource.Id.videoImg);
             ImageButton downloadButton = convertView.FindViewById<ImageButton>(Resource.Id.searchActivityDownloadButton);
 
-            Console.WriteLine(videoName.Text + " - " + position);
-
             if (!downloadButton.HasOnClickListeners)
             {
                 downloadButton.Click += (sender, e) => OnDownloadClick(sender, e, position);
@@ -72,7 +71,8 @@ namespace tubeLoadNative.Droid
                 searchResults[position].DownloadState = SearchResultDownloadItem.State.Downloadable;
             }
 
-            UpdateVideoButtonByState(searchResults[position], downloadButton);
+            UpdateVideoButtonByState(searchResults[position].DownloadState, downloadButton);
+            
 
             videoName.Text = currentVideoYoutube.Snippet.Title;
             channelName.Text = currentVideoYoutube.Snippet.ChannelTitle;
@@ -87,9 +87,9 @@ namespace tubeLoadNative.Droid
             return convertView;
         }
 
-        private void UpdateVideoButtonByState(SearchResultDownloadItem video, ImageButton downloadButton)
+        private void UpdateVideoButtonByState(SearchResultDownloadItem.State state, ImageButton downloadButton)
         {
-            switch (video.DownloadState)
+            switch (state)
             {
                 case SearchResultDownloadItem.State.Downloaded:
                     downloadButton.Enabled = false;
@@ -111,28 +111,29 @@ namespace tubeLoadNative.Droid
         private async void OnDownloadClick(object sender, EventArgs e, int videoPosition)
         {
             SearchResultDownloadItem video = searchResults[videoPosition];
-            var downloadButton = (ImageButton)sender;
-            downloadButton.Enabled = false;
-            downloadButton.SetImageResource(Resource.Drawable.ic_downloading);
-            string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
             video.DownloadState = SearchResultDownloadItem.State.Downloading;
+            string fileName = video.YoutubeResult.Snippet.Title + ".mp3";
+            UpdateVideoButtonByState(video.DownloadState, (ImageButton)sender);
 
             try
             {
                 if (await Downloader.DownloadSong(video.YoutubeResult.Id.VideoId, fileName))
                 {
                     video.DownloadState = SearchResultDownloadItem.State.Downloaded;
-                    downloadButton.Visibility = ViewStates.Gone;
+                    DownloadWatcher.DownloadFinished(sender, e);
+                    UpdateVideoButtonByState(video.DownloadState, (ImageButton)sender);
                     Toast.MakeText(context, "Download succeed", ToastLength.Short).Show();
                 }
                 else
                 {
-                    FailDownload(downloadButton, video);
+                    video.DownloadState = SearchResultDownloadItem.State.Downloadable;
+                    FailDownload(sender, e);
                 }
             }
             catch
             {
-                FailDownload(downloadButton, video);
+                video.DownloadState = SearchResultDownloadItem.State.Downloadable;
+                FailDownload(sender, e);
             }
             finally
             {
@@ -140,11 +141,10 @@ namespace tubeLoadNative.Droid
             }
         }
 
-        private void FailDownload(ImageButton downloadButton, SearchResultDownloadItem video)
+        private void FailDownload(object sender, EventArgs e)
         {
-            video.DownloadState = SearchResultDownloadItem.State.Downloadable;
-            downloadButton.SetImageResource(Resource.Drawable.ic_download);
-            downloadButton.Enabled = true;
+            DownloadWatcher.DownloadFailed(sender, e);
+            UpdateVideoButtonByState(SearchResultDownloadItem.State.Downloadable, (ImageButton)sender);
             Toast.MakeText(context, "Download failed", ToastLength.Short).Show();
         }
     }
