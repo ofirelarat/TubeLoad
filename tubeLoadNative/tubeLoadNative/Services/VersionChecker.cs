@@ -11,7 +11,14 @@ namespace tubeLoadNative.Services
     {
         private const string URL = "http://tubeloadweb.com/version.txt";
 
-        public static bool isVersionUpToDate(string currentVersion)
+        public enum VersionStatus
+        {
+            UpToDate,
+            MissingHotFix,
+            NeedUpdate
+        }
+
+        public static VersionStatus isVersionUpToDate(string currentVersion)
         {
             string latestVersion;
             try
@@ -21,11 +28,26 @@ namespace tubeLoadNative.Services
                     latestVersion = client.GetStringAsync(URL).Result;
                 }
 
-                return latestVersion.Equals(currentVersion);
+                if (!latestVersion.Equals(currentVersion))
+                {
+                    if (latestVersion.Split('.')[0].Equals(currentVersion.Split('.')[0])
+                        && latestVersion.Split('.')[1].Equals(currentVersion.Split('.')[1]))
+                    {
+                        return VersionStatus.MissingHotFix;
+                    }
+                    else
+                    {
+                        return VersionStatus.NeedUpdate;
+                    }
+                }
+                else
+                {
+                    return VersionStatus.UpToDate;
+                }
             }
             catch
             {
-                return true;
+                return VersionStatus.UpToDate;
             }
         }
     }

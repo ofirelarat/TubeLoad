@@ -42,7 +42,8 @@ namespace tubeLoadNative.Droid.Activities
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
 
-            DownloadSong.onDownloaded += LoadListView;
+            DownloadWatcher.onDownloaded += (sender, e) => LoadListView();
+            DownloadWatcher.onDownloadFailed += (sender, e) => LoadListView();
 
             searchButton.Click += async delegate
             {
@@ -75,6 +76,7 @@ namespace tubeLoadNative.Droid.Activities
         protected async override void OnResume()
         {
             base.OnResume();
+
             if (videos != null)
             {
                 LoadListView();

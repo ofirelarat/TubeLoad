@@ -35,10 +35,15 @@ namespace tubeLoadNative.Droid.Activities
             audioManager.RegisterRemoteControlClient(remoteControlClient);
 
             string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
-            if (!VersionChecker.isVersionUpToDate(currentVerion))
-            { 
+            VersionChecker.VersionStatus versionStatus = VersionChecker.isVersionUpToDate(currentVerion);
+            if (versionStatus == VersionChecker.VersionStatus.NeedUpdate)
+            {
                 passedVersionCheck = false;
                 createNewVersionDialog();
+            }
+            else if (versionStatus == VersionChecker.VersionStatus.MissingHotFix)
+            {
+                Toast.MakeText(this, "New version available, please check it at tubeloadweb.com", ToastLength.Long).Show();
             }
         }
 
