@@ -322,6 +322,7 @@ namespace tubeLoadNative.Droid.Activities
 
             menu.FindItem(Resource.Id.currentSong).SetVisible(true);
             menu.FindItem(Resource.Id.orderSongs).SetVisible(true);
+            menu.FindItem(Resource.Id.suffleSongs).SetVisible(true);
 
             return true;
         }
@@ -360,6 +361,11 @@ namespace tubeLoadNative.Droid.Activities
                     mediaPlayer.UpdateSongsList();
                     item.SetChecked(true);
                     UpdateList();
+                    return true;
+
+                case Resource.Id.suffleSongs:
+                    item.SetChecked(!item.IsChecked);
+                    mediaPlayer.isInSuffleMode = item.IsChecked;
                     return true;
 
                 default:

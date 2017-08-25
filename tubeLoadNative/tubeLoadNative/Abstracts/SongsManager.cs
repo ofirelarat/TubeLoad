@@ -60,6 +60,8 @@ namespace tubeLoadNative.Abstracts
 
         public virtual List<Song> Songs { get; protected set; }
 
+        public bool isInSuffleMode { get; set; }
+
         #endregion
 
         #region Functions
@@ -111,9 +113,16 @@ namespace tubeLoadNative.Abstracts
         {
             if (Songs.Count > 0)
             {
-                currentSongIndex = (++currentSongIndex) % Songs.Count;
-                Start(Songs[currentSongIndex].Id);
+                if (!isInSuffleMode)
+                {
+                    currentSongIndex = (++currentSongIndex) % Songs.Count;                
+                }
+                else
+                {
+                    currentSongIndex = new Random().Next(Songs.Count); 
+                }
 
+                Start(Songs[currentSongIndex].Id);
                 return true;
             }
 
