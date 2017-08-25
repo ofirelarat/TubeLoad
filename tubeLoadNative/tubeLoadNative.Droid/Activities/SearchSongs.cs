@@ -13,6 +13,7 @@ using tubeLoadNative.Services;
 using Android.Support.V4.Content;
 using tubeLoadNative.Models;
 using System;
+using System.Linq;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -24,7 +25,7 @@ namespace tubeLoadNative.Droid.Activities
         static List<SearchResultDownloadItem> videos;
         static SearchResultDownloadItem selectedVideo;
         ListView myVideosListView;
-        EditText searchString;
+        AutoCompleteTextView searchString;
         Dictionary<string, Bitmap> images;
 
         protected async override void OnCreate(Bundle savedInstanceState)
@@ -38,12 +39,13 @@ namespace tubeLoadNative.Droid.Activities
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
 
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
-            searchString = FindViewById<EditText>(Resource.Id.searchEditText);
+            searchString = FindViewById<AutoCompleteTextView>(Resource.Id.searchEditText);
+            
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
 
-            DownloadWatcher.onDownloaded += (sender, e) => LoadListView();
-            DownloadWatcher.onDownloadFailed += (sender, e) => LoadListView();
+            DownloadWatcher.onDownloaded += async (sender, e) => await LoadListView();
+            DownloadWatcher.onDownloadFailed += async (sender, e) => await LoadListView();
 
             searchButton.Click += async delegate
             {
@@ -60,7 +62,14 @@ namespace tubeLoadNative.Droid.Activities
                     HideKeyboard(searchString.Context);
                     await UpdateVideos(searchString.Text);
                     e.Handled = true;
-                }
+                }            
+            };
+
+            searchString.TextChanged += async (sender, e) =>
+            {
+                IEnumerable<string> songs = await YoutubeApiClient.SearchTitles(searchString.Text);
+                ArrayAdapter autoCompleteAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleDropDownItem1Line, songs.ToList());
+                searchString.Adapter = autoCompleteAdapter;
             };
 
             myVideosListView.ItemClick += (sender, e) =>
@@ -79,7 +88,7 @@ namespace tubeLoadNative.Droid.Activities
 
             if (videos != null)
             {
-                LoadListView();
+                await LoadListView();
             }
         }
 
@@ -124,7 +133,7 @@ namespace tubeLoadNative.Droid.Activities
                 if (videos != null)
                 {
                     images = await LoadImages(videos.ToArray());
-                    LoadListView();
+                    await LoadListView();
                 }
                 else
                 {
@@ -142,7 +151,7 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        private async void LoadListView()
+        private async Task LoadListView()
         {
             if (images == null)
             {

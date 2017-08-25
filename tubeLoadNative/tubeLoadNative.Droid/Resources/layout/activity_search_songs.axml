@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout1">
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/searchEditText"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -28,5 +28,5 @@
         android:minHeight="25px"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/songsListView"/>
+        android:id="@+id/songsListView" />
 </LinearLayout>

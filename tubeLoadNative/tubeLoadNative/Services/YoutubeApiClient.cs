@@ -17,7 +17,7 @@ namespace tubeLoadNative.Services
     {
         static YouTubeService youtubeService = new YouTubeService(new BaseClientService.Initializer()
         {
-            ApiKey = "AIzaSyD99DDTmpBI79gKReSgYj001I7IK2jBGao",
+            ApiKey = "AIzaSyCUiBlKoz4pvKVtQz9WPOwUnYdJj5YFw4I",
             ApplicationName = "TubeLoad"
         });
 
@@ -36,6 +36,8 @@ namespace tubeLoadNative.Services
         public static async Task<List<SearchResult>> Search(string query)
         {
             youtubeSearcher.Q = query;
+            youtubeSearcher.Fields = "items/id,items/snippet";
+            youtubeSearcher.MaxResults = 10;
 
             // Call the search.list method to retrieve results matching the specified query term.
             var searchListResponse = await youtubeSearcher.ExecuteAsync();
@@ -67,6 +69,23 @@ namespace tubeLoadNative.Services
             }
 
             return Videos;
+        }
+
+        public static async Task<IEnumerable<string>> SearchTitles(string query)
+        {
+            youtubeSearcher.Q = query;
+            youtubeSearcher.Fields = "items/snippet/title";
+            youtubeSearcher.MaxResults = 3;
+
+            // Call the search.list method to retrieve results matching the specified query term.
+            var searchListResponse = await youtubeSearcher.ExecuteAsync();
+
+            List<string> Videos = new List<string>();
+
+            // Add each result to the appropriate list, and then display the lists of
+            // matching videos, channels, and playlists.
+
+            return searchListResponse.Items.Select(x => x.Snippet.Title);
         }
 
         // Gets most popular songs
