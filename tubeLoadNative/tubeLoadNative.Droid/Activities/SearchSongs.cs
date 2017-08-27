@@ -26,6 +26,7 @@ namespace tubeLoadNative.Droid.Activities
         static SearchResultDownloadItem selectedVideo;
         ListView myVideosListView;
         AutoCompleteTextView searchString;
+        ImageButton clearBtn;
         Dictionary<string, Bitmap> images;
 
         protected async override void OnCreate(Bundle savedInstanceState)
@@ -37,10 +38,10 @@ namespace tubeLoadNative.Droid.Activities
             GoogleAnalyticsService.Instance.TrackAppPage("Search Song");
 
             myVideosListView = FindViewById<ListView>(Resource.Id.songsListView);
-
             ImageButton searchButton = FindViewById<ImageButton>(Resource.Id.searchBtn);
             searchString = FindViewById<AutoCompleteTextView>(Resource.Id.searchEditText);
-            
+            clearBtn = FindViewById<ImageButton>(Resource.Id.clearBtn);
+
             searchString.Text = string.Empty;
             searchString.Background.SetTint(ContextCompat.GetColor(this, Resource.Color.darkassets));
 
@@ -67,10 +68,20 @@ namespace tubeLoadNative.Droid.Activities
 
             searchString.TextChanged += async (sender, e) =>
             {
-                IEnumerable<string> songs = await YoutubeApiClient.SearchTitles(searchString.Text);
-                ArrayAdapter autoCompleteAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleDropDownItem1Line, songs.ToList());
-                searchString.Adapter = autoCompleteAdapter;
+                if (searchString.Text.Length > 0)
+                {
+                    clearBtn.Visibility = ViewStates.Visible;
+                    IEnumerable<string> songs = await YoutubeApiClient.SearchTitles(searchString.Text);
+                    ArrayAdapter autoCompleteAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleDropDownItem1Line, songs.ToList());
+                    searchString.Adapter = autoCompleteAdapter;
+                }
+                else
+                {
+                    clearBtn.Visibility = ViewStates.Gone;
+                }
             };
+
+            clearBtn.Click += (s, e) => { searchString.Text = string.Empty; };
 
             myVideosListView.ItemClick += (sender, e) =>
             {
