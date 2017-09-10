@@ -14,6 +14,7 @@ using Android.Support.V4.Content;
 using tubeLoadNative.Models;
 using System;
 using System.Linq;
+using Android.Net;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -71,9 +72,12 @@ namespace tubeLoadNative.Droid.Activities
                 if (searchString.Text.Length > 0)
                 {
                     clearBtn.Visibility = ViewStates.Visible;
-                    IEnumerable<string> songs = await YoutubeApiClient.SearchTitles(searchString.Text);
-                    ArrayAdapter autoCompleteAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleDropDownItem1Line, songs.ToList());
-                    searchString.Adapter = autoCompleteAdapter;
+                    if (checkInternetConnection())
+                    {
+                        IEnumerable<string> songs = await YoutubeApiClient.SearchTitles(searchString.Text);
+                        ArrayAdapter autoCompleteAdapter = new ArrayAdapter(this, Android.Resource.Layout.SimpleDropDownItem1Line, songs.ToList());
+                        searchString.Adapter = autoCompleteAdapter;
+                    }
                 }
                 else
                 {
@@ -191,6 +195,13 @@ namespace tubeLoadNative.Droid.Activities
             }
 
             return images;
+        }
+
+        private bool checkInternetConnection()
+        {
+            ConnectivityManager connectivityManager = (ConnectivityManager) GetSystemService(Context.ConnectivityService);
+            NetworkInfo netInfo = connectivityManager.ActiveNetworkInfo;
+            return netInfo != null && netInfo.IsConnectedOrConnecting;
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

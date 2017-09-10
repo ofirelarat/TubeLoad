@@ -8,5 +8,6 @@
 	<uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<application android:label="TubeLoad" android:theme="@android:style/Theme.Material" android:icon="@drawable/icon"></application>
 </manifest>
