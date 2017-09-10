@@ -18,7 +18,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:hint="Search" />
+                android:hint="Search"
+                android:paddingRight="30dp" />
             <ImageButton
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:id="@+id/clearBtn"
