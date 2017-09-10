@@ -26,4 +26,9 @@
       </group>
     </menu>
   </item>
+  
+  <item android:id="@+id/suffleSongs"
+    android:title="Suffle"
+    android:checkable="true"
+    android:visible="false"></item>
 </menu>

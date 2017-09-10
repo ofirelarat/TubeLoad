@@ -20,18 +20,23 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
             {
                 State state = (State)intent.GetIntExtra(BluetoothAdapter.ExtraState, BluetoothAdapter.Error);
 
-                if (state.Equals(State.TurningOff))
+                if (AndroidSongsManager.Instance.IsPlaying)
                 {
-                    AndroidSongsManager.Instance.Pause();
+                    if (state.Equals(State.TurningOff) || state.Equals(State.Off))
+                    {
+                        AndroidSongsManager.Instance.Pause();
+                    }
                 }
             }
             else if (intent.Action.Equals(BluetoothAdapter.ActionConnectionStateChanged))
             {
                 State state = (State)intent.GetIntExtra(BluetoothAdapter.ExtraConnectionState, BluetoothAdapter.Error);
-
-                if (state.Equals(State.Disconnected))
+                if (AndroidSongsManager.Instance.IsPlaying)
                 {
-                    AndroidSongsManager.Instance.Pause();
+                    if (state.Equals(State.Disconnected) || state.Equals(State.Connected))
+                    {
+                        AndroidSongsManager.Instance.Pause();
+                    }
                 }
             }
             else
