@@ -33,7 +33,7 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
                 State state = (State)intent.GetIntExtra(BluetoothAdapter.ExtraConnectionState, BluetoothAdapter.Error);
                 if (AndroidSongsManager.Instance.IsPlaying)
                 {
-                    if (state.Equals(State.Disconnected))
+                    if (state.Equals(State.Disconnected) || state.Equals(State.Connected))
                     {
                         AndroidSongsManager.Instance.Pause();
                     }
