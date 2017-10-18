@@ -134,29 +134,43 @@ namespace tubeLoadNative.Services
 
         public static async Task<HttpResponseMessage> downloadStream(string videoId)
         {
-            string videoUrl = "https://www.youtube.com/watch?v=" + videoId;
             HttpResponseMessage response;
 
-            using (var client = new HttpClient())
-            {
-                try
-                {
-                    response = await client.GetAsync("http://www.youtubeinmp3.com/fetch/?video=" + videoUrl);
-                }
-                catch
-                {
-                    throw new Exception("Could not connect to Youtube");
-                }
+            //const string API_URL = "http://www.youtubeinmp3.com/fetch/?video=";
+            const string API_URL = "http://api.yt-mp3.com/fetch?v=";
+            const string API_KEY = "&referrer=&apikey=5a142a55461d5fef016acfb927fee0bd";
 
-                if (response.Content.Headers.ContentType.MediaType.Equals("audio/mpeg"))
+            try
+            {
+                using (var urlClient = new HttpClient())
                 {
-                    return response;
+                    response = await urlClient.GetAsync(API_URL + videoId + API_KEY);
+                    string url = await GetDownloadUrl(response);
+
+                    using (var songClient = new HttpClient())
+                    {
+                        return await songClient.GetAsync(url);
+                    }
                 }
-                
-                throw new Exception("This video has been blocked");
+            }
+            catch
+            {
+                throw new Exception("Could not connect to Youtube");
             }
         }
 
+        private static async Task<string> GetDownloadUrl(HttpResponseMessage responseMessage)
+        {
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = await responseMessage.Content.ReadAsStringAsync();
+                JObject json = JObject.Parse(content);
+
+                return "http:" + json["url"].ToString();
+            }
+
+            throw new HttpRequestException("Could not get download url");
+        }
     }
 }
 
