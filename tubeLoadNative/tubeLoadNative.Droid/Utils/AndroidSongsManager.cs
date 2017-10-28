@@ -1,5 +1,6 @@
 using Android.App;
 using Android.Widget;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using tubeLoadNative.Abstracts;
@@ -104,28 +105,39 @@ namespace tubeLoadNative.Droid.Utils
             mediaPlayer.SeekTo(position);
         }
 
-        public override async Task<bool> SaveSong(string path, string songName, string id, Stream songStream)
+        public override async Task<bool> SaveSong(string path, string songName, string id, Stream songStream,Stream picStream)
         {
             string fileName = path + songName;
+            string picFile = path + "thumnail.jpg";
 
             try
             {
-                using (Stream output = File.OpenWrite(fileName))
-                using (Stream input = songStream)
-                {
-                    await input.CopyToAsync(output);
-                }
+                await saveStream(songStream, fileName);
+                await saveStream(picStream, picFile);
 
                 FileManager.WriteToJsonFile(id, songName);
+                SongMetadata.setMetadata(fileName, picFile);
+
+                File.Delete(picFile);
+
                 UpdateSongsList();
                 OnSave(null, null);
             }
-            catch
+            catch(Exception ex)
             {
                 return false;
             }
 
             return true;
+        }
+
+        private async Task saveStream(Stream stream, string fileName)
+        {
+            using (Stream output = File.OpenWrite(fileName))
+            using (Stream input = stream)
+            {
+                await input.CopyToAsync(output);
+            }
         }
 
         public void DeleteSong(string id)

@@ -132,7 +132,7 @@ namespace tubeLoadNative.Services
             }));
         }
 
-        public static async Task<HttpResponseMessage> downloadStream(string videoId)
+        public static async Task<SongStreamAndPic> downloadStream(string videoId)
         {
             HttpResponseMessage response;
 
@@ -145,12 +145,8 @@ namespace tubeLoadNative.Services
                 using (var urlClient = new HttpClient())
                 {
                     response = await urlClient.GetAsync(API_URL + videoId + API_KEY);
-                    string url = await GetDownloadUrl(response);
 
-                    using (var songClient = new HttpClient())
-                    {
-                        return await songClient.GetAsync(url);
-                    }
+                    return await GetDownloadUrl(response,videoId);
                 }
             }
             catch
@@ -159,17 +155,32 @@ namespace tubeLoadNative.Services
             }
         }
 
-        private static async Task<string> GetDownloadUrl(HttpResponseMessage responseMessage)
+        private static async Task<SongStreamAndPic> GetDownloadUrl(HttpResponseMessage responseMessage, string videoId)
         {
             if (responseMessage.IsSuccessStatusCode)
             {
                 var content = await responseMessage.Content.ReadAsStringAsync();
                 JObject json = JObject.Parse(content);
 
-                return "http:" + json["url"].ToString();
+                string songUrl = "http:" + json["url"].ToString();
+                string picUrl = "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg";
+
+                SongStreamAndPic songStreamAndPic = new SongStreamAndPic();
+                songStreamAndPic.SongStream = await getStreamFromUrl(songUrl);
+                songStreamAndPic.PicStream = await getStreamFromUrl(picUrl);
+
+                return songStreamAndPic;
             }
 
             throw new HttpRequestException("Could not get download url");
+        }
+
+        private static async Task<HttpResponseMessage> getStreamFromUrl(string url)
+        {
+            using (var songClient = new HttpClient())
+            {
+                return await songClient.GetAsync(url);
+            }
         }
     }
 }

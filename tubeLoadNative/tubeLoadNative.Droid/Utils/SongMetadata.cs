@@ -28,5 +28,13 @@ namespace tubeLoadNative.Droid.Utils
 
             return null;
         }
+
+        public static void setMetadata(string filePath,string imageFile)
+        {
+            TagLib.File file = TagLib.File.Create(filePath);
+            file.Tag.Pictures = new TagLib.Picture[]{ TagLib.Picture.CreateFromPath(imageFile)};
+            //TagLib.Image.File.Create(filePath, TagLib.ReadStyle.Average);
+            file.Save();
+        }
     }
 }
