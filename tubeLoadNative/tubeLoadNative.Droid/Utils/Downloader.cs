@@ -13,6 +13,7 @@ using System.Net.Http;
 using tubeLoadNative.Services;
 using System.Net;
 using System.Threading.Tasks;
+using tubeLoadNative.Models;
 
 namespace tubeLoadNative.Droid.Utils
 {
@@ -22,11 +23,11 @@ namespace tubeLoadNative.Droid.Utils
         {
             fileName = AndroidSongsManager.Instance.CorrectSongNameForSave(fileName);
 
-            HttpResponseMessage response = await YoutubeApiClient.downloadStream(videoId);
+            SongStreamAndPic songStreamAndPic = await YoutubeApiClient.downloadStream(videoId);
 
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (songStreamAndPic.SongStream.StatusCode == HttpStatusCode.OK)
             {
-                return await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await response.Content.ReadAsStreamAsync());
+                return await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await songStreamAndPic.SongStream.Content.ReadAsStreamAsync(), await songStreamAndPic.PicStream.Content.ReadAsStreamAsync());
             }
 
             return false;
