@@ -14,7 +14,7 @@ namespace tubeLoadNative.Droid.Utils
             directory.Mkdirs();
         }
 
-        static Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
+        public static Java.IO.File sdCard = Android.OS.Environment.ExternalStorageDirectory;
         public static readonly string PATH = sdCard.AbsolutePath + "/TubeLoad/";
 
         public const string ID_FILE = "ids.json";
