@@ -16,7 +16,7 @@ namespace tubeLoadNative.Droid.Activities
     {
         bool passedVersionCheck = true;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
@@ -35,7 +35,7 @@ namespace tubeLoadNative.Droid.Activities
             audioManager.RegisterRemoteControlClient(remoteControlClient);
 
             string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
-            VersionChecker.VersionStatus versionStatus = VersionChecker.isVersionUpToDate(currentVerion);
+            VersionChecker.VersionStatus versionStatus = await VersionChecker.isVersionUpToDate(currentVerion);
             if (versionStatus == VersionChecker.VersionStatus.NeedUpdate)
             {
                 passedVersionCheck = false;

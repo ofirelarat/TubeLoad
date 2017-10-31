@@ -18,7 +18,7 @@ namespace tubeLoadNative.Services
             NeedUpdate
         }
 
-        public static VersionStatus isVersionUpToDate(string currentVersion)
+        public static async Task<VersionStatus> isVersionUpToDate(string currentVersion)
         {
             string latestVersion;
             try
