@@ -23,11 +23,11 @@ namespace tubeLoadNative.Droid.Utils
         {
             fileName = AndroidSongsManager.Instance.CorrectSongNameForSave(fileName);
 
-            SongStreamAndPic songStreamAndPic = await YoutubeApiClient.downloadStream(videoId);
+            HttpResponseMessage songStream = await YoutubeApiClient.downloadStream(videoId);
 
-            if (songStreamAndPic.SongStream.StatusCode == HttpStatusCode.OK)
+            if (songStream.StatusCode == HttpStatusCode.OK)
             {
-                return await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await songStreamAndPic.SongStream.Content.ReadAsStreamAsync(), await songStreamAndPic.PicStream.Content.ReadAsStreamAsync());
+                return await AndroidSongsManager.Instance.SaveSong(FileManager.PATH, fileName, videoId, await songStream.Content.ReadAsStreamAsync());
             }
 
             return false;

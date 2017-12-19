@@ -132,23 +132,11 @@ namespace tubeLoadNative.Services
             }));
         }
 
-        public static async Task<SongStreamAndPic> downloadStream(string videoId)
+        public static async Task<HttpResponseMessage> downloadStream(string videoId)
         {
-            const string API_URL = "http://887f1bca.ngrok.io/download?id=";
+            string songUrl = "http://372029af.ngrok.io/download?id=" + videoId;
 
-            return await GetDownloadUrl(videoId);
-        }
-
-        private static async Task<SongStreamAndPic> GetDownloadUrl(string videoId)
-        {
-            string songUrl = "http://31386ef1.ngrok.io/download?id=" + videoId;
-            string picUrl = "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg";
-
-            SongStreamAndPic songStreamAndPic = new SongStreamAndPic();
-            songStreamAndPic.PicStream = await getStreamFromUrl(picUrl);
-            songStreamAndPic.SongStream = await getStreamFromUrl(songUrl);
-
-            return songStreamAndPic;
+            return await getStreamFromUrl(songUrl);
         }
 
         private static async Task<HttpResponseMessage> getStreamFromUrl(string url)
