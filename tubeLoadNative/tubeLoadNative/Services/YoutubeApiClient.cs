@@ -134,7 +134,7 @@ namespace tubeLoadNative.Services
 
         public static async Task<HttpResponseMessage> downloadStream(string videoId)
         {
-            string songUrl = "http://372029af.ngrok.io/download?id=" + videoId;
+            string songUrl = "http://tubeloadweb.com/download?id=" + videoId;
 
             return await getStreamFromUrl(songUrl);
         }
