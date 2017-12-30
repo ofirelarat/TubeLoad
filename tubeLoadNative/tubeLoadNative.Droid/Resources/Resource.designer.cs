@@ -196,22 +196,25 @@ namespace tubeLoadNative.Droid
 			public const int ic_media_play = 2130837530;
 			
 			// aapt resource value: 0x7f02001b
-			public const int ic_media_previous = 2130837531;
+			public const int ic_media_play_pause = 2130837531;
 			
 			// aapt resource value: 0x7f02001c
-			public const int ic_media_stop = 2130837532;
+			public const int ic_media_previous = 2130837532;
 			
 			// aapt resource value: 0x7f02001d
-			public const int icon = 2130837533;
+			public const int ic_media_stop = 2130837533;
 			
 			// aapt resource value: 0x7f02001e
-			public const int selector = 2130837534;
+			public const int icon = 2130837534;
 			
 			// aapt resource value: 0x7f02001f
-			public const int splashimg = 2130837535;
+			public const int selector = 2130837535;
 			
 			// aapt resource value: 0x7f020020
-			public const int youtubeic2 = 2130837536;
+			public const int splashimg = 2130837536;
+			
+			// aapt resource value: 0x7f020021
+			public const int youtubeic2 = 2130837537;
 			
 			static Drawable()
 			{
