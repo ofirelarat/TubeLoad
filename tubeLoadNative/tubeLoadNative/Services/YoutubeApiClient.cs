@@ -132,47 +132,11 @@ namespace tubeLoadNative.Services
             }));
         }
 
-        public static async Task<SongStreamAndPic> downloadStream(string videoId)
+        public static async Task<HttpResponseMessage> downloadStream(string videoId)
         {
-            HttpResponseMessage response;
+            string songUrl = "http://tubeloadweb.com/download?id=" + videoId;
 
-            //const string API_URL = "http://www.youtubeinmp3.com/fetch/?video=";
-            const string API_URL = "http://api.yt-mp3.com/fetch?v=";
-            const string API_KEY = "&referrer=&apikey=5a142a55461d5fef016acfb927fee0bd";
-
-            try
-            {
-                using (var urlClient = new HttpClient())
-                {
-                    response = await urlClient.GetAsync(API_URL + videoId + API_KEY);
-
-                    return await GetDownloadUrl(response,videoId);
-                }
-            }
-            catch
-            {
-                throw new Exception("Could not connect to Youtube");
-            }
-        }
-
-        private static async Task<SongStreamAndPic> GetDownloadUrl(HttpResponseMessage responseMessage, string videoId)
-        {
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var content = await responseMessage.Content.ReadAsStringAsync();
-                JObject json = JObject.Parse(content);
-
-                string songUrl = "http:" + json["url"].ToString();
-                string picUrl = "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg";
-
-                SongStreamAndPic songStreamAndPic = new SongStreamAndPic();
-                songStreamAndPic.SongStream = await getStreamFromUrl(songUrl);
-                songStreamAndPic.PicStream = await getStreamFromUrl(picUrl);
-
-                return songStreamAndPic;
-            }
-
-            throw new HttpRequestException("Could not get download url");
+            return await getStreamFromUrl(songUrl);
         }
 
         private static async Task<HttpResponseMessage> getStreamFromUrl(string url)

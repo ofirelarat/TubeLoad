@@ -93,7 +93,7 @@ namespace tubeLoadNative.Abstracts
         public abstract void Start(string songId);
         public abstract void Pause();
         public abstract void SeekTo(int position);
-        public abstract Task<bool> SaveSong(string path, string songName, string id, Stream songStream, Stream picStream);
+        public abstract Task<bool> SaveSong(string path, string songName, string id, Stream songStream);
 
         #endregion
 

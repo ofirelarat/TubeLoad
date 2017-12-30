@@ -105,20 +105,15 @@ namespace tubeLoadNative.Droid.Utils
             mediaPlayer.SeekTo(position);
         }
 
-        public override async Task<bool> SaveSong(string path, string songName, string id, Stream songStream,Stream picStream)
+        public override async Task<bool> SaveSong(string path, string songName, string id, Stream songStream)
         {
             string fileName = path + songName;
-            string picFile = path + "thumnail.jpg";
 
             try
             {
                 await saveStream(songStream, fileName);
-                await saveStream(picStream, picFile);
 
                 FileManager.WriteToJsonFile(id, songName);
-                SongMetadata.setMetadata(fileName, picFile);
-
-                File.Delete(picFile);
 
                 UpdateSongsList();
                 OnSave(null, null);
