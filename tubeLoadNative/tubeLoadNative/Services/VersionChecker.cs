@@ -9,7 +9,7 @@ namespace tubeLoadNative.Services
 {
     public static class VersionChecker
     {
-        private const string URL = "http://tubeloadweb.com/version.txt";
+        private const string URL = "http://tubeloadweb.com/version";
 
         public enum VersionStatus
         {
