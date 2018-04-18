@@ -9,5 +9,9 @@
 	<uses-permission android:name="android.permission.BLUETOOTH" />
 	<uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<application android:label="TubeLoad" android:theme="@android:style/Theme.Material" android:icon="@drawable/icon"></application>
+	<application android:label="TubeLoad" android:theme="@android:style/Theme.Material" android:icon="@drawable/icon">
+    <activity android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />
+  </application>
 </manifest>

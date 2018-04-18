@@ -10,6 +10,7 @@ using tubeLoadNative.Droid.Utils;
 using Android.Support.V4.Content;
 using tubeLoadNative.Models;
 using tubeLoadNative.Services;
+using Android.Gms.Ads;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -23,6 +24,8 @@ namespace tubeLoadNative.Droid.Activities
         ImageView videoImg;
         TextView channelName;
         ProgressBar progressBar;
+        AdView bannerad;
+        private const string bannerID = "ca-app-pub-2772184448965971/2833438017";
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -42,6 +45,9 @@ namespace tubeLoadNative.Droid.Activities
 
             DownloadWatcher.onDownloaded += (sender, e) => TogglePlay();
             DownloadWatcher.onDownloadFailed += (sender, e) => ToggelDownload();
+
+            bannerad = AdWrapper.ConstructStandardBanner(this, AdSize.SmartBanner, bannerID);
+            bannerad.CustomBuild();
 
             UpdateView();
         }
@@ -167,6 +173,19 @@ namespace tubeLoadNative.Droid.Activities
                     break;
                 }
             }
+        }
+
+        protected override void OnResume()
+        {
+            if (bannerad != null)
+                bannerad.Resume();
+            base.OnResume();
+        }
+        protected override void OnPause()
+        {
+            if (bannerad != null)
+                bannerad.Pause();
+            base.OnPause();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
