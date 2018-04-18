@@ -51,4 +51,19 @@
         android:layout_margin="20dp"
         style="@android:style/Widget.Holo.Light.ProgressBar"
         android:visibility="invisible" />
+    <RelativeLayout
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relativeLayout1">
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            ads:adUnitId="ca-app-pub-2772184448965971/2833438017"
+            ads:adSize="BANNER"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
 </LinearLayout>
