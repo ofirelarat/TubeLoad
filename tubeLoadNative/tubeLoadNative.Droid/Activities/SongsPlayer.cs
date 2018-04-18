@@ -18,7 +18,7 @@ using Android.Support.V4.Content;
 
 namespace tubeLoadNative.Droid.Activities
 {
-    [Activity(Label = "TubeLoad", LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad")]
     public class SongsPlayer : Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
@@ -336,6 +336,7 @@ namespace tubeLoadNative.Droid.Activities
                 case Resource.Id.addSong:
                     intent = new Intent(this, typeof(SearchSongs));
                     StartActivity(intent);
+                    Finish();
 
                     return true;
 
@@ -344,6 +345,7 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         intent = new Intent(this, typeof(CurrentSong));
                         StartActivity(intent);
+                        Finish();
                     }
                     else
                     {
