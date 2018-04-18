@@ -35,12 +35,13 @@
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <Debugger>Xamarin</Debugger>
+    <Debugger>.Net (Xamarin)</Debugger>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
     <AotAssemblies>False</AotAssemblies>
     <EnableLLVM>False</EnableLLVM>
     <EnableProguard>False</EnableProguard>
+    <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -182,7 +183,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BroadcastReceivers\BluetoothRemoteControlReciever.cs" />
-    <Compile Include="Utils\AdWrapper.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Activities\CurrentSong.cs" />
     <Compile Include="Utils\Downloader.cs" />

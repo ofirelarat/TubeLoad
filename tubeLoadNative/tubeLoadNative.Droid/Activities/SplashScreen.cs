@@ -1,5 +1,6 @@
 using Android.App;
 using Android.Content;
+using Android.Gms.Ads;
 using Android.Media;
 using Android.OS;
 using Android.Widget;
@@ -15,6 +16,7 @@ namespace tubeLoadNative.Droid.Activities
     public class SplashScreen : Activity
     {
         bool passedVersionCheck = true;
+        const string MOB_ID = "ca-app-pub-2772184448965971~2893271479";
 
         protected override async void OnCreate(Bundle savedInstanceState)
         {
@@ -22,6 +24,8 @@ namespace tubeLoadNative.Droid.Activities
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
+
+            MobileAds.Initialize(this, MOB_ID);
 
             AudioManager audioManager = (AudioManager)this.GetSystemService(AudioService);
             ComponentName componentName = new ComponentName(this.PackageName, new BluetoothRemoteControlReciever().ComponentName);

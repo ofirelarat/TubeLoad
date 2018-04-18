@@ -24,8 +24,7 @@ namespace tubeLoadNative.Droid.Activities
         ImageView videoImg;
         TextView channelName;
         ProgressBar progressBar;
-        AdView bannerad;
-        private const string bannerID = "ca-app-pub-2772184448965971/2833438017";
+        AdView bannerFrame;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -41,13 +40,13 @@ namespace tubeLoadNative.Droid.Activities
             videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
             progressBar = FindViewById<ProgressBar>(Resource.Id.downloadingProgressBar);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
+            bannerFrame = FindViewById<AdView>(Resource.Id.adView);
             downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             DownloadWatcher.onDownloaded += (sender, e) => TogglePlay();
             DownloadWatcher.onDownloadFailed += (sender, e) => ToggelDownload();
 
-            bannerad = AdWrapper.ConstructStandardBanner(this, AdSize.SmartBanner, bannerID);
-            bannerad.CustomBuild();
+            bannerFrame.LoadAd(new AdRequest.Builder().Build());
 
             UpdateView();
         }
@@ -177,14 +176,14 @@ namespace tubeLoadNative.Droid.Activities
 
         protected override void OnResume()
         {
-            if (bannerad != null)
-                bannerad.Resume();
+            if (bannerFrame != null)
+                bannerFrame.Resume();
             base.OnResume();
         }
         protected override void OnPause()
         {
-            if (bannerad != null)
-                bannerad.Pause();
+            if (bannerFrame != null)
+                bannerFrame.Pause();
             base.OnPause();
         }
 
