@@ -190,46 +190,49 @@ namespace tubeLoadNative.Droid
 			public const int googleg_standard_color_18 = 2130837525;
 			
 			// aapt resource value: 0x7f020016
-			public const int ic_cancel_white = 2130837526;
+			public const int ic_cancel_blue = 2130837526;
 			
 			// aapt resource value: 0x7f020017
-			public const int ic_download = 2130837527;
+			public const int ic_cancel_white = 2130837527;
 			
 			// aapt resource value: 0x7f020018
-			public const int ic_downloading = 2130837528;
+			public const int ic_download = 2130837528;
 			
 			// aapt resource value: 0x7f020019
-			public const int ic_media_next = 2130837529;
+			public const int ic_downloading = 2130837529;
 			
 			// aapt resource value: 0x7f02001a
-			public const int ic_media_pause = 2130837530;
+			public const int ic_media_next = 2130837530;
 			
 			// aapt resource value: 0x7f02001b
-			public const int ic_media_play = 2130837531;
+			public const int ic_media_pause = 2130837531;
 			
 			// aapt resource value: 0x7f02001c
-			public const int ic_media_play_pause = 2130837532;
+			public const int ic_media_play = 2130837532;
 			
 			// aapt resource value: 0x7f02001d
-			public const int ic_media_previous = 2130837533;
+			public const int ic_media_play_pause = 2130837533;
 			
 			// aapt resource value: 0x7f02001e
-			public const int ic_media_stop = 2130837534;
+			public const int ic_media_previous = 2130837534;
 			
 			// aapt resource value: 0x7f02001f
-			public const int ic_play_pause = 2130837535;
+			public const int ic_media_stop = 2130837535;
 			
 			// aapt resource value: 0x7f020020
-			public const int icon = 2130837536;
+			public const int ic_play_pause = 2130837536;
 			
 			// aapt resource value: 0x7f020021
-			public const int selector = 2130837537;
+			public const int icon = 2130837537;
 			
 			// aapt resource value: 0x7f020022
-			public const int splashimg = 2130837538;
+			public const int selector = 2130837538;
 			
 			// aapt resource value: 0x7f020023
-			public const int youtubeic2 = 2130837539;
+			public const int splashimg = 2130837539;
+			
+			// aapt resource value: 0x7f020024
+			public const int youtubeic2 = 2130837540;
 			
 			static Drawable()
 			{

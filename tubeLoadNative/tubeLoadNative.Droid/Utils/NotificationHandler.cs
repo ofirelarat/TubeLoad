@@ -29,6 +29,11 @@ namespace tubeLoadNative.Droid.Utils
 
             builder.SetOngoing(true);
 
+            if (Android.OS.Build.VERSION.SdkInt <= Android.OS.Build.VERSION_CODES.Lollipop)
+            {
+                CreateNotificationMediaActions();
+            }
+
             notificationManager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
         }
 
@@ -57,17 +62,22 @@ namespace tubeLoadNative.Droid.Utils
                 bitmap = BitmapFactory.DecodeResource(Application.Context.Resources, Resource.Drawable.default_song_image);
             }
 
-            RemoteViews notificationLayoutExpanded = new RemoteViews(Application.Context.PackageName, Resource.Layout.view_notification_actions);
-            notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationTitle, title);
-            notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationContent, content);
-            notificationLayoutExpanded.SetImageViewBitmap(Resource.Id.songImg, bitmap);
-            CreateNotificationMediaActions(notificationLayoutExpanded);
-            builder.SetCustomBigContentView(notificationLayoutExpanded);
-
-            //builder.SetLargeIcon(bitmap);
-            //builder.SetContentTitle(title);
-            //builder.SetContentText(content);
-
+            if (Android.OS.Build.VERSION.SdkInt > Android.OS.Build.VERSION_CODES.Lollipop)
+            {
+                RemoteViews notificationLayoutExpanded = new RemoteViews(Application.Context.PackageName, Resource.Layout.view_notification_actions);
+                notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationTitle, title);
+                notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationContent, content);
+                notificationLayoutExpanded.SetImageViewBitmap(Resource.Id.songImg, bitmap);
+                CreateNotificationMediaActions(notificationLayoutExpanded);
+                builder.SetCustomBigContentView(notificationLayoutExpanded);
+            }
+            else
+            {
+                builder.SetLargeIcon(bitmap);
+                builder.SetContentTitle(title);
+                builder.SetContentText(content);
+            }
+        
             songNotification = builder.Build();
 
             notificationManager.Notify(SONG_NOTIFICATION_ID, songNotification);
@@ -99,7 +109,15 @@ namespace tubeLoadNative.Droid.Utils
             stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
             PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.closeBtn, stopPendingIntent);
+        }
 
+        private static void CreateNotificationMediaActions()
+        {
+            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
+            PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
+            Notification.Action stopAction = new Notification.Action(Resource.Drawable.ic_cancel_blue, string.Empty, stopPendingIntent);
+            builder.AddAction(stopAction);
         }
     }
 }
