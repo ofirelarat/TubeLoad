@@ -6,7 +6,8 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,7 +27,8 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1">
             <TextView
                 android:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall"
@@ -41,11 +43,18 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/notificationContent" />
         </LinearLayout>
+        <ImageButton
+            android:src="@drawable/ic_cancel_white"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/closeBtn"
+            android:background="@android:color/transparent"
+            android:padding="5dp" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_weight="90">
         <ImageButton
             android:src="@drawable/ic_media_previous"

@@ -27,6 +27,8 @@ namespace tubeLoadNative.Droid.Utils
             builder = new Notification.Builder(Application.Context);
             builder.SetContentIntent(pendingIntent);
 
+            builder.SetOngoing(true);
+
             notificationManager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
         }
 
@@ -92,6 +94,12 @@ namespace tubeLoadNative.Droid.Utils
             nextIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaNext));
             PendingIntent nextPendingIntent = PendingIntent.GetBroadcast(Application.Context, 2, nextIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.nextBtn, nextPendingIntent);
+
+            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
+            PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
+            notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.closeBtn, stopPendingIntent);
+
         }
     }
 }

@@ -58,6 +58,7 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
 
                             case Keycode.MediaStop:
                                 AndroidSongsManager.Instance.Stop();
+                                NotificationHandler.DeleteNotification();
                                 break;
 
                             case Keycode.Headsethook:
