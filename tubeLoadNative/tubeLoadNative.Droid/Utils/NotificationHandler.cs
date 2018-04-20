@@ -7,6 +7,7 @@ using tubeLoadNative.Droid.Activities;
 using Android.Views;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using Android.Widget;
 
 namespace tubeLoadNative.Droid.Utils
 {
@@ -26,8 +27,13 @@ namespace tubeLoadNative.Droid.Utils
             builder = new Notification.Builder(Application.Context);
             builder.SetContentIntent(pendingIntent);
 
-            CreateNotificationMediaActions();
-          
+            builder.SetOngoing(true);
+
+            if (Android.OS.Build.VERSION.SdkInt <= Android.OS.Build.VERSION_CODES.Lollipop)
+            {
+                CreateNotificationMediaActions();
+            }
+
             notificationManager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
         }
 
@@ -56,10 +62,22 @@ namespace tubeLoadNative.Droid.Utils
                 bitmap = BitmapFactory.DecodeResource(Application.Context.Resources, Resource.Drawable.default_song_image);
             }
 
-            builder.SetLargeIcon(bitmap);
-            builder.SetContentTitle(title);
-            builder.SetContentText(content);
-
+            if (Android.OS.Build.VERSION.SdkInt > Android.OS.Build.VERSION_CODES.Lollipop)
+            {
+                RemoteViews notificationLayoutExpanded = new RemoteViews(Application.Context.PackageName, Resource.Layout.view_notification_actions);
+                notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationTitle, title);
+                notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationContent, content);
+                notificationLayoutExpanded.SetImageViewBitmap(Resource.Id.songImg, bitmap);
+                CreateNotificationMediaActions(notificationLayoutExpanded);
+                builder.SetCustomBigContentView(notificationLayoutExpanded);
+            }
+            else
+            {
+                builder.SetLargeIcon(bitmap);
+                builder.SetContentTitle(title);
+                builder.SetContentText(content);
+            }
+        
             songNotification = builder.Build();
 
             notificationManager.Notify(SONG_NOTIFICATION_ID, songNotification);
@@ -70,25 +88,36 @@ namespace tubeLoadNative.Droid.Utils
             notificationManager.CancelAll();
         }
 
-        private static void CreateNotificationMediaActions()
+        private static void CreateNotificationMediaActions(RemoteViews notificationLayoutExpanded)
         {
             Intent prevIntent = new Intent(Intent.ActionMediaButton);
             prevIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaPrevious));
             PendingIntent prevPendingIntent = PendingIntent.GetBroadcast(Application.Context, 0, prevIntent, PendingIntentFlags.UpdateCurrent);
-            Notification.Action prevAction = new Notification.Action(Resource.Drawable.ic_media_previous, string.Empty, prevPendingIntent);
-            builder.AddAction(prevAction);
-
+            notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.prevBtn, prevPendingIntent);
+          
             Intent playPauseIntent = new Intent(Intent.ActionMediaButton);
             playPauseIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaPlayPause));
             PendingIntent playPausePendingIntent = PendingIntent.GetBroadcast(Application.Context, 1, playPauseIntent, PendingIntentFlags.UpdateCurrent);
-            Notification.Action playPauseAction = new Notification.Action(Resource.Drawable.ic_media_play_pause, string.Empty, playPausePendingIntent);
-            builder.AddAction(playPauseAction);
+            notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.playBtn, playPausePendingIntent);
 
             Intent nextIntent = new Intent(Intent.ActionMediaButton);
             nextIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaNext));
             PendingIntent nextPendingIntent = PendingIntent.GetBroadcast(Application.Context, 2, nextIntent, PendingIntentFlags.UpdateCurrent);
-            Notification.Action nextAction = new Notification.Action(Resource.Drawable.ic_media_next, string.Empty, nextPendingIntent);
-            builder.AddAction(nextAction);
+            notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.nextBtn, nextPendingIntent);
+
+            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
+            PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
+            notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.closeBtn, stopPendingIntent);
+        }
+
+        private static void CreateNotificationMediaActions()
+        {
+            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
+            PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
+            Notification.Action stopAction = new Notification.Action(Resource.Drawable.ic_cancel_blue, string.Empty, stopPendingIntent);
+            builder.AddAction(stopAction);
         }
     }
 }
