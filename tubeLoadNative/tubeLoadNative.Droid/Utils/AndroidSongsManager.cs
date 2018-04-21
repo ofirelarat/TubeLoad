@@ -149,6 +149,12 @@ namespace tubeLoadNative.Droid.Utils
             newName = GetValidFileName(newName);
             string fileName = FileManager.PATH + GetSong(id).Name;
 
+            if (String.Equals(newName, GetSong(id).Name, StringComparison.OrdinalIgnoreCase))
+            {
+                File.Move(fileName, FileManager.PATH + "temporary.mp3");
+                fileName = FileManager.PATH + "temporary.mp3";
+            }
+
             // Renaming the song file
             File.Move(fileName, FileManager.PATH + newName);
 
