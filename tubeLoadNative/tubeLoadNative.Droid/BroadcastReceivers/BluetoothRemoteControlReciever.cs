@@ -57,7 +57,10 @@ namespace tubeLoadNative.Droid.BroadcastReceivers
                                 break;
 
                             case Keycode.MediaStop:
-                                AndroidSongsManager.Instance.Stop();
+                                if (AndroidSongsManager.Instance.IsPlaying)
+                                {
+                                    AndroidSongsManager.Instance.Stop();
+                                }
                                 NotificationHandler.DeleteNotification();
                                 break;
 

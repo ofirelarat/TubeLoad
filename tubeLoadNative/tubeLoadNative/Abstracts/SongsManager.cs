@@ -111,7 +111,7 @@ namespace tubeLoadNative.Abstracts
         {
             if (Songs.Count > 0)
             {
-                currentSongIndex = new Random().Next(Songs.Count); 
+                currentSongIndex = (++currentSongIndex) % Songs.Count;
 
                 Start(Songs[currentSongIndex].Id);
                 return true;

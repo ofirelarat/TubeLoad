@@ -15,6 +15,7 @@ using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Views;
 using Android.Support.V4.Content;
+using Android.Gms.Ads;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -30,7 +31,7 @@ namespace tubeLoadNative.Droid.Activities
         SeekbarView seekbarview;
         AlertDialog seekbarDialog;
         Song selectedSong;
-
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -38,7 +39,7 @@ namespace tubeLoadNative.Droid.Activities
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppPage("Songs player");
-
+            
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
@@ -47,7 +48,7 @@ namespace tubeLoadNative.Droid.Activities
             playBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
-
+            
             FileManager.SongsListUpdate();
             UpdateList();
 
@@ -294,7 +295,7 @@ namespace tubeLoadNative.Droid.Activities
             {
                 try
                 {
-                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !File.Exists(FileManager.PATH + renameText.Text) && renameText.Text.Length <= 100)
+                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !FileManager.ExistCaseSensetive(renameText.Text) && renameText.Text.Length <= 100)
                     {
                         mediaPlayer.RenameSong(selectedSong.Id, renameText.Text);
                         UpdateList();
