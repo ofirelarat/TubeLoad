@@ -366,8 +366,9 @@ namespace tubeLoadNative.Droid.Activities
                     return true;
 
                 case Resource.Id.suffleSongs:
-                    item.SetChecked(!item.IsChecked);
-                    mediaPlayer.isInSuffleMode = item.IsChecked;
+                    mediaPlayer.ShuffleSongs();
+                    item.SetChecked(true);
+                    UpdateList();
                     return true;
 
                 default:
