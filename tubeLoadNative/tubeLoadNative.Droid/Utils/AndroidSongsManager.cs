@@ -96,6 +96,7 @@ namespace tubeLoadNative.Droid.Utils
 
         public new void Stop()
         {
+            OnPause(null, null);
             base.Stop();
             mediaPlayer.Stop();
         }

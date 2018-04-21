@@ -18,7 +18,7 @@ using Android.Net;
 
 namespace tubeLoadNative.Droid.Activities
 {
-    [Activity(Label = "TubeLoad", MainLauncher = false, LaunchMode = Android.Content.PM.LaunchMode.SingleInstance, Icon = "@drawable/icon")]
+    [Activity(Label = "TubeLoad", MainLauncher = false, Icon = "@drawable/icon")]
     public class SearchSongs : Android.App.Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
@@ -225,6 +225,7 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         intent = new Intent(this, typeof(SongsPlayer));
                         StartActivity(intent);
+                        Finish();
                     }
                     else
                     {
@@ -237,6 +238,7 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         intent = new Intent(this, typeof(CurrentSong));
                         StartActivity(intent);
+                        Finish();
                     }
                     else
                     {

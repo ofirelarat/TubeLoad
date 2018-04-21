@@ -32,4 +32,6 @@ using Android.App;
 [assembly: Application(Debuggable=true)]
 #else
 [assembly: Application(Debuggable = false)]
+[assembly: UsesPermission(Android.Manifest.Permission.Internet)]
+[assembly: UsesPermission(Android.Manifest.Permission.AccessNetworkState)]
 #endif

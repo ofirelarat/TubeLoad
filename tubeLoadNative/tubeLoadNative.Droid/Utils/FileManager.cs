@@ -99,5 +99,19 @@ namespace tubeLoadNative.Droid.Utils
                 DeleteSong(songId);
             }
         }
+
+        public static bool ExistCaseSensetive(string name)
+        {
+            DirectoryInfo directory = new DirectoryInfo(PATH);
+            foreach (FileInfo fileInfo in directory.GetFiles("*.mp3"))
+            {
+                if (fileInfo.Name.Equals(name))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

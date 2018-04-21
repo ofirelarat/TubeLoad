@@ -11,10 +11,11 @@ using Android.Graphics;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Droid.Views;
 using Android.Support.V4.Content;
+using Android.Gms.Ads;
 
 namespace tubeLoadNative.Droid.Activities
 {
-    [Activity(Label = "TubeLoad", LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad")]
     public class CurrentSong : Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
@@ -23,6 +24,7 @@ namespace tubeLoadNative.Droid.Activities
         TextView songTitle;
         ImageView songImg;
         SeekbarView seekbar;
+        AdView bannerFrame;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -31,7 +33,8 @@ namespace tubeLoadNative.Droid.Activities
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppPage("Current Song");
-            
+
+            bannerFrame = FindViewById<AdView>(Resource.Id.adView);
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
             seekbar = FindViewById<SeekbarView>(Resource.Id.seekbar);
@@ -45,6 +48,8 @@ namespace tubeLoadNative.Droid.Activities
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             checkCurrentSong();
+
+            bannerFrame.LoadAd(new AdRequest.Builder().Build());
 
             nextBtn.Click += delegate
             {
@@ -184,11 +189,13 @@ namespace tubeLoadNative.Droid.Activities
                 case Resource.Id.addSong:
                     intent = new Intent(this, typeof(SearchSongs));
                     StartActivity(intent);
+                    Finish();
                     return true;
 
                 case Resource.Id.mySong:
                     intent = new Intent(this, typeof(SongsPlayer));
                     StartActivity(intent);
+                    Finish();
                     return true;
 
                 default:

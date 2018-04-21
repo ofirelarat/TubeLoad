@@ -15,10 +15,11 @@ using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Views;
 using Android.Support.V4.Content;
+using Android.Gms.Ads;
 
 namespace tubeLoadNative.Droid.Activities
 {
-    [Activity(Label = "TubeLoad", LaunchMode = Android.Content.PM.LaunchMode.SingleInstance)]
+    [Activity(Label = "TubeLoad")]
     public class SongsPlayer : Activity
     {
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
@@ -30,7 +31,7 @@ namespace tubeLoadNative.Droid.Activities
         SeekbarView seekbarview;
         AlertDialog seekbarDialog;
         Song selectedSong;
-
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -38,7 +39,7 @@ namespace tubeLoadNative.Droid.Activities
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppPage("Songs player");
-
+            
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
@@ -47,7 +48,7 @@ namespace tubeLoadNative.Droid.Activities
             playBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
-
+            
             FileManager.SongsListUpdate();
             UpdateList();
 
@@ -224,6 +225,7 @@ namespace tubeLoadNative.Droid.Activities
                 case Resource.Id.item_play:
                     Play(selectedSong.Id);
                     Intent intent = new Intent(this, typeof(CurrentSong));
+                    intent.AddFlags(ActivityFlags.SingleTop);
                     StartActivity(intent);
 
                     return true;
@@ -294,7 +296,7 @@ namespace tubeLoadNative.Droid.Activities
             {
                 try
                 {
-                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !File.Exists(FileManager.PATH + renameText.Text) && renameText.Text.Length <= 100)
+                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !FileManager.ExistCaseSensetive(renameText.Text) && renameText.Text.Length <= 100)
                     {
                         mediaPlayer.RenameSong(selectedSong.Id, renameText.Text);
                         UpdateList();
@@ -336,6 +338,7 @@ namespace tubeLoadNative.Droid.Activities
                 case Resource.Id.addSong:
                     intent = new Intent(this, typeof(SearchSongs));
                     StartActivity(intent);
+                    Finish();
 
                     return true;
 
@@ -344,6 +347,7 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         intent = new Intent(this, typeof(CurrentSong));
                         StartActivity(intent);
+                        Finish();
                     }
                     else
                     {
@@ -364,8 +368,9 @@ namespace tubeLoadNative.Droid.Activities
                     return true;
 
                 case Resource.Id.suffleSongs:
-                    item.SetChecked(!item.IsChecked);
-                    mediaPlayer.isInSuffleMode = item.IsChecked;
+                    mediaPlayer.ShuffleSongs();
+                    item.SetChecked(true);
+                    UpdateList();
                     return true;
 
                 default:

@@ -24,7 +24,10 @@ namespace tubeLoadNative.Droid.Utils
             mediaPlayer = new MediaPlayer();
             mediaPlayer.Completion += (sender, e) =>
             {
-                OnComplete?.Invoke(sender, e);
+                if (!mediaPlayer.IsPlaying)
+                {
+                    OnComplete?.Invoke(sender, e);
+                }
             };
         }
 

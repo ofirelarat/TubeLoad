@@ -23,12 +23,10 @@
         <item android:id="@+id/modifiedSort"
             android:checked="true"
             android:title="Modified Date"></item>
+        
+        <item android:id="@+id/suffleSongs"
+            android:title="Suffle"></item>
       </group>
     </menu>
   </item>
-  
-  <item android:id="@+id/suffleSongs"
-    android:title="Suffle"
-    android:checkable="true"
-    android:visible="false"></item>
 </menu>
