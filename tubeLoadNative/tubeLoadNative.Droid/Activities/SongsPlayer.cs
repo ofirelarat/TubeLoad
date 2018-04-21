@@ -225,6 +225,7 @@ namespace tubeLoadNative.Droid.Activities
                 case Resource.Id.item_play:
                     Play(selectedSong.Id);
                     Intent intent = new Intent(this, typeof(CurrentSong));
+                    intent.AddFlags(ActivityFlags.SingleTop);
                     StartActivity(intent);
 
                     return true;

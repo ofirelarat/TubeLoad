@@ -21,7 +21,7 @@ namespace tubeLoadNative.Droid.Utils
         static NotificationHandler()
         {
             Intent intent = new Intent(Application.Context, typeof(CurrentSong));
-            intent.AddFlags(ActivityFlags.NoHistory);
+            intent.AddFlags(ActivityFlags.SingleTop);
             PendingIntent pendingIntent = PendingIntent.GetActivity(Application.Context, 0, intent, PendingIntentFlags.UpdateCurrent);
             
             builder = new Notification.Builder(Application.Context);
