@@ -47,7 +47,7 @@ namespace tubeLoadNative.Droid.Utils
             if (title == null || content == null)
             {
                 title = "TubeLoad";
-                content = AndroidSongsManager.Instance.GetSong(songId).Name;
+                content = AndroidSongsManager.Instance.GetSong(songId).Name.Replace(".mp3","");
             }
 
             builder.SetSmallIcon(Resource.Drawable.icon);
