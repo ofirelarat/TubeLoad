@@ -7,6 +7,7 @@ using Android.Widget;
 using Java.Lang;
 using System.Threading.Tasks;
 using tubeLoadNative.Droid.BroadcastReceivers;
+using tubeLoadNative.Droid.Services;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Services;
 
@@ -26,6 +27,8 @@ namespace tubeLoadNative.Droid.Activities
             GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
 
             MobileAds.Initialize(this, MOB_ID);
+
+            StartService(new Intent(this, typeof(ClosingService)));
 
             AudioManager audioManager = (AudioManager)this.GetSystemService(AudioService);
             ComponentName componentName = new ComponentName(this.PackageName, new BluetoothRemoteControlReciever().ComponentName);
