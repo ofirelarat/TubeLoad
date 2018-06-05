@@ -88,9 +88,19 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnResume();
 
+            if (bannerFrame != null)
+                bannerFrame.Resume();
+
             checkCurrentSong();
 
             ChangePlayingView();
+        }
+
+        protected override void OnPause()
+        {
+            if (bannerFrame != null)
+                bannerFrame.Pause();
+            base.OnPause();
         }
 
         void ChangePlayingView()
