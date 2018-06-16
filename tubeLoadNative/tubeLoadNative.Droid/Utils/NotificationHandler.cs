@@ -90,22 +90,22 @@ namespace tubeLoadNative.Droid.Utils
 
         private static void CreateNotificationMediaActions(RemoteViews notificationLayoutExpanded)
         {
-            Intent prevIntent = new Intent(Intent.ActionMediaButton);
+            Intent prevIntent = new Intent("ACTION_MEDIA_BUTTON");
             prevIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaPrevious));
             PendingIntent prevPendingIntent = PendingIntent.GetBroadcast(Application.Context, 0, prevIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.prevBtn, prevPendingIntent);
           
-            Intent playPauseIntent = new Intent(Intent.ActionMediaButton);
+            Intent playPauseIntent = new Intent("ACTION_MEDIA_BUTTON");
             playPauseIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaPlayPause));
             PendingIntent playPausePendingIntent = PendingIntent.GetBroadcast(Application.Context, 1, playPauseIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.playBtn, playPausePendingIntent);
 
-            Intent nextIntent = new Intent(Intent.ActionMediaButton);
+            Intent nextIntent = new Intent("ACTION_MEDIA_BUTTON");
             nextIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaNext));
             PendingIntent nextPendingIntent = PendingIntent.GetBroadcast(Application.Context, 2, nextIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.nextBtn, nextPendingIntent);
 
-            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            Intent stopIntent = new Intent("ACTION_MEDIA_BUTTON");
             stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
             PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
             notificationLayoutExpanded.SetOnClickPendingIntent(Resource.Id.closeBtn, stopPendingIntent);
@@ -113,7 +113,7 @@ namespace tubeLoadNative.Droid.Utils
 
         private static void CreateNotificationMediaActions()
         {
-            Intent stopIntent = new Intent(Intent.ActionMediaButton);
+            Intent stopIntent = new Intent("ACTION_MEDIA_BUTTON");
             stopIntent.PutExtra(Intent.ExtraKeyEvent, new KeyEvent(KeyEventActions.Down, Keycode.MediaStop));
             PendingIntent stopPendingIntent = PendingIntent.GetBroadcast(Application.Context, 3, stopIntent, PendingIntentFlags.UpdateCurrent);
             Notification.Action stopAction = new Notification.Action(Resource.Drawable.ic_cancel_blue, string.Empty, stopPendingIntent);

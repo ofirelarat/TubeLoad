@@ -8,7 +8,7 @@ using tubeLoadNative.Droid.Utils;
 namespace tubeLoadNative.Droid.BroadcastReceivers
 {
     [BroadcastReceiver(Exported = false)]
-    [IntentFilter(new[] { Intent.ActionMediaButton, BluetoothAdapter.ActionStateChanged, BluetoothAdapter.ActionConnectionStateChanged })]
+    [IntentFilter(new[] { Intent.ActionMediaButton, BluetoothAdapter.ActionStateChanged, BluetoothAdapter.ActionConnectionStateChanged, "ACTION_MEDIA_BUTTON"})]
     public class BluetoothRemoteControlReciever : BroadcastReceiver
     {
         public string ComponentName { get { return Class.Name; } }
