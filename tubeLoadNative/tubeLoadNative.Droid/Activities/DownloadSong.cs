@@ -11,6 +11,7 @@ using Android.Support.V4.Content;
 using tubeLoadNative.Models;
 using tubeLoadNative.Services;
 using Android.Gms.Ads;
+using tubeLoadNative.Droid.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -24,7 +25,6 @@ namespace tubeLoadNative.Droid.Activities
         ImageView videoImg;
         TextView channelName;
         ProgressBar progressBar;
-        AdView bannerFrame;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -40,13 +40,16 @@ namespace tubeLoadNative.Droid.Activities
             videoImg = FindViewById<ImageView>(Resource.Id.videoImg);
             progressBar = FindViewById<ProgressBar>(Resource.Id.downloadingProgressBar);
             downloadBtn = FindViewById<Button>(Resource.Id.downloadBtn);
-            bannerFrame = FindViewById<AdView>(Resource.Id.adView);
             downloadBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             DownloadWatcher.onDownloaded += (sender, e) => TogglePlay();
             DownloadWatcher.onDownloadFailed += (sender, e) => ToggelDownload();
 
-            bannerFrame.LoadAd(new AdRequest.Builder().Build());
+            if (AdsService.DownloadSongAd == null)
+            {
+                AdsService.DownloadSongAd = FindViewById<AdView>(Resource.Id.adView);
+                AdsService.LoadBanner(AdsService.DownloadSongAd);
+            }
 
             UpdateView();
         }
@@ -176,14 +179,14 @@ namespace tubeLoadNative.Droid.Activities
 
         protected override void OnResume()
         {
-            if (bannerFrame != null)
-                bannerFrame.Resume();
+            if (AdsService.DownloadSongAd != null)
+                AdsService.DownloadSongAd.Resume();
             base.OnResume();
         }
         protected override void OnPause()
         {
-            if (bannerFrame != null)
-                bannerFrame.Pause();
+            if (AdsService.DownloadSongAd != null)
+                AdsService.DownloadSongAd.Pause();
             base.OnPause();
         }
 

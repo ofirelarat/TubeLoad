@@ -4,6 +4,7 @@ using Android.Support.V4.Content;
 using Android.Views;
 using Android.Widget;
 using tubeLoadNative.Droid.Utils;
+using tubeLoadNative.Models;
 
 namespace tubeLoadNative.Droid
 {
@@ -12,13 +13,13 @@ namespace tubeLoadNative.Droid
         AndroidSongsManager mediaPlayer = AndroidSongsManager.Instance;
 
         private Android.App.Activity context;
-        private string[] songsNames;
+        private Song[] songs;
         private static LayoutInflater inflater = null;
 
-        public SongsAdapter(Activity context,string[] songsNames)
+        public SongsAdapter(Activity context,Song[] songs)
         {
             this.context = context;
-            this.songsNames = songsNames;
+            this.songs = songs;
             inflater = (LayoutInflater)context.GetSystemService(Android.Content.Context.LayoutInflaterService);
         }
 
@@ -26,13 +27,13 @@ namespace tubeLoadNative.Droid
         {
             get
             {
-                return songsNames.Length;
+                return songs.Length;
             }
         }
 
         public override Java.Lang.Object GetItem(int position)
         {
-            return songsNames[position];
+            return songs[position].Name;
         }
 
         public override long GetItemId(int position)
@@ -48,9 +49,9 @@ namespace tubeLoadNative.Droid
             }
 
             TextView songName = convertView.FindViewById<TextView>(Resource.Id.songName);
-            songName.Text = songsNames[position];
+            songName.Text = songs[position].Name;
 
-            if (mediaPlayer.CurrentSong != null && mediaPlayer.Songs[position].Id.Equals(mediaPlayer.CurrentSong.Id))
+            if (mediaPlayer.CurrentSong != null && songs[position].Id.Equals(mediaPlayer.CurrentSong.Id))
             {
                 convertView.SetBackgroundColor(new Color(ContextCompat.GetColor(context, Resource.Color.brightassets)));
             }

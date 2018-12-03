@@ -25,7 +25,7 @@ namespace tubeLoadNative.Services
             {
                 using (var client = new HttpClient())
                 {
-                    latestVersion = client.GetStringAsync(URL).Result;
+                    latestVersion = await client.GetStringAsync(URL);
                 }
 
                 if (!latestVersion.Equals(currentVersion))
