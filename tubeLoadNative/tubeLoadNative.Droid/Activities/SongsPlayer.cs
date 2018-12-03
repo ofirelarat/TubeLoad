@@ -155,8 +155,7 @@ namespace tubeLoadNative.Droid.Activities
             int index = songsListView.FirstVisiblePosition;
             View songView = songsListView.GetChildAt(0);
             int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
-
-            songs.ForEach((x) => x.Name.Replace(".mp3", string.Empty));
+            
             BaseAdapter adapter = new SongsAdapter(this, songs.ToArray());
             songsListView.Adapter = adapter;
 
@@ -170,8 +169,7 @@ namespace tubeLoadNative.Droid.Activities
             int index = songsListView.FirstVisiblePosition;
             View songView = songsListView.GetChildAt(0);
             int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
-
-            songs.ForEach((x) => x.Name.Replace(".mp3", string.Empty));
+            
             BaseAdapter adapter = new SongsAdapter(this, songs.ToArray());
             songsListView.Adapter = adapter;
 
