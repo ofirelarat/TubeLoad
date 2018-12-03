@@ -183,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BroadcastReceivers\BluetoothRemoteControlReciever.cs" />
+    <Compile Include="Services\AdsService.cs" />
     <Compile Include="Services\ClosingService.cs" />
     <Compile Include="Utils\Common.cs" />
     <Compile Include="Activities\CurrentSong.cs" />
@@ -442,7 +443,6 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_cancel_blue.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

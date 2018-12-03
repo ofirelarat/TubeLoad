@@ -10,12 +10,12 @@ using Android.Widget;
 using Android.Media;
 using Android.Graphics.Drawables;
 using Android.Graphics;
-using System.IO;
 using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Models;
 using tubeLoadNative.Droid.Views;
 using Android.Support.V4.Content;
-using Android.Gms.Ads;
+using tubeLoadNative.Droid.Services;
+using Android.Views.InputMethods;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -31,7 +31,9 @@ namespace tubeLoadNative.Droid.Activities
         SeekbarView seekbarview;
         AlertDialog seekbarDialog;
         Song selectedSong;
-        
+
+        static int adsCounter = 0;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -39,16 +41,18 @@ namespace tubeLoadNative.Droid.Activities
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppPage("Songs player");
-            
+
             songsListView = FindViewById<ListView>(Resource.Id.songsListView);
             playBtn = FindViewById<ImageButton>(Resource.Id.playBtn);
             ImageButton nextBtn = FindViewById<ImageButton>(Resource.Id.nextBtn);
             ImageButton prevBtn = FindViewById<ImageButton>(Resource.Id.prevBtn);
+            EditText searchString = FindViewById<EditText>(Resource.Id.searchEditText);
+            ImageButton clearBtn = FindViewById<ImageButton>(Resource.Id.clearBtn);
 
             playBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             nextBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
-            
+
             FileManager.SongsListUpdate();
             UpdateList();
 
@@ -107,6 +111,27 @@ namespace tubeLoadNative.Droid.Activities
             {
                 mediaPlayer.PlayPrev();
             };
+
+            searchString.TextChanged += (sender, e) =>
+            {
+                if (searchString.Text.Length > 0)
+                {
+                    clearBtn.Visibility = ViewStates.Visible;
+                    FilterList(searchString.Text);
+                }
+                else
+                {
+                    HideKeyboard();
+                    clearBtn.Visibility = ViewStates.Gone;
+                    UpdateList();
+                }
+            };
+
+            clearBtn.Click += (s, e) => {
+                HideKeyboard();
+                searchString.Text = string.Empty;
+                UpdateList();
+            };
         }
 
         void TogglePlay()
@@ -131,7 +156,23 @@ namespace tubeLoadNative.Droid.Activities
             View songView = songsListView.GetChildAt(0);
             int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
 
-            BaseAdapter adapter = new SongsAdapter(this, songs.Select((x) => x.Name.Replace(".mp3", string.Empty)).ToArray());
+            songs.ForEach((x) => x.Name.Replace(".mp3", string.Empty));
+            BaseAdapter adapter = new SongsAdapter(this, songs.ToArray());
+            songsListView.Adapter = adapter;
+
+            songsListView.SetSelectionFromTop(index, top);
+        }
+
+        void FilterList(string filterText)
+        {
+            songs = mediaPlayer.Songs.FindAll((song) => song.Name.ToLower().Contains(filterText));
+
+            int index = songsListView.FirstVisiblePosition;
+            View songView = songsListView.GetChildAt(0);
+            int top = (songView == null) ? 0 : songView.Top - songsListView.ListPaddingTop;
+
+            songs.ForEach((x) => x.Name.Replace(".mp3", string.Empty));
+            BaseAdapter adapter = new SongsAdapter(this, songs.ToArray());
             songsListView.Adapter = adapter;
 
             songsListView.SetSelectionFromTop(index, top);
@@ -165,11 +206,76 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
+        string GetSelectedSongTitle()
+        {
+            MediaMetadataRetriever metadata = SongMetadata.GetMetadata(selectedSong.Id);
+            string title = metadata.ExtractMetadata(MetadataKey.Title);
+
+            if (title == null)
+            {
+                title = selectedSong.Name.Replace(".mp3", string.Empty);
+            }
+
+            return title;
+        }
+
+        void RenameSong()
+        {
+            AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
+            EditText renameText = new EditText(this);
+            renameText.Text = selectedSong.Name.Replace(".mp3", string.Empty);
+            renameText.SetSingleLine();
+            renameDialog.SetTitle("Rename");
+            renameDialog.SetView(renameText);
+
+            renameDialog.SetPositiveButton("OK", (s, e) =>
+            {
+                try
+                {
+                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !FileManager.ExistCaseSensetive(renameText.Text) && renameText.Text.Length <= 100)
+                    {
+                        mediaPlayer.RenameSong(selectedSong.Id, renameText.Text);
+                        UpdateList();
+                    }
+                    else
+                    {
+                        Toast.MakeText(Application.Context, "Not a valid name", ToastLength.Long).Show();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
+                    Toast.MakeText(Application.Context, "Could not rename the song", ToastLength.Long).Show();
+                }
+            });
+
+            renameDialog.Show();
+        }
+
+        void HideKeyboard()
+        {
+            var inputMethodManager = this.GetSystemService(InputMethodService) as InputMethodManager;
+
+            if (inputMethodManager != null && this is Android.App.Activity)
+            {
+                var activity = this as Android.App.Activity;
+                var token = activity.CurrentFocus == null ? null : activity.CurrentFocus.WindowToken;
+                inputMethodManager.HideSoftInputFromWindow(token, HideSoftInputFlags.ImplicitOnly);
+            }
+        }
+
         protected override void OnResume()
         {
+            adsCounter++;
             FileManager.SongsListUpdate();
             UpdateList();
             ChangePlayingView();
+
+            if (AdsService.InterstitialAd.IsLoaded && adsCounter % 5 == 0)
+            {
+                AdsService.InterstitialAd.Show();
+                AdsService.LoadInterstitial(AdsService.InterstitialAd);
+            }
 
             base.OnResume();
         }
@@ -270,52 +376,6 @@ namespace tubeLoadNative.Droid.Activities
             }
         }
 
-        string GetSelectedSongTitle()
-        {
-            MediaMetadataRetriever metadata = SongMetadata.GetMetadata(selectedSong.Id);
-            string title = metadata.ExtractMetadata(MetadataKey.Title);
-
-            if (title == null)
-            {
-                title = selectedSong.Name.Replace(".mp3", string.Empty);
-            }
-
-            return title;
-        }
-
-        void RenameSong()
-        {
-            AlertDialog.Builder renameDialog = new AlertDialog.Builder(this);
-            EditText renameText = new EditText(this);
-            renameText.Text = selectedSong.Name.Replace(".mp3", string.Empty);
-            renameText.SetSingleLine();
-            renameDialog.SetTitle("Rename");
-            renameDialog.SetView(renameText);
-
-            renameDialog.SetPositiveButton("OK", (s, e) =>
-            {
-                try
-                {
-                    if (renameText.Text != string.Empty && FileManager.FindSong(renameText.Text) == null && !FileManager.ExistCaseSensetive(renameText.Text) && renameText.Text.Length <= 100)
-                    {
-                        mediaPlayer.RenameSong(selectedSong.Id, renameText.Text);
-                        UpdateList();
-                    }
-                    else
-                    {
-                        Toast.MakeText(Application.Context, "Not a valid name", ToastLength.Long).Show();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    GoogleAnalyticsService.Instance.TrackAppException(ex.Message, false);
-                    Toast.MakeText(Application.Context, "Could not rename the song", ToastLength.Long).Show();
-                }
-            });
-
-            renameDialog.Show();
-        }
-
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             var inflater = MenuInflater;
@@ -353,24 +413,28 @@ namespace tubeLoadNative.Droid.Activities
                     {
                         Toast.MakeText(this, "No song is playing", ToastLength.Long).Show();
                     }
+
                     return true;
 
                 case Resource.Id.alphabeticSort:
                     mediaPlayer.SortSongs(Song.AlphabeticCompare);
                     item.SetChecked(true);
                     UpdateList();
+
                     return true;
 
                 case Resource.Id.modifiedSort:
                     mediaPlayer.UpdateSongsList();
                     item.SetChecked(true);
                     UpdateList();
+
                     return true;
 
                 case Resource.Id.suffleSongs:
                     mediaPlayer.ShuffleSongs();
                     item.SetChecked(true);
                     UpdateList();
+
                     return true;
 
                 default:

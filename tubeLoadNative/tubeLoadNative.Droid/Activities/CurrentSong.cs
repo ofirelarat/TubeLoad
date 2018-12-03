@@ -12,6 +12,7 @@ using tubeLoadNative.Droid.Utils;
 using tubeLoadNative.Droid.Views;
 using Android.Support.V4.Content;
 using Android.Gms.Ads;
+using tubeLoadNative.Droid.Services;
 
 namespace tubeLoadNative.Droid.Activities
 {
@@ -24,7 +25,6 @@ namespace tubeLoadNative.Droid.Activities
         TextView songTitle;
         ImageView songImg;
         SeekbarView seekbar;
-        AdView bannerFrame;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -34,7 +34,12 @@ namespace tubeLoadNative.Droid.Activities
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppPage("Current Song");
 
-            bannerFrame = FindViewById<AdView>(Resource.Id.adView);
+            if (AdsService.CurrentSongAd == null)
+            {
+                AdsService.CurrentSongAd = FindViewById<AdView>(Resource.Id.adView);
+                AdsService.LoadBanner(AdsService.CurrentSongAd);
+            }
+
             songImg = FindViewById<ImageView>(Resource.Id.songImg);
             songTitle = FindViewById<TextView>(Resource.Id.songTitle);
             seekbar = FindViewById<SeekbarView>(Resource.Id.seekbar);
@@ -48,8 +53,6 @@ namespace tubeLoadNative.Droid.Activities
             prevBtn.SetBackgroundColor(new Color(ContextCompat.GetColor(this, Resource.Color.darkassets)));
 
             checkCurrentSong();
-
-            bannerFrame.LoadAd(new AdRequest.Builder().Build());
 
             nextBtn.Click += delegate
             {
@@ -88,8 +91,8 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnResume();
 
-            if (bannerFrame != null)
-                bannerFrame.Resume();
+            if (AdsService.CurrentSongAd != null)
+                AdsService.CurrentSongAd.Resume();
 
             checkCurrentSong();
 
@@ -98,8 +101,8 @@ namespace tubeLoadNative.Droid.Activities
 
         protected override void OnPause()
         {
-            if (bannerFrame != null)
-                bannerFrame.Pause();
+            if (AdsService.CurrentSongAd != null)
+                AdsService.CurrentSongAd.Pause();
             base.OnPause();
         }
 

@@ -16,17 +16,14 @@ namespace tubeLoadNative.Droid.Activities
     [Activity(Theme = "@style/MyTheme.Splash", MainLauncher = true, NoHistory = true)]
     public class SplashScreen : Activity
     {
-        bool passedVersionCheck = true;
         const string MOB_ID = "ca-app-pub-2772184448965971~2893271479";
 
-        protected override async void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             GoogleAnalyticsService.Instance.Initialize(this);
             GoogleAnalyticsService.Instance.TrackAppEvent(GoogleAnalyticsService.GAEventCategory.EnteringApp, "Entered splash screen");
-
-            MobileAds.Initialize(this, MOB_ID);
 
             StartService(new Intent(this, typeof(ClosingService)));
 
@@ -41,17 +38,10 @@ namespace tubeLoadNative.Droid.Activities
             RemoteControlClient remoteControlClient = new RemoteControlClient(mediaPendingIntent);
             audioManager.RegisterRemoteControlClient(remoteControlClient);
 
-            string currentVerion = this.PackageManager.GetPackageInfo(PackageName, 0).VersionName;
-            VersionChecker.VersionStatus versionStatus = await VersionChecker.isVersionUpToDate(currentVerion);
-            if (versionStatus == VersionChecker.VersionStatus.NeedUpdate)
+            Task.Run(() =>
             {
-                passedVersionCheck = false;
-                createNewVersionDialog();
-            }
-            else if (versionStatus == VersionChecker.VersionStatus.MissingHotFix)
-            {
-                Toast.MakeText(this, "New version available, please check it at tubeloadweb.com", ToastLength.Long).Show();
-            }
+                checkForUpdateVersionAsync();
+            });
         }
 
         protected override void OnResume()
@@ -72,29 +62,20 @@ namespace tubeLoadNative.Droid.Activities
                  };
              });
 
-            if (passedVersionCheck)
-            {
-                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
-            }
+            StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
         }
 
-        private void createNewVersionDialog()
+        private async void checkForUpdateVersionAsync()
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.SetCancelable(false);
-            builder.SetTitle("New Version");
-            builder.SetMessage("Your version is out of date. Do you want to install the new one?");
-            builder.SetPositiveButton("accept", (s, e) =>
+            string currentVerion = PackageManager.GetPackageInfo(PackageName, 0).VersionName;
+            VersionChecker.VersionStatus versionStatus = await VersionChecker.isVersionUpToDate(currentVerion);
+
+            if (versionStatus == VersionChecker.VersionStatus.MissingHotFix || versionStatus == VersionChecker.VersionStatus.NeedUpdate)
             {
-                var uri = Android.Net.Uri.Parse("http://www.tubeloadweb.com");
-                var intent = new Intent(Intent.ActionView, uri);
-                StartActivity(intent);
-                Finish();
-            });
-            builder.SetNegativeButton("ignore", (s, e) => {
-                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
-            });
-            builder.Show();
+                RunOnUiThread(new Runnable(
+                    () => Toast.MakeText(this, "New version available, please check it at tubeloadweb.com", ToastLength.Long).Show()  
+                ));
+            }
         }
     }
 }
