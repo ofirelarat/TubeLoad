@@ -49,7 +49,7 @@ namespace tubeLoadNative.Droid
             }
 
             TextView songName = convertView.FindViewById<TextView>(Resource.Id.songName);
-            songName.Text = songs[position].Name;
+            songName.Text = songs[position].Name.Replace(".mp3", "");
 
             if (mediaPlayer.CurrentSong != null && songs[position].Id.Equals(mediaPlayer.CurrentSong.Id))
             {
