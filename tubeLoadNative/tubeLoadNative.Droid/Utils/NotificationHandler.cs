@@ -29,7 +29,7 @@ namespace tubeLoadNative.Droid.Utils
 
             builder.SetOngoing(true);
 
-            if (Android.OS.Build.VERSION.SdkInt <= Android.OS.Build.VERSION_CODES.M)
+            if (Android.OS.Build.VERSION.SdkInt <= Android.OS.BuildVersionCodes.M)
             {
                 CreateNotificationMediaActions();
             }
@@ -62,7 +62,7 @@ namespace tubeLoadNative.Droid.Utils
                 bitmap = BitmapFactory.DecodeResource(Application.Context.Resources, Resource.Drawable.default_song_image);
             }
 
-            if (Android.OS.Build.VERSION.SdkInt > Android.OS.Build.VERSION_CODES.M)
+            if (Android.OS.Build.VERSION.SdkInt > Android.OS.BuildVersionCodes.M)
             {
                 RemoteViews notificationLayoutExpanded = new RemoteViews(Application.Context.PackageName, Resource.Layout.view_notification_actions);
                 notificationLayoutExpanded.SetTextViewText(Resource.Id.notificationTitle, title);
