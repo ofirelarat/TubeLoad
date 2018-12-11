@@ -1,8 +1,13 @@
+using Android;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.Gms.Ads;
 using Android.Media;
 using Android.OS;
+using Android.Runtime;
+using Android.Support.V4.App;
+using Android.Support.V4.Content;
 using Android.Widget;
 using Java.Lang;
 using System.Threading.Tasks;
@@ -38,6 +43,8 @@ namespace tubeLoadNative.Droid.Activities
             RemoteControlClient remoteControlClient = new RemoteControlClient(mediaPendingIntent);
             audioManager.RegisterRemoteControlClient(remoteControlClient);
 
+            checkReadWriteToStorage();
+
             Task.Run(() =>
             {
                 checkForUpdateVersionAsync();
@@ -61,8 +68,16 @@ namespace tubeLoadNative.Droid.Activities
                          () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
                  };
              });
+        }
 
-            StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) == Permission.Granted &&
+                   ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) == Permission.Granted)
+            {
+                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+            }
         }
 
         private async void checkForUpdateVersionAsync()
@@ -75,6 +90,25 @@ namespace tubeLoadNative.Droid.Activities
                 RunOnUiThread(new Runnable(
                     () => Toast.MakeText(this, "New version available, please check it at tubeloadweb.com", ToastLength.Long).Show()  
                 ));
+            }
+        }
+
+        private void checkReadWriteToStorage()
+        {
+            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != Permission.Granted &&
+                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != Permission.Granted)
+            {
+                if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.WriteExternalStorage) &&
+                        ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadExternalStorage))
+                {
+                    Toast.MakeText(Application.Context, "Permission to storage has been denied", ToastLength.Long).Show();
+                }
+                else
+                {
+                    ActivityCompat.RequestPermissions(this,
+                            new string[] { Manifest.Permission.WriteExternalStorage, Manifest.Permission.ReadExternalStorage },
+                            0);
+                }
             }
         }
     }
