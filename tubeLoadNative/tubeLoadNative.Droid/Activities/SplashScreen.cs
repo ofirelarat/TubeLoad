@@ -54,7 +54,7 @@ namespace tubeLoadNative.Droid.Activities
         protected override void OnResume()
         {
             base.OnResume();
-           
+
             Task.Run(async () =>
              {
                  try
@@ -68,6 +68,12 @@ namespace tubeLoadNative.Droid.Activities
                          () => Toast.MakeText(Application.Context, "Could not connect, please check your internet connection", ToastLength.Long).Show()));
                  };
              });
+
+            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) == Permission.Granted &&
+          ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) == Permission.Granted)
+            {
+                StartActivity(new Intent(Application.Context, typeof(SongsPlayer)));
+            }
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
@@ -96,17 +102,19 @@ namespace tubeLoadNative.Droid.Activities
         private void checkReadWriteToStorage()
         {
             if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != Permission.Granted &&
-                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != Permission.Granted)
+                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadExternalStorage) != Permission.Granted &&
+                    ContextCompat.CheckSelfPermission(this, Manifest.Permission.ReadPhoneState) != Permission.Granted)
             {
                 if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.WriteExternalStorage) &&
-                        ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadExternalStorage))
+                        ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadExternalStorage) &&
+                        ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.ReadPhoneState))
                 {
                     Toast.MakeText(Application.Context, "Permission to storage has been denied", ToastLength.Long).Show();
                 }
                 else
                 {
                     ActivityCompat.RequestPermissions(this,
-                            new string[] { Manifest.Permission.WriteExternalStorage, Manifest.Permission.ReadExternalStorage },
+                            new string[] { Manifest.Permission.WriteExternalStorage, Manifest.Permission.ReadExternalStorage, Manifest.Permission.ReadPhoneState},
                             0);
                 }
             }
