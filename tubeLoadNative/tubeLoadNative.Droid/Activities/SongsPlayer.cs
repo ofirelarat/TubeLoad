@@ -272,7 +272,6 @@ namespace tubeLoadNative.Droid.Activities
             if (AdsService.InterstitialAd.IsLoaded && adsCounter % 5 == 0)
             {
                 AdsService.InterstitialAd.Show();
-                AdsService.LoadInterstitial(AdsService.InterstitialAd);
             }
 
             base.OnResume();

@@ -48,6 +48,7 @@ namespace tubeLoadNative.Droid.Activities
             if (AdsService.DownloadSongAd == null)
             {
                 AdsService.DownloadSongAd = FindViewById<AdView>(Resource.Id.adView);
+                AdsService.DownloadSongAd.AdListener = new AdsService.AdListenerService(() => { if (!AdsService.DownloadSongAd.IsShown) AdsService.DownloadSongAd.Resume(); }, () => AdsService.LoadBanner(AdsService.DownloadSongAd));
                 AdsService.LoadBanner(AdsService.DownloadSongAd);
             }
 

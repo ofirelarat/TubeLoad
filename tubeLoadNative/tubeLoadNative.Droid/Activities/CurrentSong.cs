@@ -37,6 +37,7 @@ namespace tubeLoadNative.Droid.Activities
             if (AdsService.CurrentSongAd == null)
             {
                 AdsService.CurrentSongAd = FindViewById<AdView>(Resource.Id.adView);
+                AdsService.CurrentSongAd.AdListener = new AdsService.AdListenerService(() => {  }, () => AdsService.LoadBanner(AdsService.CurrentSongAd));
                 AdsService.LoadBanner(AdsService.CurrentSongAd);
             }
 
@@ -91,8 +92,10 @@ namespace tubeLoadNative.Droid.Activities
         {
             base.OnResume();
 
-            if (AdsService.CurrentSongAd != null)
-                AdsService.CurrentSongAd.Resume();
+            //if (AdsService.CurrentSongAd != null && !AdsService.CurrentSongAd.IsShown)
+            //{
+            //    AdsService.CurrentSongAd.Resume();
+            //}
 
             checkCurrentSong();
 
@@ -101,8 +104,8 @@ namespace tubeLoadNative.Droid.Activities
 
         protected override void OnPause()
         {
-            if (AdsService.CurrentSongAd != null)
-                AdsService.CurrentSongAd.Pause();
+            //if (AdsService.CurrentSongAd != null)
+            //    AdsService.CurrentSongAd.Pause();
             base.OnPause();
         }
 
